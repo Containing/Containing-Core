@@ -77,7 +77,7 @@ public class XMLChecker {
     public static void main(String[] args) {
 
         try {
-            XMLChecker a = new XMLChecker("C:/one/xml7.xml");
+            XMLChecker a = new XMLChecker("C:/one/xml0.xml");
             a.GetApprovedContainers();
         } 
         catch (Exception ex) {

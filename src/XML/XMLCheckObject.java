@@ -4,14 +4,18 @@ import Main.Container;
 
 public class XMLCheckObject {
     
-    public XMLCheckObject(Container container){
-        this.approved = true;
-        this.reason = "No error Found";
-        this.container = container;
+    public XMLCheckObject(Container container) throws Exception{
+        if (container == null){
+            throw new Exception("Container can't be null");
+        }
+        else{
+            this.container = container;
+        }
+        
     }
     
-    public boolean approved;
-    public String reason;
+    public boolean approved = true;
+    public String reason = "No error Found";
     public Container container;
  
     public void foundError(String reason){
@@ -28,6 +32,6 @@ public class XMLCheckObject {
     @Override
     public String toString()
     {
-        return this.container.getContainNr() + " : " + approved + "\n" + reason;
+        return this.container.getId() + " : " + approved + "\n" + reason;
     }
 }
