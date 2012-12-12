@@ -1,7 +1,7 @@
 package XML;
 
 import Main.Container;
-import Main.Vector3f;
+import Helpers.Vector3f;
 import java.util.*;
 
 public class XMLChecker {
