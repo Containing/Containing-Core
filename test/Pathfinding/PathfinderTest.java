@@ -60,7 +60,7 @@ public class PathfinderTest {
      * Test of findShortest method, of class Pathfinder.
      */
     @Test
-    public void testFindShortest_Node_Node() {
+    public void testFindShortest_Node_Node() throws Exception {
         System.out.println("findShortest");
         Pathfinder.generateGrid();
         
@@ -82,7 +82,7 @@ public class PathfinderTest {
      * Test of findShortest method, of class Pathfinder.
      */
     @Test
-    public void testFindShortest_3args() {
+    public void testFindShortest_3args() throws Exception {
         Pathfinder.generateGrid();
         testBlockCargo();
         Pathfinder.generateGrid();  //Clean grid
@@ -90,7 +90,7 @@ public class PathfinderTest {
         testBlockedPath();
     }
     
-    private void testBlockedPath(){
+    private void testBlockedPath() throws Exception{
         for(int i = 0 ; i < Pathfinder.Paths.length ; i++)Pathfinder.Paths[i].FilterCargo=2;    //Block full cargo on all paths
         Node startNode = Pathfinder.Nodes[0];
         Node endNode = Pathfinder.Nodes[5];
@@ -101,7 +101,7 @@ public class PathfinderTest {
         assertEquals(expResult, result);
     }
     
-    private void testBlockCargo(){
+    private void testBlockCargo() throws Exception{
         System.out.println("findShortest");
         Pathfinder.generateGrid();
         Pathfinder.Paths[2].FilterCargo=2;  //Block loaded cargo
@@ -122,7 +122,7 @@ public class PathfinderTest {
         assertEquals(expResult, result);
     }
     
-    private void testOneWay(){
+    private void testOneWay() throws Exception{
         
         //Test one way traffic
         Pathfinder.Paths[2].OneWay = true;
