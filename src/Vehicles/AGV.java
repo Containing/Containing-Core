@@ -3,22 +3,30 @@ package vehicles;
 import Helpers.GameTime;
 import Helpers.Vector3f;
 import Main.Container;
+import Pathfinding.Node;
 
 public class AGV extends Vehicle {
 
     private Container container;
-    private Vector3f destination;
-    private Vector3f position;
-    //private Texture texture;
-
+    private Node destination;
+    private Node position;
+    private Node[] route;
+    private final float SpeedWithContainer = 72;
+    private final float SpeedWithoutContainer = 144;
+    
     @Override
-    public void setDestination(Vector3f destination) {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public void setDestination(Node destination) {
+        this.destination = destination;
     }
 
     @Override
-    public Vector3f getDestination() {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public Node getDestination() {
+        if (route.length == 0 || route == null){
+            return null;
+        }
+        else{
+            return route[route.length-1];
+        }
     }
 
     @Override
@@ -28,7 +36,22 @@ public class AGV extends Vehicle {
 
     @Override
     public void update(GameTime gameTime) {
-
+        if (position == destination){
+            // wait for message
+        }
+        else if (route.length == 0 || route == null)
+        {
+            try {
+                route = Pathfinding.Pathfinder.findShortest(position, destination, container == null);
+            } 
+            catch (Exception ex) {
+                
+            }
+        }
+        else{
+            // follow route
+        }
+            
     }
 
     @Override

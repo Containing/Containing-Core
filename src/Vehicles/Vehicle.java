@@ -1,14 +1,15 @@
 package vehicles;
 
 import Helpers.GameTime;
-import Main.Container;
 import Helpers.Vector3f;
+import Main.Container;
+import Pathfinding.Node;
 
 public abstract class Vehicle {
     
-    public abstract void setDestination(Vector3f destination);
+    public abstract void setDestination(Node destination);
     
-    public abstract Vector3f getDestination();
+    public abstract Node getDestination();
     
     public abstract Vector3f getPosition();
     
