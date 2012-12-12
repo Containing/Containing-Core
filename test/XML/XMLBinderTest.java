@@ -46,15 +46,18 @@ public class XMLBinderTest {
     public void testGetContainerList() throws Exception {
         System.out.println("GetContainerList");
         
-        String fileName1 = "C:/one/a.png";
-        ArrayList expResult1 = null;
-        ArrayList result1 = XMLBinder.GetContainerList(fileName1);
-        assertEquals(expResult1, result1);
+        // niet een xml bestand
+        assertEquals(XMLBinder.GetContainerList("C:/one/a.png"), null);
+
+        // geen bestand
+        assertEquals(XMLBinder.GetContainerList(""), null);
         
-        String fileName2 = "C:/one/xml0.xml";
-        ArrayList<Container> result2 = XMLBinder.GetContainerList(fileName2);
-        assertEquals(2, result2.size());
-        assertEquals("id0", result2.get(0).getId());
-        assertEquals("id1", result2.get(1).getId());
+        // een xml bestand met fouten
+        //assertEquals(XMLBinder.GetContainerList("C:/one/xml0.xml"), null);
+        
+        // een goed xml bestand
+        assertEquals(XMLBinder.GetContainerList("C:/one/xml1.xml").size(), 10);
+        assertEquals(XMLBinder.GetContainerList("C:/one/xml1.xml").get(0).getId(), "id0");
+        assertEquals(XMLBinder.GetContainerList("C:/one/xml1.xml").get(1).getId(), "id1");
     }
 }
