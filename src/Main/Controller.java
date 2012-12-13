@@ -7,8 +7,8 @@ package Main;
 import java.util.List;
 import vehicles.*;
 import Helpers.*;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.concurrent.Callable;
 import updateTimer.updateTimer;
 
 /**
@@ -37,6 +37,18 @@ public class Controller {
     {
         Initialize();
         
+        // Walk's through all the method's in this class
+        for(Method method : this.getClass().getMethods())
+        {
+            // When the method == update initialize the timer
+            if("Update".equals(method.getName()))
+            {
+                timer = new updateTimer(method);
+                break;
+            }
+        }
+        timer.start();
+        timer.run();
     }
     
     /**
@@ -180,7 +192,9 @@ public class Controller {
         }
         // When this vehicle is a Truck
         else if (vehicle.getClass() == Truck.class)
+        {
             craneRequests = 1;
+        }
         
         // While the vehicle can hold more cranes 
         while(craneRequests-- != 0)
