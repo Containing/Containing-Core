@@ -7,11 +7,18 @@ import Pathfinding.Node;
 
 public class Truck extends Vehicle  {
     
-    Container container;
-
+    private Container container;
+    private Node destination;
+    private Node position;
+    
+    public Truck(Node startPosition)
+    {
+        this.position = startPosition;
+    }
+    
     @Override
     public void setDestination(Node destination) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        this.destination = destination;
     }
 
     @Override
@@ -26,17 +33,27 @@ public class Truck extends Vehicle  {
 
     @Override
     public void update(GameTime gameTime) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        
     }
 
     @Override
     public Container GetContainer(Vector3f containerPos) throws Exception {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
+        if (container != null){
+           return container;
+        }
+        else{
+            throw new Exception("Their is no container.");
+        }
+   }
 
     @Override
-    public void SetContainer(Container container, Vector3f containerPos) throws Exception {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public void SetContainer(Container container, Vector3f containerPos) throws Exception{
+        if (container != null){
+            throw new Exception("This vehicle can't carry more then one container.");
+        }
+        else{
+            this.container = container;
+        }
     }
     
 }

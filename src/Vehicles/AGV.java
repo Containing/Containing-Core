@@ -14,6 +14,10 @@ public class AGV extends Vehicle {
     private final float SpeedWithContainer = 72;
     private final float SpeedWithoutContainer = 144;
     
+    public AGV(Node startPosition){
+        this.position = startPosition;
+    }
+    
     @Override
     public void setDestination(Node destination) {
         this.destination = destination;
@@ -21,8 +25,8 @@ public class AGV extends Vehicle {
 
     @Override
     public Node getDestination() {
-        if (route.length == 0 || route == null){
-            return null;
+        if (route.length == 0 || route == null || position == destination){
+            return position;
         }
         else{
             return route[route.length-1];
@@ -37,7 +41,7 @@ public class AGV extends Vehicle {
     @Override
     public void update(GameTime gameTime) {
         if (position == destination){
-            // wait for message
+            // send message arrived
         }
         else if (route.length == 0 || route == null)
         {
@@ -49,9 +53,13 @@ public class AGV extends Vehicle {
             }
         }
         else{
-            // follow route
-        }
-            
+            if (container == null){
+                // follow route SpeedWithoutContainer
+            }
+            else{
+                // follow route SpeedWithContainer
+            }
+        }   
     }
 
     @Override
