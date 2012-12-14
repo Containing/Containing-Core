@@ -20,17 +20,18 @@ public class AGV extends Vehicle {
     
     @Override
     public void setDestination(Node destination) {
-        this.destination = destination;
+        try {
+            route = Pathfinding.Pathfinder.findShortest(position, destination, container == null);
+            this.destination = route[route.length-1];
+        } 
+        catch (Exception ex) {
+
+        }
     }
 
     @Override
     public Node getDestination() {
-        if (route.length == 0 || route == null || position == destination){
-            return position;
-        }
-        else{
-            return route[route.length-1];
-        }
+        return (destination == null) ? position : destination;
     }
 
     @Override
@@ -43,21 +44,14 @@ public class AGV extends Vehicle {
         if (position == destination){
             // send message arrived
         }
-        else if (route.length == 0 || route == null)
-        {
-            try {
-                route = Pathfinding.Pathfinder.findShortest(position, destination, container == null);
-            } 
-            catch (Exception ex) {
-                
-            }
-        }
         else{
             if (container == null){
                 // follow route SpeedWithoutContainer
+                // update position
             }
             else{
                 // follow route SpeedWithContainer
+                // update position
             }
         }   
     }

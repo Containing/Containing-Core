@@ -4,26 +4,39 @@ import Helpers.GameTime;
 import Helpers.Vector3f;
 import Main.Container;
 import Pathfinding.Node;
+import java.sql.Date;
 
 public class Truck extends Vehicle  {
     
+    private Date arrivalDate;
+    private Date departureDate;
     private Container container;
-    private Node destination;
     private Node position;
+    private Node destination;
+    private Node[] route;
+    private float speed/*= X*/;
     
-    public Truck(Node startPosition)
+    public Truck(Date arrivalDate, Date departureDate, Node startPosition)
     {
         this.position = startPosition;
+        this.arrivalDate = arrivalDate;
+        this.departureDate = departureDate;
     }
     
     @Override
     public void setDestination(Node destination) {
-        this.destination = destination;
+        try {
+            this.destination = destination;
+            route = Pathfinding.Pathfinder.findShortest(position, destination);
+        } 
+        catch (Exception ex) {
+
+        }
     }
 
     @Override
     public Node getDestination() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return (destination == null) ? position : destination;
     }
 
     @Override
@@ -33,7 +46,14 @@ public class Truck extends Vehicle  {
 
     @Override
     public void update(GameTime gameTime) {
-        
+        if (position == destination){
+            // send message
+            // wait for message depart
+        }
+        else{
+            // follow route 
+            // update position
+        } 
     }
 
     @Override

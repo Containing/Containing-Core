@@ -4,25 +4,40 @@ import Helpers.GameTime;
 import Helpers.Vector3f;
 import Main.Container;
 import Pathfinding.Node;
+import java.sql.Date;
 
 public class Train extends Vehicle{
 
+    private Date arrivalDate;
+    private Date departureDate;
     private Container[] containerList;
-    private Vector3f position;
+    private Node position;
+    private Node destination;
+    private Node[] route;
+    private float speed/*= X*/;
    
-    public Train(/*position,*/ int Containers)
+    public Train(Date arrivalDate, Date departureDate, int trainLenght, Node startPosition)
     {
-        containerList = new Container[Containers];
+        this.position = startPosition;
+        this.arrivalDate = arrivalDate;
+        this.departureDate = departureDate;
+        containerList = new Container[trainLenght];
     }
     
     @Override
     public void setDestination(Node destination) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        try {
+            this.destination = destination;
+            route = Pathfinding.Pathfinder.findShortest(position, destination);
+        } 
+        catch (Exception ex) {
+
+        }
     }
 
     @Override
     public Node getDestination() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return (destination == null) ? position : destination;
     }
 
     @Override
@@ -32,7 +47,14 @@ public class Train extends Vehicle{
 
     @Override
     public void update(GameTime gameTime) {
-
+        if (position == destination){
+            // send message
+            // wait for message depart
+        }
+        else{
+            // follow route 
+            // update position
+        } 
     }
     
     @Override
