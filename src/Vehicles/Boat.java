@@ -76,7 +76,7 @@ public class Boat extends Vehicle {
             throw new Exception("The Y index needs to be between 0 and " + cly + 
                                 ".\n Used index: " + y);
         }
-        else if (0 > y || y > cly){
+        else if (0 > z || y > clz){
             throw new Exception("The Z index needs to be between 0 and " + clz + 
                                 ".\n Used index: " + z);
         }
