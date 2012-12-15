@@ -24,7 +24,7 @@ public class Container
     /**
      * The date format used
      */
-    public DateFormat df = new SimpleDateFormat("dd MM yy HH:mm");
+    public static DateFormat df = new SimpleDateFormat("dd MM yy HH:mm");
 
     /**
      * The constructor

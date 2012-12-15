@@ -57,13 +57,10 @@ public class Train extends Vehicle{
         } 
     }
     
-    @Override
-    public Container GetContainer(Vector3f containerPos) throws Exception {
-        int x = (int)containerPos.x;
-
-        if (containerList.length > x && x > 0){
-            if (containerList[x] != null){
-                return containerList[x];
+    public Container GetContainer(int index) throws Exception {
+        if (containerList.length > index && index > 0){
+            if (containerList[index] != null){
+                return containerList[index];
             }
             else{
                 throw new Exception("Their is no container.");
@@ -71,17 +68,14 @@ public class Train extends Vehicle{
         }
         else{
             throw new Exception("The index needs to be between 0 and " + containerList.length + 
-                                ".\n Used index: " + x);
+                                ".\n Used index: " + index);
         }
     }
 
-    @Override
-    public void SetContainer(Container container, Vector3f containerPos) throws Exception {
-        int x = (int)containerPos.x;
-
-        if (containerList.length > x && x > 0){
-            if (containerList[x] == null){
-                containerList[x] = container;
+    public void SetContainer(Container container, int index) throws Exception {
+        if (containerList.length > index && index > 0){
+            if (containerList[index] == null){
+                containerList[index] = container;
             }
             else{
                 throw new Exception("Their is allready a container.");
@@ -89,7 +83,7 @@ public class Train extends Vehicle{
         }
         else{
             throw new Exception("The index needs to be between 0 and " + containerList.length + 
-                                ".\n Used index: " + x);
+                                ".\n Used index: " + index);
         }
     }
 }

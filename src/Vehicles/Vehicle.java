@@ -34,21 +34,5 @@ public abstract class Vehicle {
      * @param gameTime
      */
     public abstract void update(GameTime gameTime);
-    
-    /**
-     *
-     * @param containerPos
-     * @return
-     * @throws Exception
-     */
-    public abstract Container GetContainer(Vector3f containerPos) throws Exception;
-    
-    /**
-     * Sets the container on a certain position.
-     * @param container The container to place
-     * @param containerPos The position to place the container
-     * @throws Exception If their allready is a container on the spot, or if the spot doesn't exist.
-     */
-    public abstract void SetContainer(Container container, Vector3f containerPos) throws Exception;
 }
 

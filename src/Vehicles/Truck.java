@@ -56,8 +56,7 @@ public class Truck extends Vehicle  {
         } 
     }
 
-    @Override
-    public Container GetContainer(Vector3f containerPos) throws Exception {
+    public Container GetContainer() throws Exception {
         if (container != null){
            return container;
         }
@@ -66,8 +65,7 @@ public class Truck extends Vehicle  {
         }
    }
 
-    @Override
-    public void SetContainer(Container container, Vector3f containerPos) throws Exception{
+    public void SetContainer(Container container) throws Exception{
         if (container != null){
             throw new Exception("This vehicle can't carry more then one container.");
         }
