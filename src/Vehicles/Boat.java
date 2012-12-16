@@ -7,33 +7,53 @@ import Pathfinding.Node;
 import Vehicles.Ostack;
 import java.util.Date;
 
+/**
+ * The boat.
+ * @author Tonnie Boersma
+ */
 public class Boat extends Vehicle {
     
     private Date arrivalDate;
     private Date departureDate;
-    public Ostack[][] containerField;
+    private Ostack[][] containerField;
     private Vector3f size;
     private Node position;
     private Node destination;
     private Node[] route;
     private float speed/*= X*/;
-    
 
-    
-    public Boat(Date arrivalDate, Date departureDate, Vector3f containerArraySize, Node startPosition)
+    /**
+     * Generate a new boat, with an empty containerfield.
+     * @param arrivalDate The arrival date.
+     * @param departureDate The Departure date.
+     * @param containerArraySize The ships containerfield sizes.
+     * @param startPosition The spawn position.
+     * @throws Exception If a variable is equel to null.
+     */
+    public Boat(Date arrivalDate, Date departureDate, Vector3f containerArraySize, Node startPosition) throws Exception
     {
-        this.position = startPosition;
-        this.arrivalDate = arrivalDate;
-        this.departureDate = departureDate;
-        this.size = containerArraySize;
-        
-        
-        this.containerField = new Ostack[(int)size.z][(int)size.x];
-        
-        for (int z = 0; z < size.z; z++) {
-            for (int x = 0; x < size.x; x++) {
-                this.containerField[z][x] = new Ostack<>((int)size.y);
+        if (arrivalDate == null || departureDate == null
+                || containerArraySize == null || startPosition == null){
+            throw new Exception("\nThe input variable can't be null:"+
+                    "\narrivalDate: " + arrivalDate +
+                    "\ndepartureDate: " + departureDate +
+                    "\ncontainerArraySize: " + containerArraySize +
+                    "\nstartPosition: " + startPosition);
+        }
+        else{
+            this.position = startPosition;
+            this.arrivalDate = arrivalDate;
+            this.departureDate = departureDate;
+            this.size = containerArraySize;
+
+            this.containerField = new Ostack[(int)size.z][(int)size.x];
+
+            for (int z = 0; z < size.z; z++) {
+                for (int x = 0; x < size.x; x++) {
+                    this.containerField[z][x] = new Ostack<>((int)size.y);
+                }
             }
+            
         }
     }
     
@@ -70,18 +90,22 @@ public class Boat extends Vehicle {
         } 
     }
     
+    /**
+     * Gets the bestcontainer from the given row.
+     * @param rowIndex The row to get the container from.
+     * @return The container with the latest departure date.
+     * @throws Exception If the row is empty.
+     */
     public Container GetBestContainer(int rowIndex) throws Exception {
         if (0 > rowIndex || rowIndex > size.x){
             throw new Exception("Row " + rowIndex + " doesn't exist on this ship.");
         }
         else{
             Date max = null;
-            
-            for (int z = 0; z < size.x; z++) {
-                if (containerField[rowIndex][z].count() > 0){
-                    Date now = ((Container)containerField[rowIndex][z].peek()).getDepartureDateStart();
-                    
-                    if (z == 0){
+            for (int z = 0; z < size.z; z++) {
+                if (containerField[z][rowIndex].count() > 0){
+                    Date now = ((Container)containerField[z][rowIndex].peek()).getDepartureDateStart();
+                    if (max == null){
                         max = now;
                     }
                     else if (max.before(now)){
@@ -89,10 +113,10 @@ public class Boat extends Vehicle {
                     }
                 }
             }
-            for (int z = 0; z < size.x; z++) {
-                if (containerField[rowIndex][z].count() > 0){
-                    if(max == ((Container)containerField[rowIndex][z].peek()).getDepartureDateStart()){
-                        return (Container)containerField[rowIndex][z].pop();
+            for (int z = 0; z < size.z; z++) {
+                if (containerField[z][rowIndex].count() > 0){
+                    if(max == ((Container)containerField[z][rowIndex].peek()).getDepartureDateStart()){
+                        return (Container)containerField[z][rowIndex].pop();
                     }
                 }
             }
@@ -103,13 +127,55 @@ public class Boat extends Vehicle {
         return null;
     }
 
-    public void SetContainer(Container container, Vector3f containerPos) throws Exception {
+    /**
+     * Places the container in the row.
+     * @param container The container to place on the ship.
+     * @param rowIndex The row to place the container.
+     * @throws Exception If tthe row is full.
+     */
+    public void SetContainer(Container container, int rowIndex) throws Exception {
+        if (container == null){
+            throw new Exception("Can't place an empty container.");
+        }
+        else if (0 > rowIndex || rowIndex > size.x){
+            throw new Exception("Row " + rowIndex + " doesn't exist on this ship.");
+        }  
+        else{
+            int counter = 0;
+            for (int z = 0; z < size.z; z++) {
+                counter += containerField[z][rowIndex].count();
+            }
+            if (counter >= size.y*size.z){
+                throw new Exception("Row " + rowIndex + " is full can't place container.");
+            }
+            else{
+                for (int z = 0; z < size.z; z++) {
+                    if(containerField[z][rowIndex].count() < size.y){
+                        containerField[z][rowIndex].push(container);
+                        break;
+                    }
+                }
+            }
+        }
+    }
+    
+    /**
+     * Sets the container at the position.
+     * This is still buggy and should be followed by the CheckShip() methode.
+     * @param container The container to place on the ship.
+     * @param containerPos The position to place the container.
+     * @throws Exception If their is allready a container at the position, or if the container is equel to zero.
+     */
+    public void SetContainerManual(Container container, Vector3f containerPos) throws Exception {
         int x = (int)containerPos.x;
         int y = (int)containerPos.y;
         int z = (int)containerPos.z;
         
         // <editor-fold defaultstate="collapsed" desc="generate Exception">
         String ExceptionString = "";
+        if (container == null){
+            ExceptionString += ("\nCan't place a null container");
+        }
         if (0 > x || x > size.x){
             ExceptionString += ("\nThe X index needs to be between 0 and " + size.x + 
                                 ".\nUsed index: " + x);
@@ -136,4 +202,22 @@ public class Boat extends Vehicle {
             throw new Exception(ExceptionString);
         }
     }
+    
+    /**
+     * Checks if their are holes in the stacked containers.
+     * @return True if their are no holes.
+     */
+    public boolean CheckShip(){
+        for (int x = 0; x < size.x; x++) {
+            for (int z = 0; z < size.z; z++) {
+                if (containerField[z][x].HasHole()){
+                    System.out.println(z + ":" + x);
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
 }
+
+
