@@ -12,31 +12,69 @@ import vehicles.Vehicle;
  * @author Martin
  */
 public class Message {
-    Vehicle senderRef;
-    Object requested;
+    /**
+     * Action Types for the the requestedObject
+     */
+    public enum ACTION { Load, Unload, Fetch, Deliver }        
+    // Action of the message
+    ACTION action;
+    
+    // Object that requested
+    Object destinationObject;
+    // Object that is requested
+    Object requestedObject;
     
     /**
-     * Returns the position node of the sender
+     * Get's the requested action type 
      * @return 
      */
-    public Node DestinationNode()
+    public ACTION CurrentAction()
     {
-        return senderRef.getDestination();
+        return action;
     }
     
-    public Vehicle SenderReference()
+    /**
+     * Get's the object reference of the object that send the request
+     * @return 
+     */
+    public Object DestinationObject()
     {
-        return senderRef;
+        return destinationObject;
     }
     
-    public Object RequestedType()
+    /**
+     * The destination where the requested object need's to go
+     * @return 
+     */
+    public Node destinationNode()
     {
-        return requested.getClass();
+        //if(destinationObject.getClass() == (Crane))
+        //    return ((Crane)destination).position;
+        if(destinationObject.getClass() == Vehicle.class)
+            return ((Vehicle)destinationObject).getDestination();
+        
+        return null;
     }
     
-    public Message(Vehicle messageSender, Object requested)
+    /**
+     * Object that is requested
+     * @return 
+     */
+    public Object RequestedObject()
     {
-        this.senderRef = messageSender;
-        this.requested = requested;
+        return requestedObject.getClass();
+    }
+    
+    /**
+     * Class Constructor
+     * @param sourceSender
+     * @param requestType
+     * @param action 
+     */
+    public Message(Object sourceSender, Object requestType,ACTION action)
+    {
+        this.destinationObject = sourceSender;
+        this.requestedObject = requestType;
+        this.action = action;
     }
 }

@@ -122,10 +122,10 @@ public class Controller {
                 while(++index < messages.size())
                 {
                     // When the message requested an AGV 
-                    if(messages.get(index).RequestedType() == agv.getClass())
+                    if(messages.get(index).RequestedObject() == agv.getClass())
                     {  
                         // Send's the agv to the node of the quest giver
-                        agv.setDestination(messages.get(index).DestinationNode());
+                        agv.setDestination(messages.get(index).destinationNode());
                         // Removes the message
                         messages.remove(index--); 
                         // Stop looping because this agv now has an assingment
@@ -157,14 +157,15 @@ public class Controller {
                 while(++index < messages.size())
                 {
                     // When the message request a crane of the same type of this crane
-                    if(messages.get(index).RequestedType() == crane.getClass())
+                    if(messages.get(index).RequestedObject() == crane.getClass())
                     {
                         // Send's the crane to the node of the quest giver
-                        crane.setDestination(messages.get(index).DestinationNode());
+                        crane.setDestination(messages.get(index).destinationNode());
                         // Request's an AGV for contianer pickup
                         messages.add(new Message(
                                 crane,
-                                AGV.class));
+                                AGV.class,
+                                Message.ACTION.Unload));
                         // Removes this message
                         messages.remove(index--);
                         // Stop looping because this crane now has an assingment
