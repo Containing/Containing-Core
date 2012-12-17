@@ -3,6 +3,7 @@ package vehicles;
 import Helpers.Vector3f;
 import Main.Container;
 import Pathfinding.Node;
+import Pathfinding.Pathfinder;
 import Vehicles.Ostack;
 import java.util.Date;
 
@@ -16,7 +17,7 @@ public class Boat extends Vehicle {
     private Date departureDate;
     private Ostack[][] containerField;
     private Vector3f size;
-    private Node position;
+    private Vector3f position;
     private Node destination;
     private Node[] route;
     private float speed/*= X*/;
@@ -40,7 +41,7 @@ public class Boat extends Vehicle {
                     "\nstartPosition: " + startPosition);
         }
         else{
-            this.position = startPosition;
+            this.position = startPosition.getPosition();
             this.arrivalDate = arrivalDate;
             this.departureDate = departureDate;
             this.size = containerArraySize;
@@ -60,7 +61,7 @@ public class Boat extends Vehicle {
     public void setDestination(Node destination) {
         try {
             this.destination = destination;
-            route = Pathfinding.Pathfinder.findShortest(position, destination);
+            route = Pathfinding.Pathfinder.findShortest(Pathfinder.findClosestNode(position), destination);
         } 
         catch (Exception ex) {
 
@@ -69,7 +70,7 @@ public class Boat extends Vehicle {
 
     @Override
     public Node getDestination() {
-        return (destination == null) ? position : destination;
+        return (destination == null) ? Pathfinder.findClosestNode(position) : destination;
     }
 
     @Override
@@ -79,7 +80,7 @@ public class Boat extends Vehicle {
 
     @Override
     public void update(float gameTime) {
-        if (position == destination){
+        if (position == destination.getPosition()){
             // send message
             // wait for message depart
         }

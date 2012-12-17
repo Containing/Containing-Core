@@ -3,6 +3,7 @@ package vehicles;
 import Helpers.Vector3f;
 import Main.Container;
 import Pathfinding.Node;
+import Pathfinding.Pathfinder;
 import java.sql.Date;
 
 public class Train extends Vehicle{
@@ -10,14 +11,14 @@ public class Train extends Vehicle{
     private Date arrivalDate;
     private Date departureDate;
     private Container[] containerList;
-    private Node position;
+    private Vector3f position;
     private Node destination;
     private Node[] route;
     private float speed/*= X*/;
    
     public Train(Date arrivalDate, Date departureDate, int trainLenght, Node startPosition)
     {
-        this.position = startPosition;
+        this.position = startPosition.getPosition();
         this.arrivalDate = arrivalDate;
         this.departureDate = departureDate;
         containerList = new Container[trainLenght];
@@ -27,7 +28,7 @@ public class Train extends Vehicle{
     public void setDestination(Node destination) {
         try {
             this.destination = destination;
-            route = Pathfinding.Pathfinder.findShortest(position, destination);
+            route = Pathfinding.Pathfinder.findShortest(Pathfinder.findClosestNode(position), destination);
         } 
         catch (Exception ex) {
 
@@ -36,7 +37,7 @@ public class Train extends Vehicle{
 
     @Override
     public Node getDestination() {
-        return (destination == null) ? position : destination;
+        return (destination == null) ? Pathfinder.findClosestNode(position) : destination;
     }
 
     @Override
@@ -46,7 +47,7 @@ public class Train extends Vehicle{
 
     @Override
     public void update(float gameTime) {
-        if (position == destination){
+        if (position == destination.getPosition()){
             // send message
             // wait for message depart
         }

@@ -3,24 +3,25 @@ package vehicles;
 import Helpers.Vector3f;
 import Main.Container;
 import Pathfinding.Node;
+import Pathfinding.Pathfinder;
 
 public class AGV extends Vehicle {
 
     private Container container;
     private Node destination;
-    private Node position;
+    private Vector3f position;
     private Node[] route;
     private final float SpeedWithContainer = 72;
     private final float SpeedWithoutContainer = 144;
     
     public AGV(Node startPosition){
-        this.position = startPosition;
+        this.position = startPosition.getPosition();
     }
     
     @Override
     public void setDestination(Node destination) {
         try {
-            route = Pathfinding.Pathfinder.findShortest(position, destination, container == null);
+            route = Pathfinding.Pathfinder.findShortest(Pathfinder.findClosestNode(position), destination, container == null);
             this.destination = route[route.length-1];
         } 
         catch (Exception ex) {
@@ -30,7 +31,7 @@ public class AGV extends Vehicle {
 
     @Override
     public Node getDestination() {
-        return (destination == null) ? position : destination;
+        return (destination == null) ? Pathfinder.findClosestNode(position) : destination;
     }
 
     @Override
@@ -40,7 +41,7 @@ public class AGV extends Vehicle {
 
     @Override
     public void update(float gameTime) {
-        if (position == destination){
+        if (position == destination.getPosition()){
             // send message arrived
         }
         else{
