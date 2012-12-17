@@ -4,7 +4,7 @@
  */
 package Pathfinding;
 
-import Helpers.Vector2;
+import Helpers.Vector3f;
 import org.junit.*;
 import static org.junit.Assert.*;
 
