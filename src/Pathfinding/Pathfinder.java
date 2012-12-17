@@ -1,5 +1,6 @@
 package Pathfinding;
 
+import Helpers.Vector3f;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -93,14 +94,27 @@ public class Pathfinder {
         
         Paths[11] = new Path(Nodes[0], Nodes[11]);
         Paths[12] = new Path(Nodes[11], Nodes[6]);
-        
-        
-        
-        
-        
     }
     
 
+    public static Node findClosestNode(Vector3f position){
+        NodeScore[] nscore = new NodeScore[Nodes.length];
+        for(int i = 0 ; i < Nodes.length ; i++){
+            nscore[i] = new NodeScore(Nodes[i], Vector3f.distance(Nodes[i].getPosition(), position) , null);
+        }
+        
+        float lowestScore = Float.MAX_VALUE;
+        int index = 0;
+        
+        for(int i = 0 ; i < nscore.length ; i++){
+            if(nscore[i].score<lowestScore){
+                lowestScore = nscore[i].score;
+                index = i;
+            }
+        }
+
+        return nscore[index].node;
+    }
 
     /**
      * 
