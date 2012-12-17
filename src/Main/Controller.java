@@ -18,7 +18,6 @@ import vehicles.*;
 public class Controller {
     
     updateTimer timer;
-    GameTime gameTime;
     
     List<Vehicle> dockedVehicles;
     // List with all AGV's
@@ -43,7 +42,7 @@ public class Controller {
             // When the method == update initialize the timer
             if("Update".equals(method.getName()))
             {
-                timer = new updateTimer(method);
+                timer = new updateTimer(method, this);
                 break;
             }
         }
@@ -98,7 +97,7 @@ public class Controller {
      * Updates class logic
      * @param gameTime 
      */
-    public void Update(GameTime gameTime )
+    public void Update(float gameTime )
     {
         // Updates the logic of each AGV
         for(Vehicle agv : agvList)

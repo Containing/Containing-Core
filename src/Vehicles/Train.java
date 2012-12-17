@@ -1,6 +1,5 @@
 package vehicles;
 
-import Helpers.GameTime;
 import Helpers.Vector3f;
 import Main.Container;
 import Pathfinding.Node;
@@ -46,7 +45,7 @@ public class Train extends Vehicle{
     }
 
     @Override
-    public void update(GameTime gameTime) {
+    public void update(float gameTime) {
         if (position == destination){
             // send message
             // wait for message depart

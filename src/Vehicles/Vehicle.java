@@ -1,6 +1,5 @@
 package vehicles;
 
-import Helpers.GameTime;
 import Helpers.Vector3f;
 import Main.Container;
 import Pathfinding.Node;
@@ -33,6 +32,6 @@ public abstract class Vehicle {
      *
      * @param gameTime
      */
-    public abstract void update(GameTime gameTime);
+    public abstract void update(float gameTime);
 }
 

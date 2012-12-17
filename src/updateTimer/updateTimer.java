@@ -11,6 +11,7 @@ import java.util.logging.Logger;
  */
 public class updateTimer implements Runnable{
     private Method updateMethod;
+    private Object updateObject;
     private boolean running;
 
     private float targetFPS = 30;
@@ -18,8 +19,9 @@ public class updateTimer implements Runnable{
 
     private Thread t;
 
-    public updateTimer(Method updateMethod){
+    public updateTimer(Method updateMethod, Object updateObject){
         this.updateMethod = updateMethod;
+        this.updateObject = updateObject;
         this.t = new Thread(this);
     }
 
@@ -53,12 +55,20 @@ public class updateTimer implements Runnable{
         prevTime = System.nanoTime();
         while(running){
             curTime = System.nanoTime();
-         
-            /*
-            * 
-            * DO STUFF HERE
-            * 
-            */
+            try {
+                updateMethod.invoke(updateObject, (curTime-prevTime)/1000000000f);
+                /*
+                * 
+                * DO STUFF HERE
+                * 
+                */
+            } catch (IllegalAccessException ex) {
+                Logger.getLogger(updateTimer.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (IllegalArgumentException ex) {
+                Logger.getLogger(updateTimer.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (InvocationTargetException ex) {
+                Logger.getLogger(updateTimer.class.getName()).log(Level.SEVERE, null, ex);
+            }
 
             prevTime = curTime;
             //Calculate difference and adjust sleep
