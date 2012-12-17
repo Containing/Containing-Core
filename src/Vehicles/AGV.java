@@ -1,9 +1,12 @@
 package vehicles;
 
+import Helpers.Message;
 import Helpers.Vector3f;
 import Main.Container;
 import Pathfinding.Node;
 import Pathfinding.Pathfinder;
+import java.util.ArrayList;
+import java.util.List;
 
 public class AGV extends Vehicle {
 
@@ -14,8 +17,11 @@ public class AGV extends Vehicle {
     private final float SpeedWithContainer = 72;
     private final float SpeedWithoutContainer = 144;
     
+    public List<Message> messageQue;
+    
     public AGV(Node startPosition){
         this.position = startPosition.getPosition();
+        messageQue = new ArrayList();        
     }
     
     @Override
@@ -54,6 +60,9 @@ public class AGV extends Vehicle {
                 // update position
             }
         }   
+        // When the container was fetched or removed
+        if(messageQue.size() > 0)
+            messageQue.remove(0);
     }
 
     public Container GetContainer() throws Exception {
