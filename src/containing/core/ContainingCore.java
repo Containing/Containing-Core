@@ -14,6 +14,6 @@ public class ContainingCore {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        // TODO code application logic here
+        Main.Controller c = new Main.Controller();
     }
 }

@@ -99,6 +99,7 @@ public class Controller {
      */
     public void Update(float gameTime )
     {
+        System.out.println(gameTime);
         // Updates the logic of each AGV
         for(Vehicle agv : agvList)
         {    
