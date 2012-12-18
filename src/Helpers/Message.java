@@ -5,7 +5,7 @@
 package Helpers;
 
 import Pathfinding.Node;
-import vehicles.Vehicle;
+import Vehicles.Vehicle;
 
 /**
  *

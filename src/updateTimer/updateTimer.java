@@ -63,11 +63,11 @@ public class updateTimer implements Runnable{
                 * 
                 */
             } catch (IllegalAccessException ex) {
-                Logger.getLogger(updateTimer.class.getName()).log(Level.SEVERE, null, ex);
+                //Logger.getLogger(updateTimer.class.getName()).log(Level.SEVERE, null, ex);
             } catch (IllegalArgumentException ex) {
-                Logger.getLogger(updateTimer.class.getName()).log(Level.SEVERE, null, ex);
+                //Logger.getLogger(updateTimer.class.getName()).log(Level.SEVERE, null, ex);
             } catch (InvocationTargetException ex) {
-                Logger.getLogger(updateTimer.class.getName()).log(Level.SEVERE, null, ex);
+               // Logger.getLogger(updateTimer.class.getName()).log(Level.SEVERE, null, ex);
             }
 
             prevTime = curTime;

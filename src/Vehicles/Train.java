@@ -1,4 +1,4 @@
-package vehicles;
+package Vehicles;
 
 import Helpers.Vector3f;
 import Main.Container;

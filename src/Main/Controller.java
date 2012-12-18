@@ -5,11 +5,13 @@
 package Main;
 
 import Helpers.*;
+import Pathfinding.Node;
+import Vehicles.*;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import updateTimer.updateTimer;
-import vehicles.*;
+
 
 /**
  *
@@ -64,7 +66,7 @@ public class Controller {
         // Add's 100 AGV's to the class all waiting
         for(int i = 0; i < 100; i++)
         {
-            agvList.add(new AGV(null));
+            agvList.add(new AGV(new Node(1,0)));
         }
         
         //Er zijn in totaal  10 zeeschipkranen, 8 binnenvaartkranen, 4 treinkranen en 20 truckkranen 

@@ -1,9 +1,10 @@
-package vehicles;
+package Vehicles;
 
 import Helpers.Vector3f;
 import Main.Container;
 import Pathfinding.Node;
 import Pathfinding.Pathfinder;
+import Vehicles.Vehicle;
 
 public class AGV extends Vehicle {
 
