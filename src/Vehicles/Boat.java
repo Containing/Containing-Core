@@ -1,10 +1,9 @@
-package vehicles;
+package Vehicles;
 
 import Helpers.Vector3f;
 import Main.Container;
 import Pathfinding.Node;
 import Pathfinding.Pathfinder;
-import Vehicles.Ostack;
 import java.util.Date;
 
 /**
@@ -79,7 +78,7 @@ public class Boat extends Vehicle {
     }
 
     @Override
-    public void update(float gameTime) {
+    public void update(float gameTime) throws Exception {
         if (position == destination.getPosition()){
             // send message
             // wait for message depart
