@@ -15,7 +15,7 @@ public class Message {
     /**
      * Action Types for the the requestedObject
      */
-    public enum ACTION { Load, Unload, Fetch, Deliver }        
+    enum ACTION { Load, Unload, Fetch, Deliver }        
     // Action of the message
     ACTION action;
     
@@ -72,8 +72,10 @@ public class Message {
      * Get's the object reference of the object that send the request
      * @return 
      */
-    public Object DestinationObject()
+    public Object DestinationObject() throws Exception
     {
+        if(destinationObject == null)            
+            throw new Exception("DestinationObject isn't initialized");        
         return destinationObject;
     }
     
@@ -81,22 +83,24 @@ public class Message {
      * The destination where the requested object need's to go
      * @return 
      */
-    public Node destinationNode()
+    public Node destinationNode() throws Exception
     {
         //if(destinationObject.getClass() == (Crane))
         //    return ((Crane)destination).position;
         if(destinationObject.getClass() == Vehicle.class)
-            return ((Vehicle)destinationObject).getDestination();
+            return ((Vehicle)destinationObject).getDestination();    
         
-        return null;
+        throw new Exception("No destination initialized");
     }
     
     /**
      * Object that is requested
      * @return 
      */
-    public Object RequestedObject()
+    public Object RequestedObject() throws Exception
     {
+        if(requestedObject == null)
+            throw new Exception("RequestedObject isn't initialized");
         return requestedObject.getClass();
     }
     

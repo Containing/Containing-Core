@@ -45,7 +45,7 @@ public class AGV extends Vehicle {
     }
 
     @Override
-    public void update(float gameTime) {
+    public void update(float gameTime) throws Exception {
         if (position == destination.getPosition()){
             // send message arrived
         }
@@ -82,15 +82,17 @@ public class AGV extends Vehicle {
                     assignments.remove(0); 
                 }
             }
+            else
+            {
+                // When the assignment is not is Deliver, Fetch
+                throw new Exception("Wrong assignment AGV Can't Load or Unload");
+            }
             // When there are no assignments left
             if(Available())
             {
                 /**
                  * 
-                 * 
-                 * 
                  * TODO Send the AGV to the nearest parking lot
-                 * 
                  * 
                  */
             }

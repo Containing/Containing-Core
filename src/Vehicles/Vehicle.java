@@ -32,6 +32,6 @@ public abstract class Vehicle {
      *
      * @param gameTime
      */
-    public abstract void update(float gameTime);
+    public abstract void update(float gameTime) throws Exception;
 }
 
