@@ -25,12 +25,47 @@ public class Message {
     Object requestedObject;
     
     /**
-     * Get's the requested action type 
+     * When the current action is to deliver a container
      * @return 
      */
-    public ACTION CurrentAction()
+    public boolean Deliver()
     {
-        return action;
+        if(action != null)
+            return action.equals(ACTION.Deliver);
+        return false;
+    }
+    
+    /**
+     * When the current action is to fetch a container
+     * @return 
+     */
+    public boolean Fetch()
+    {
+        if(action != null)
+            return action.equals(ACTION.Fetch);
+        return false;
+    }
+    
+    /**
+     * When the current action is to load a vehicle
+     * @return 
+     */
+    public boolean Load()
+    {
+        if(action != null)
+            return action.equals(ACTION.Load);
+        return false;
+    }
+    
+    /**
+     * When the current action is to unload a vehicle
+     * @return 
+     */
+    public boolean UnLoad()
+    {
+        if(action != null)
+            return action.equals(ACTION.Unload);
+        return false;
     }
     
     /**

@@ -9,6 +9,7 @@ import Pathfinding.Node;
 import Vehicles.*;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import updateTimer.updateTimer;
 
@@ -26,9 +27,13 @@ public class Controller {
     List<Vehicle> agvList;
     // List with all Cranes
     List<Vehicle> craneList;
-    
     // List with all current messages
     List<Message> messages;
+    
+    // Simulation Time
+    Date simulationTime;
+    // Date when the controller needs to send containers
+    Date deliveryTime;
     
     /**
      * Class Constructor,
@@ -102,87 +107,63 @@ public class Controller {
     public void Update(float gameTime )
     {
         System.out.println(gameTime);
+        
         // Updates the logic of each AGV
         for(Vehicle agv : agvList)
-        {    
-            // Index for the message list 
-            // so it doesn't start walking through each message
-            int index = -1;
-            
-            // TEMP        
-            if( index == -1)
-            // When the current agv is active
-            //if(agv.jobType != Vehicle.TypeJob.None)
-            {
-                // Updates AGV's logic
-                agv.update(gameTime);
-            }
-            else
-            {
-                // When this agv has no task's.
-                // Walk through all the messages for a job
-                while(++index < messages.size())
-                {
-                    // When the message requested an AGV 
-                    if(messages.get(index).RequestedObject() == agv.getClass())
-                    {  
-                        // Send's the agv to the node of the quest giver
-                        agv.setDestination(messages.get(index).destinationNode());
-                        // Removes the message
-                        messages.remove(index--); 
-                        // Stop looping because this agv now has an assingment
-                        break;
-                    }
-                }                     
-            }
-        }
-        
+            agv.update(gameTime);
         // Updates the logic of each crane
         for(Vehicle crane : craneList)
-        {
-            // Index for the message list 
-            // so it doesn't start walking through each message
-            int index =-1;
-            
-            //TEMP
-            if(index == -1)
-            // When the current crane is active
-            //if(crane.jobType != Vehicle.TypeJob.None)
-            {
-                // Updates Crane's logic
-                crane.update(gameTime);
-            }
-            else
-            {
-                // When this crane has no task's.
-                // Walk through all the messages for a job
-                while(++index < messages.size())
-                {
-                    // When the message request a crane of the same type of this crane
-                    if(messages.get(index).RequestedObject() == crane.getClass())
-                    {
-                        // Send's the crane to the node of the quest giver
-                        crane.setDestination(messages.get(index).destinationNode());
-                        // Request's an AGV for contianer pickup
-                        messages.add(new Message(
-                                crane,
-                                AGV.class,
-                                Message.ACTION.Unload));
-                        // Removes this message
-                        messages.remove(index--);
-                        // Stop looping because this crane now has an assingment
-                        break;
-                    }
-                }
-            }            
-        }
-        
+            crane.update(gameTime);
         // Updates the logic of each docked vehicle
         for(Vehicle vehicle : dockedVehicles)
+            vehicle.update(gameTime);        
+        
+        // When the simulation time is equal or greater than the deliveryTime
+        if(simulationTime.getTime() >= deliveryTime.getTime())
         {
-            // Updates Vehicle logic
-            vehicle.update(gameTime);
+            /**
+             * TODO:
+             * Get all the contianers that need to be deliverd
+             * Set them into delivery messages
+             */
         }
+        
+        // Check's every message
+        for(Message mess : messages)
+        {
+            // When this message is an agv request 
+            if(mess.RequestedObject() == AGV.class)
+            {  
+                for(Vehicle agv : agvList)
+                {
+                    // When the agv has nothing to do
+                    if(((AGV)agv).Available())
+                    {
+                        //Set's the destination of the AGV
+                        agv.setDestination(mess.destinationNode());
+                        //Copy's the message to the message que
+                        ((AGV)agv).AddAssignment(mess);
+                        //Message was handeld so remove it
+                        messages.remove(mess);
+                        
+                        /**
+                         * 
+                         * 
+                         * TODO: When it's a fetch assignment add also a delivery assignment 
+                         * 
+                         * 
+                         */
+                    }
+                }
+            }
+            //else if(mess.RequestedObject() == Crane.class)
+                // Send a Crane
+        }
+        /**
+         * TODO:
+         *  Send messages naar AGV's wat en waar ze wat moeten doen
+         *  Send messages to Crane's if the have to load or unload 
+         */
     }
     
     /**
