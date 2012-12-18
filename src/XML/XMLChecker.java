@@ -3,7 +3,11 @@ package XML;
 import Main.Container;
 import Helpers.Vector3f;
 import java.util.*;
-
+import Main.Database;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.Statement;
 public class XMLChecker {
     
     private XMLCheckObject[] approvedList;
@@ -22,10 +26,18 @@ public class XMLChecker {
         for (int i = 0; i < containerList.size(); i++) {
             this.approvedList[i] = new XMLCheckObject(containerList.get(i));
         }
-        
+
         CheckDate();
         CheckWeight();
         CheckPosition();
+
+        Connection con = Database.getConnection();
+        Statement stm = con.createStatement();
+        ResultSet rs = stm.executeQuery("SELECT COUNT(id) aantal FROM container");
+        rs.next();
+        System.out.println("Aantal records: " + rs.getString("aantal"));
+        
+        stm.close();
     }
             
     private void CheckDate()
