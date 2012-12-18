@@ -8,15 +8,13 @@ import Pathfinding.Node;
 import Vehicles.Vehicle;
 
 /**
- *
+ * 
  * @author Martin
  */
-public class Message {
-    /**
-     * Action Types for the the requestedObject
-     */
+public class Message {    
+    // Actiontypes for what the requestedObject need's to do   
     enum ACTION { Load, Unload, Fetch, Deliver }        
-    // Action of the message
+    // Action for the requested object
     ACTION action;
     
     // Object that requested
@@ -28,44 +26,44 @@ public class Message {
      * When the current action is to deliver a container
      * @return 
      */
-    public boolean Deliver()
+    public boolean Deliver() throws Exception
     {
         if(action != null)
-            return action.equals(ACTION.Deliver);
-        return false;
+            throw new Exception("Action isn't initialized");            
+        return action.equals(ACTION.Deliver);
     }
     
     /**
      * When the current action is to fetch a container
      * @return 
      */
-    public boolean Fetch()
+    public boolean Fetch() throws Exception
     {
         if(action != null)
-            return action.equals(ACTION.Fetch);
-        return false;
+            throw new Exception("Action isn't initialized");  
+        return action.equals(ACTION.Fetch);
     }
     
     /**
      * When the current action is to load a vehicle
      * @return 
      */
-    public boolean Load()
+    public boolean Load() throws Exception
     {
         if(action != null)
-            return action.equals(ACTION.Load);
-        return false;
+            throw new Exception("Action isn't initialized");  
+        return action.equals(ACTION.Load);
     }
     
     /**
      * When the current action is to unload a vehicle
      * @return 
      */
-    public boolean UnLoad()
+    public boolean UnLoad() throws Exception
     {
         if(action != null)
-            return action.equals(ACTION.Unload);
-        return false;
+            throw new Exception("Action isn't initialized");  
+        return action.equals(ACTION.Unload);
     }
     
     /**
@@ -85,12 +83,15 @@ public class Message {
      */
     public Node destinationNode() throws Exception
     {
+        if(destinationObject == null)
+             throw new Exception("No destinationNode initialized");
+        
         //if(destinationObject.getClass() == (Crane))
         //    return ((Crane)destination).position;
         if(destinationObject.getClass() == Vehicle.class)
             return ((Vehicle)destinationObject).getDestination();    
         
-        throw new Exception("No destination initialized");
+        throw new Exception("Message send from unknown source");
     }
     
     /**

@@ -104,19 +104,19 @@ public class Controller {
      * Updates class logic
      * @param gameTime 
      */
-    public void Update(float gameTime )
+    public void Update(float gameTime ) throws Exception
     {
         System.out.println(gameTime);
         
         // Updates the logic of each AGV
-        for(Vehicle agv : agvList)
-            agv.update(gameTime);
+        for(Vehicle agv : agvList){
+            agv.update(gameTime);}
         // Updates the logic of each crane
-        for(Vehicle crane : craneList)
-            crane.update(gameTime);
+        for(Vehicle crane : craneList){
+            crane.update(gameTime);}
         // Updates the logic of each docked vehicle
-        for(Vehicle vehicle : dockedVehicles)
-            vehicle.update(gameTime);        
+        for(Vehicle vehicle : dockedVehicles){
+            vehicle.update(gameTime);}        
         
         // When the simulation time is equal or greater than the deliveryTime
         if(simulationTime.getTime() >= deliveryTime.getTime())
