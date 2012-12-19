@@ -21,6 +21,7 @@ public class AGV extends Vehicle {
     
     public AGV(Node startPosition){
         this.position = startPosition.getPosition();
+        this.destination = startPosition;
         assignments = new ArrayList();
     }
     
