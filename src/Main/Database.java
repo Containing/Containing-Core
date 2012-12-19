@@ -8,6 +8,7 @@ import java.io.*;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.Statement;
+import org.sqlite.SQLiteJDBCLoader;
 /**
  *
  * @author Christiaan
@@ -72,5 +73,13 @@ public class Database {
                 e.printStackTrace();  
             }
         }
+    }
+    
+    /**
+     * Check if SQLite database is running in native mode or pure-java
+     * @return boolean true if running in native mode, false if running pure-java
+     */
+    public static boolean isNativeMode() {
+        return SQLiteJDBCLoader.isNativeMode();
     }
 }

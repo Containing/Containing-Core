@@ -11,6 +11,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
+import org.sqlite.SQLiteJDBCLoader;
 
 /**
  *
@@ -59,5 +60,16 @@ public class DatabaseTest {
         assertNotNull(con);
         Database.closeConnection();
         assertEquals(true, con.isClosed());
+    }
+
+    /**
+     * Test of isNativeMode method, of class Database.
+     */
+    @Test
+    public void testIsNativeMode() {
+        System.out.println("isNativeMode");
+        boolean expResult = true;
+        boolean result = Database.isNativeMode();
+        assertEquals(expResult, result);
     }
 }
