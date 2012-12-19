@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import updateTimer.updateTimer;
+import Crane.Crane;
 
 
 /**
@@ -26,7 +27,7 @@ public class Controller {
     // List with all AGV's
     List<Vehicle> agvList;
     // List with all Cranes
-    List<Vehicle> craneList;
+    List<Crane> craneList;
     // List with all current messages
     List<Message> messages;
     
@@ -113,7 +114,7 @@ public class Controller {
             agv.update(gameTime);
         }
         // Updates the logic of each crane
-        for(Vehicle crane : craneList){
+        for(Crane crane : craneList){
             crane.update(gameTime);
         }
         // Updates the logic of each docked vehicle
@@ -145,7 +146,7 @@ public class Controller {
                         //Set's the destination of the AGV
                         agv.setDestination(mess.destinationNode());
                         //Copy's the message to the message que
-                        ((AGV)agv).AddAssignment(mess);
+                        ((AGV)agv).SendMessage(mess);
                         //Message was handeld so remove it
                         messages.remove(mess);
                         
@@ -159,8 +160,22 @@ public class Controller {
                     }
                 }
             }
-            //else if(mess.RequestedObject() == Crane.class)
-                // Send a Crane
+            else if(mess.RequestedObject() == Crane.class)
+            {
+                for(Crane crane : craneList)
+                {
+                    if(crane.Available())
+                    {
+                        //Set's the destination of the AGV
+                        //crane.setDestination(mess.destinationNode());
+                        //Copy's the message to the message que
+                        crane.SendMessage(mess);
+                        //Message was handeld so remove it
+                        messages.remove(mess);
+                    }
+                    // Send a Crane
+                }
+            }
         }
         /**
          * TODO:
