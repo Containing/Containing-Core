@@ -19,7 +19,7 @@ import updateTimer.updateTimer;
  * @author Martin_Notebook
  */
 public class Controller {
-    
+    // Updates the update method
     updateTimer timer;
     
     List<Vehicle> dockedVehicles;
@@ -53,6 +53,7 @@ public class Controller {
                 break;
             }
         }
+        // Start's and run's the timer for updating the application
         timer.start();
         timer.run();
     }
@@ -69,8 +70,7 @@ public class Controller {
         craneList = new ArrayList();        
         
         // Add's 100 AGV's to the class all waiting
-        for(int i = 0; i < 100; i++)
-        {
+        for(int i = 0; i < 100; i++){
             agvList.add(new AGV(new Node(1,0)));
         }
         
@@ -110,13 +110,16 @@ public class Controller {
         
         // Updates the logic of each AGV
         for(Vehicle agv : agvList){
-            agv.update(gameTime);}
+            agv.update(gameTime);
+        }
         // Updates the logic of each crane
         for(Vehicle crane : craneList){
-            crane.update(gameTime);}
+            crane.update(gameTime);
+        }
         // Updates the logic of each docked vehicle
         for(Vehicle vehicle : dockedVehicles){
-            vehicle.update(gameTime);}        
+            vehicle.update(gameTime);
+        }        
         
         // When the simulation time is equal or greater than the deliveryTime
         if(simulationTime.getTime() >= deliveryTime.getTime())
@@ -124,7 +127,7 @@ public class Controller {
             /**
              * TODO:
              * Get all the contianers that need to be deliverd
-             * Set them into delivery messages
+             * Send a message for each container that need's to be deliverd
              */
         }
         
