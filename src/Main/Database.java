@@ -33,15 +33,19 @@ public class Database {
                 Class.forName("org.sqlite.JDBC");
                 connection = DriverManager.getConnection("jdbc:sqlite::memory:");
 
-                BufferedReader input = new BufferedReader(new FileReader("db/schema.sql"));
-                String contents;
-                String sql = "";
-                while((contents = input.readLine()) != null) {
-                    sql += contents;
-                }
-                input.close();
+                InputStream inputStream = Database.class.getResourceAsStream("schema.sql");
+                
+                InputStreamReader is = new InputStreamReader(inputStream);
+                StringBuilder sb = new StringBuilder();
+                BufferedReader br = new BufferedReader(is);
+                String read = br.readLine();
 
-                executeUpdate(sql);
+                while(read != null) {
+                    sb.append(read);
+                    read =br.readLine();
+                }
+
+                executeUpdate(sb.toString());
             }
             catch (Exception e) {  
                 e.printStackTrace();  
