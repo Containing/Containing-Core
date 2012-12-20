@@ -27,12 +27,12 @@ public class Database {
      */
     public static Connection getConnection() {
         if(connection == null) {
-            Statement statement = null;
+            Statement stm = null;
             try {
                 Class.forName("org.sqlite.JDBC");
                 connection = DriverManager.getConnection("jdbc:sqlite::memory:");
                 
-                statement = connection.createStatement();
+                stm = connection.createStatement();
          
                 BufferedReader input = new BufferedReader(new FileReader("db/schema.sql"));
                 String contents;
@@ -42,15 +42,14 @@ public class Database {
                 }
                 input.close();
          
-                statement.executeUpdate(sql);
+                stm.executeUpdate(sql);
             }
-            catch (Exception e) 
-            {  
+            catch (Exception e) {  
                 e.printStackTrace();  
             }
             finally {
                 try {
-                    statement.close();
+                    stm.close();
                 }
                 catch (Exception e) 
                 {  
@@ -70,8 +69,7 @@ public class Database {
                 connection.close();
                 connection = null;
             }
-            catch (Exception e) 
-            {  
+            catch (Exception e) {  
                 e.printStackTrace();  
             }
         }
