@@ -7,6 +7,8 @@ package Main;
 import java.io.*;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.Statement;
 import org.sqlite.SQLiteJDBCLoader;
 
@@ -27,13 +29,10 @@ public class Database {
      */
     public static Connection getConnection() {
         if(connection == null) {
-            Statement stm = null;
             try {
                 Class.forName("org.sqlite.JDBC");
                 connection = DriverManager.getConnection("jdbc:sqlite::memory:");
-                
-                stm = connection.createStatement();
-         
+
                 BufferedReader input = new BufferedReader(new FileReader("db/schema.sql"));
                 String contents;
                 String sql = "";
@@ -41,20 +40,11 @@ public class Database {
                     sql += contents;
                 }
                 input.close();
-         
-                stm.executeUpdate(sql);
+
+                executeUpdate(sql);
             }
             catch (Exception e) {  
                 e.printStackTrace();  
-            }
-            finally {
-                try {
-                    stm.close();
-                }
-                catch (Exception e) 
-                {  
-                    e.printStackTrace();  
-                }
             }
         }
         return connection;
@@ -88,22 +78,11 @@ public class Database {
      * @return boolean true if succeeded
      */
     public static boolean dumpDatabase() {
-        Statement stm = null;
         try {
-            stm = getConnection().createStatement();
-            stm.executeUpdate("backup to db/backup.db");
+            executeUpdate(createStatement(), "backup to db/backup.db");
         }
         catch(Exception e) {
-            e.printStackTrace();
             return false;
-        }
-        finally {
-            try {
-                stm.close();
-            }
-            catch (Exception e) {  
-                e.printStackTrace();
-            }
         }
         return true;
     }
@@ -113,23 +92,101 @@ public class Database {
      * @return boolean true if succeeded
      */
     public static boolean restoreDump() {
-        Statement stm = null;
         try {
-            stm = getConnection().createStatement();
-            stm.executeUpdate("restore from db/backup.db");
+            executeUpdate(createStatement(), "restore from db/backup.db");
         }
         catch(Exception e) {
-            e.printStackTrace();
             return false;
         }
-        finally {
-            try {
-                stm.close();
-            }
-            catch (Exception e) {  
-                e.printStackTrace();
-            }
-        }
         return true;
+    }
+    
+    /**
+     * Create a Statement
+     * @return Statement
+     */
+    public static Statement createStatement() throws Exception {
+        return getConnection().createStatement();
+    }
+    
+    /**
+     * Create a PreparedStatement
+     * @param sql
+     * @return PreparedStatement
+     * @throws Exception 
+     */
+    public static PreparedStatement createPreparedStatement(String sql) throws Exception {
+        return getConnection().prepareStatement(sql);
+    }
+    
+    public static ResultSet executeQuery(String sql) throws Exception {
+        Statement stm = createStatement();
+        return executeQuery(stm, sql);
+    }
+    
+    /**
+     * Execute prepared query
+     * @param stm
+     * @return 
+     * @throws Exception 
+     */
+    public static ResultSet executeQuery(PreparedStatement stm) throws Exception {
+        return executeQuery(stm, null);
+    }
+    
+    /**
+     * Execute query
+     * @param stm
+     * @param sql Query to execute
+     * @return ResultSet
+     * @throws Exception 
+     */
+    public static ResultSet executeQuery(Statement stm, String sql) throws Exception {
+        ResultSet rs = null;
+        if(stm instanceof PreparedStatement)
+            rs = ((PreparedStatement)stm).executeQuery();
+        else if(stm instanceof Statement)
+            rs = stm.executeQuery(sql);
+        else
+            throw new Exception("Unsupported Statement interface");
+        return rs;
+    }
+    
+    /**
+     * Execute update for prepared query
+     * @param stm
+     * @return number of modified rows
+     * @throws Exception 
+     */
+    public static int executeUpdate(PreparedStatement stm) throws Exception {
+        return executeUpdate(stm, null);
+    }
+    
+    /**
+     * Execute update query
+     * @param sql
+     * @return number of modified rows
+     * @throws Exception 
+     */
+    public static int executeUpdate(String sql) throws Exception {
+        return executeUpdate(createStatement(), sql);
+    }
+    
+    /**
+     * Execute update query
+     * @param stm
+     * @param sql
+     * @return number of modified rows
+     * @throws Exception 
+     */
+    public static int executeUpdate(Statement stm, String sql) throws Exception {
+        int modifiedRows = 0;
+        if(stm instanceof PreparedStatement)
+            modifiedRows = ((PreparedStatement)stm).executeUpdate();
+        else if(stm instanceof Statement)
+            modifiedRows = stm.executeUpdate(sql);
+        else
+            throw new Exception("Unsupported Statement interface");
+        return modifiedRows;
     }
 }
