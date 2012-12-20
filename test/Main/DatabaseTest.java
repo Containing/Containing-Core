@@ -72,4 +72,26 @@ public class DatabaseTest {
         boolean result = Database.isNativeMode();
         assertEquals(expResult, result);
     }
+
+    /**
+     * Test of dumpDatabase method, of class Database.
+     */
+    @Test
+    public void testDumpDatabase() {
+        System.out.println("dumpDatabase");
+        boolean expResult = true;
+        boolean result = Database.dumpDatabase();
+        assertEquals(expResult, result);
+    }
+
+    /**
+     * Test of restoreDump method, of class Database.
+     */
+    @Test
+    public void testRestoreDump() {
+        System.out.println("restoreDump");
+        boolean expResult = true;
+        boolean result = Database.restoreDump();
+        assertEquals(expResult, result);
+    }
 }

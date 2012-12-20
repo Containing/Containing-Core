@@ -9,6 +9,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.Statement;
 import org.sqlite.SQLiteJDBCLoader;
+
 /**
  *
  * @author Christiaan
@@ -81,5 +82,55 @@ public class Database {
      */
     public static boolean isNativeMode() {
         return SQLiteJDBCLoader.isNativeMode();
+    }
+    
+    /**
+     * Dump in-memory database to file
+     * @return boolean true if succeeded
+     */
+    public static boolean dumpDatabase() {
+        Statement stm = null;
+        try {
+            stm = getConnection().createStatement();
+            stm.executeUpdate("backup to db/backup.db");
+        }
+        catch(Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+        finally {
+            try {
+                stm.close();
+            }
+            catch (Exception e) {  
+                e.printStackTrace();
+            }
+        }
+        return true;
+    }
+    
+    /**
+     * 
+     * @return boolean true if succeeded
+     */
+    public static boolean restoreDump() {
+        Statement stm = null;
+        try {
+            stm = getConnection().createStatement();
+            stm.executeUpdate("restore from db/backup.db");
+        }
+        catch(Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+        finally {
+            try {
+                stm.close();
+            }
+            catch (Exception e) {  
+                e.printStackTrace();
+            }
+        }
+        return true;
     }
 }
