@@ -1,6 +1,7 @@
 package Storage;
 
 import Main.Container;
+import java.util.EmptyStackException;
 
 /**
  * @author Karel Gerbrands
@@ -18,7 +19,8 @@ public class Container_Stack
     
     public Container_Stack (int height)
     {
-        _containerArray = new Container[6];
+        _containerArray = new Container[height];
+        _currentHeight = 0;
         _maxHeight = height;
     }
     
@@ -28,6 +30,27 @@ public class Container_Stack
     public int getHeight ()
     {
         return _currentHeight;
+    }
+    
+        /**
+     * Shows the top container but doesn't remove it. Only to be used if data
+     * has to be checked on the top container.
+     * 
+     * @return Returns the top container of the stack. If a null is returned,
+     * the stack is empty.
+     */
+    public Container peak () throws EmptyStackException
+    {
+        if (_currentHeight == 0)
+        {
+            System.out.println("Exception in Container_Stack : '" + this.toString() + "' Can't peak from an empty stack.");
+            throw new EmptyStackException();
+        }
+        
+        else
+        {
+            return _containerArray[(_currentHeight-1)];
+        }
     }
     
     /**
@@ -40,7 +63,8 @@ public class Container_Stack
     {
         if (_currentHeight == 0)
         {
-            return null;
+            System.out.println("Exception in Container_Stack : '" + this.toString() + "' Can't pop a container from an empty stack.");
+            throw new EmptyStackException();
         }
         
         else
@@ -50,25 +74,6 @@ public class Container_Stack
         }
     }
 
-    /**
-     * Shows the top container but doesn't remove it. Only to be used if data
-     * has to be checked on the top container.
-     * 
-     * @return Returns the top container of the stack. If a null is returned,
-     * the stack is empty.
-     */
-    public Container peak ()
-    {
-        if (_currentHeight == 0)
-        {
-            return null;
-        }
-        
-        else
-        {
-            return _containerArray[(_currentHeight-1)];
-        }
-    }
     
     /**
      * Places the given container ontop of the stack. Unless the stack is full.
@@ -76,11 +81,18 @@ public class Container_Stack
      * @param container The container to place ontop of the stack.
      * @return Returns false if the stack is full, else true.
      */
-    public Boolean push (Container container)
+    public Boolean push (Container container) throws Exception
     {
-        if (_currentHeight == _maxHeight || container == null)
+        if (_currentHeight == _maxHeight)
         {
-            return false;
+            System.out.println("Exception in Container_Stack : '" + this.toString() + "' Can't push a container onto a full stack.");
+            throw new Exception("Can't push a container onto a full stack.");
+        }
+        
+        else if (container == null)
+        {
+            System.out.println("Exception in Container_Stack : '" + this.toString() + "' Container can't be null.");
+            throw new Exception("Container can't be null.");
         }
         
         else
