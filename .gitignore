@@ -10,3 +10,5 @@ dist/
 nbdist
 build/
 nbbuild/
+db/backup.db
+src/Main/schema.sql

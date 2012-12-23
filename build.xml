@@ -71,4 +71,8 @@
     nbproject/build-impl.xml file. 
 
     -->
+    <target name="-pre-compile"> 
+        <copy file="db/schema.sql" flatten="true" todir="${src.dir}/Main" /> 
+    </target> 
+    
 </project>

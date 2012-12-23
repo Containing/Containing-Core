@@ -8,7 +8,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-class XMLBinder {
+public class XMLBinder {
     
     public static void main(String[] args) throws Exception 
     {

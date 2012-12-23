@@ -1,14 +1,13 @@
 package Vehicles;
 
-import Helpers.Message;
-import Helpers.Vector3f;
+import Helpers.*;
 import Main.Container;
 import Pathfinding.Node;
 import Pathfinding.Pathfinder;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AGV extends Vehicle {
+public class AGV extends Vehicle implements IMessageReceiver {
 
     private Container container;
     private Node destination;
@@ -21,6 +20,7 @@ public class AGV extends Vehicle {
     
     public AGV(Node startPosition){
         this.position = startPosition.getPosition();
+        this.destination = startPosition;
         assignments = new ArrayList();
     }
     
@@ -122,6 +122,7 @@ public class AGV extends Vehicle {
      * When there are no assignments for the AGV
      * @return 
      */
+    @Override
     public boolean Available()
     {
         return assignments.isEmpty();
@@ -131,7 +132,8 @@ public class AGV extends Vehicle {
      * Add's an assignment for the agv
      * @param mess 
      */
-    public void AddAssignment(Message mess)
+    @Override
+    public void SendMessage(Message mess)
     {
         assignments.add(mess);
     }
