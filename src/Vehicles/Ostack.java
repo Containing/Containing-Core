@@ -78,51 +78,6 @@ public class Ostack<E> {
         itemArray = (E[]) new Object[size];
     }
     
-    /**
-     *
-     * @param item An object to place in the stack.
-     * @param index The index to place the object.
-     */
-    public void SetStackItem(E item, int index){
-        this.itemArray[index] = item;
-        for (int i = itemArray.length-1; i > 0; i--) {
-            if(this.itemArray[i] != null)
-            {
-                this.pointer = i;
-                break;
-            }
-        }
-        this.pointer = (pointer > -1) ? pointer : 0;
-    }
-
-    /**
-     *
-     * @return true if their is a null value in the stack
-     */
-    public boolean HasHole(){
-        if (pointer == -1){
-            return false;
-        }
-        else{
-            E[] temp = (E[]) new Object[pointer];
-            for (int i = 0; i < pointer; i++) {
-                if(temp[i] == null){
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-    
-    /**
-     *
-     * @param index
-     * @return true if the value on the index is null
-     */
-    public boolean HasHole(int index){
-        return itemArray[index] == null;
-    }
-    
     @Override
     public String toString() {
         String returnString = "";

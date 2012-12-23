@@ -24,14 +24,13 @@ public class Container
     /**
      * The date format used
      */
-    public static DateFormat df = new SimpleDateFormat("dd MM yy HH:mm");
+    public static DateFormat df = new SimpleDateFormat("yy-MM-dd HH:mm");
 
     /**
      * The constructor
      * @param id An unique id
      */
-    public Container(String id)
-    {
+    public Container(String id){
         this.id = id;
     }
     
@@ -45,8 +44,7 @@ public class Container
      */
     public void setArrival(Date arrivalDateStart, Date arrivalDateEnd, 
             TransportType arrivalTransportType, String arrivalCompany,
-            Vector3f arrivalPosition)
-    {
+            Vector3f arrivalPosition){
         this.arrivalDateStart = arrivalDateStart;
         this.arrivalDateEnd = arrivalDateEnd;
         this.arrivalTransportType = arrivalTransportType;
@@ -59,8 +57,7 @@ public class Container
      * @param owner The container owner
      * @param containNr the container number
      */
-    public void setOwnerInformation(String owner, int containNr)
-    {
+    public void setOwnerInformation(String owner, int containNr){
         this.owner = owner;
         this.containerNr = containNr;
     }
@@ -73,21 +70,11 @@ public class Container
      * @param departureCompany the departure company
      */
     public void setDeparture(Date departureDateStart, Date departureDateEnd,
-            TransportType departureTransportType, String departureCompany)
-    {
+            TransportType departureTransportType, String departureCompany){
         this.departureDateStart = departureDateStart;
         this.departureDateEnd = departureDateEnd;
         this.departureTransportType = departureTransportType;
         this.departureCompany = departureCompany;
-    }
-
-    /**
-     * Sets the size of the container
-     * @param dimension The l b h sizes.
-     */
-    public void setDimension(Vector3f dimension)
-    {
-        this.dimension = dimension;
     }
     
     /**
@@ -95,8 +82,7 @@ public class Container
      * @param empty The container weight without content
      * @param weight The container weight with content
      */
-    public void setWeightInformation(int empty, int weight)
-    {
+    public void setWeightInformation(int empty, int weight){
         this.empty = empty;
         this.weight = weight;
     }
@@ -107,8 +93,7 @@ public class Container
      * @param kind The type of content
      * @param danger The danger of the content
      */
-    public void setContentInformation(String name, String kind, String danger)
-    {
+    public void setContentInformation(String name, String kind, String danger){
         this.name = name;
         this.kind = kind;
         this.danger = danger;
@@ -135,9 +120,6 @@ public class Container
     private TransportType departureTransportType;
     private String departureCompany;
 
-    // dimension
-    private Vector3f dimension;
-    
     // weight
     private int empty;
     private int weight;
@@ -247,14 +229,6 @@ public class Container
     }
 
     /**
-     * Get l b h sizes.
-     * @return dimensions
-     */
-    public Vector3f getDimension(){
-        return this.dimension;
-    }
-
-    /**
      * Get container weight without content
      * @return empty
      */
@@ -296,9 +270,7 @@ public class Container
     // </editor-fold>
     
     @Override
-    public String toString()
-    {
-        DateFormat df = new SimpleDateFormat("dd-MM-yy HH:mm");
+    public String toString(){
         return "[ContainerNr:" + containerNr + "] [" + id + "] [" + owner + "]\n" +
                 "Arrival:\n"+
                 "Arrival Date:        " + df.format(arrivalDateStart) + " <-> " + df.format(arrivalDateEnd) + "\n" +

@@ -82,8 +82,16 @@ public class Database {
      * @return boolean true if succeeded
      */
     public static boolean dumpDatabase() {
+        return dumpDatabase("backup");
+    }
+    /**
+     * Dump in-memory database to file
+     * @param fileName the Db name
+     * @return boolean true if succeeded
+     */
+    public static boolean dumpDatabase(String fileName) {
         try {
-            executeUpdate(createStatement(), "backup to db/backup.db");
+            executeUpdate(createStatement(), "backup to db/" + fileName + ".db");
         }
         catch(Exception e) {
             return false;

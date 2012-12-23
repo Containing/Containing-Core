@@ -5,7 +5,7 @@ CREATE TABLE `container` (
     `arrivalDateEnd` DATETIME,
     `arrivalTransportType` INTEGER,
     `arrivalCompany` TEXT,
-    `arrivalPosition` INTEGER,
+    `arrivalPosition` TEXT,
     `owner` TEXT,
     `containerNr` INTEGER,
     `departureDateStart` DATETIME,

@@ -13,6 +13,7 @@ public class XMLBinder {
     public static void main(String[] args) throws Exception 
     {
         GenerateContainerDatabase("C:/one/xml1.xml");
+        //Database.dumpDatabase();
     }
     
     @SuppressWarnings("empty-statement")
@@ -138,10 +139,11 @@ public class XMLBinder {
             inhoud_gevaar.bind(vn);
             // </editor-fold>
             
-            int counter = 0;
+            int counter = -1;
             HashSet<String> containerNrs = new HashSet<>();
             while(record.evalXPath()!=-1){
-
+                counter++;
+                
                 String containerNr = eigenaar_containernr.evalXPathToString();
                 // Prevent adding double containerNr records
                 if(containerNrs.contains(containerNr)) {
@@ -157,7 +159,7 @@ public class XMLBinder {
                 // prefent adding containers with a wrong position
                 String x = aankomst_positie_x.evalXPathToString();
                 String y = aankomst_positie_y.evalXPathToString();
-                String z = aankomst_positie_y.evalXPathToString();
+                String z = aankomst_positie_z.evalXPathToString();
                 if(!CheckPosition(x,y,z)){
                     continue;
                 }
@@ -171,32 +173,27 @@ public class XMLBinder {
                 String departureStartDate = departureDate + vertrek_tijd_van.evalXPathToString().replace('.', ':');
                 String departureEndDate = departureDate + vertrek_tijd_tot.evalXPathToString().replace('.', ':');
                 if(!CheckDate(arrivalStartDate, arrivalEndDate, departureStartDate, departureEndDate)){
+                    System.out.println("a");
                     continue;
                 }
                 
-                stm.setString(1, "id" + counter++); // id
-                stm.setString(2,  aankomst_datum_j.evalXPathToString() + "-"
-                                + aankomst_datum_m.evalXPathToString() + "-"
-                                + aankomst_datum_d.evalXPathToString() + " "
-                                + aankomst_tijd_van.evalXPathToString().replace('.', ':')); //arrivalDateStart
-                stm.setString(3,  aankomst_datum_j.evalXPathToString() + "-"
-                                + aankomst_datum_m.evalXPathToString() + "-"
-                                + aankomst_datum_d.evalXPathToString() + " "
-                                + aankomst_tijd_tot.evalXPathToString().replace('.', ':')); //arrivalDateEnd
+                String aankomstDatum = AddZero(aankomst_datum_j.evalXPathToString()) + "-" + AddZero(aankomst_datum_m.evalXPathToString()) + "-" + AddZero(aankomst_datum_d.evalXPathToString()) + " ";
+                stm.setString(1, "id" + counter); // id
+                String[] aankomstTijdVan = aankomst_tijd_van.evalXPathToString().split("\\.");
+                stm.setString(2,  aankomstDatum + AddZero(aankomstTijdVan[0]) + ":" +  AddZero(aankomstTijdVan[1])); //arrivalDateStart
+                String[] aankomstTijdTot = aankomst_tijd_tot.evalXPathToString().split("\\.");
+                stm.setString(3,  aankomstDatum + AddZero(aankomstTijdTot[0]) + ":" +  AddZero(aankomstTijdTot[1])); //arrivalDateEnd
                 stm.setString(4, aankomst_soort_vervoer.evalXPathToString()); //arrivalTransportType
                 stm.setString(5, aankomst_bedrijf.evalXPathToString()); //arrivalCompany
-                int arrivalPosition = Integer.parseInt(aankomst_positie_y.evalXPathToString() + aankomst_positie_x.evalXPathToString() + aankomst_positie_z.evalXPathToString());
-                stm.setInt(6, arrivalPosition);//arrivalPosition
+                String arrivalPosition = AddZero(aankomst_positie_y.evalXPathToString())+AddZero(aankomst_positie_x.evalXPathToString())+AddZero(aankomst_positie_z.evalXPathToString());
+                stm.setString(6, arrivalPosition);//arrivalPosition
                 stm.setString(7, eigenaar_naam.evalXPathToString()); //owner
                 stm.setInt(8, Integer.parseInt(eigenaar_containernr.evalXPathToString())); //containerNr
-                stm.setString(9,  vertrek_datum_j.evalXPathToString() + "-"
-                                + vertrek_datum_m.evalXPathToString() + "-"
-                                + vertrek_datum_d.evalXPathToString() + " "
-                                + vertrek_tijd_van.evalXPathToString().replace('.', ':')); //departureDateStart
-                stm.setString(10,  vertrek_datum_j.evalXPathToString() + "-"
-                                + vertrek_datum_m.evalXPathToString() + "-"
-                                + vertrek_datum_d.evalXPathToString() + " "
-                                + vertrek_tijd_tot.evalXPathToString().replace('.', ':')); //departureDateEnd
+                String vertrekDatum = AddZero(vertrek_datum_j.evalXPathToString()) + "-" + AddZero(vertrek_datum_m.evalXPathToString()) + "-" + AddZero(vertrek_datum_d.evalXPathToString()) + " ";
+                String[] vertrekTijdVan = vertrek_tijd_van.evalXPathToString().split("\\.");
+                stm.setString(9,  vertrekDatum + AddZero(vertrekTijdVan[0]) + ":" +  AddZero(aankomstTijdVan[1])); //departureDateStart
+                String[] vertrekTijdTot = vertrek_tijd_van.evalXPathToString().split("\\.");
+                stm.setString(10, vertrekDatum + AddZero(vertrekTijdTot[0]) + ":" +  AddZero(vertrekTijdTot[1])); //departureDateEnd
                 stm.setString(11, vertrek_soort_vervoer.evalXPathToString()); //departureTransportType
                 stm.setString(12, vertrek_bedrijf.evalXPathToString()); //departureCompany
                 stm.setInt(13, Integer.parseInt(gewicht_leeg.evalXPathToString())); //empty
@@ -213,8 +210,9 @@ public class XMLBinder {
                     System.err.println(e.getMessage());
                 }
             }
+            
             record.resetXPath();
-            System.out.println("Proccesed: " + counter);;
+            System.out.println("Proccesed: " + (1+counter));
         }
     }
     
@@ -244,5 +242,14 @@ public class XMLBinder {
         }
         
         return true;
+    }
+    
+    private static String AddZero(String input){
+        if (input.length() == 1){
+            return "0" + input;
+        }
+        else{
+            return input;
+        }
     }
 }
