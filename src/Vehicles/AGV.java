@@ -4,12 +4,13 @@ import Helpers.*;
 import Main.Container;
 import Pathfinding.Node;
 import Pathfinding.Pathfinder;
+import Storage.Storage_Area;
 import java.util.ArrayList;
 import java.util.List;
 
 public class AGV extends Vehicle implements IMessageReceiver {
 
-    private Container container;
+    private Storage_Area storage;
     private Node destination;
     private Vector3f position;
     private Node[] route;
@@ -18,16 +19,22 @@ public class AGV extends Vehicle implements IMessageReceiver {
     private List<Message> assignments;
     
     
-    public AGV(Node startPosition){
-        this.position = startPosition.getPosition();
-        this.destination = startPosition;
+    public AGV(Node startPosition) throws Exception{
+        if (startPosition == null){
+            throw new Exception("\nThe input variable can't be null:"+
+                    "\nstartPosition: " + startPosition);
+        }
+        else{
+            this.position = startPosition.getPosition();
+            storage = new Storage_Area(1, 1, 1, position);
+        }
         assignments = new ArrayList();
     }
     
     @Override
     public void setDestination(Node destination) {
         try {
-            route = Pathfinding.Pathfinder.findShortest(Pathfinder.findClosestNode(position), destination, container == null);
+            route = Pathfinding.Pathfinder.findShortest(Pathfinder.findClosestNode(position), destination, storage.Count() == 0);
             this.destination = route[route.length-1];
         } 
         catch (Exception ex) {
@@ -50,7 +57,7 @@ public class AGV extends Vehicle implements IMessageReceiver {
             // send message arrived
         }
         else{
-            if (container == null){
+            if (storage.Count() == 0){
                 // follow route SpeedWithoutContainer
                 // update position
             }
@@ -66,7 +73,7 @@ public class AGV extends Vehicle implements IMessageReceiver {
             if(assignments.get(0).Fetch())
             {
                 // When the AGV has a container on him
-                if(container != null)
+                if(storage.Count() > 0)
                 {
                     // Remove assingment because the container is fetched
                     assignments.remove(0);                  
@@ -76,7 +83,7 @@ public class AGV extends Vehicle implements IMessageReceiver {
             else if(assignments.get(0).Deliver())
             {
                 // When the AGV doesn't has a contianer on him
-                if(container == null)
+                if(storage.Count() == 0)
                 {
                     // Remove assingment because the contianer is deliverd
                     assignments.remove(0); 
@@ -98,24 +105,6 @@ public class AGV extends Vehicle implements IMessageReceiver {
             }
         }
         
-    }
-
-    public Container GetContainer() throws Exception {
-        if (container != null){
-           return container;
-        }
-        else{
-            throw new Exception("Their is no container.");
-        }
-   }
-
-    public void SetContainer(Container container) throws Exception{
-        if (container != null){
-            throw new Exception("This vehicle can't carry more then one container.");
-        }
-        else{
-            this.container = container;
-        }
     }
     
     /**

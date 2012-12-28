@@ -12,14 +12,14 @@ public class XMLBinder {
     
     public static void main(String[] args) throws Exception 
     {
-        GenerateContainerDatabase("C:/one/xml1.xml");
-        //Database.dumpDatabase();
+        GenerateContainerDatabase("C:/one/xml7.xml");
+        Database.dumpDatabase();
     }
     
     @SuppressWarnings("empty-statement")
     public static void GenerateContainerDatabase(String fileName) throws Exception{
         
-        String query = "INSERT INTO container (id, arrivalDateStart, arrivalDateEnd, arrivalTransportType, arrivalCompany, arrivalPosition, owner, containerNr, departureDateStart, departureDateEnd, departureTransportType, departureCompany, empty, weight, name, kind, danger, storageLocation) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String query = "INSERT INTO container (id, arrivalDateStart, arrivalDateEnd, arrivalTransportType, arrivalCompany, arrivalPositionX, arrivalPositionY, arrivalPositionZ, owner, containerNr, departureDateStart, departureDateEnd, departureTransportType, departureCompany, empty, weight, name, kind, danger, storageLocation) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         Connection con = Database.getConnection();
         PreparedStatement stm = con.prepareStatement(query);
 
@@ -185,22 +185,23 @@ public class XMLBinder {
                 stm.setString(3,  aankomstDatum + AddZero(aankomstTijdTot[0]) + ":" +  AddZero(aankomstTijdTot[1])); //arrivalDateEnd
                 stm.setString(4, aankomst_soort_vervoer.evalXPathToString()); //arrivalTransportType
                 stm.setString(5, aankomst_bedrijf.evalXPathToString()); //arrivalCompany
-                String arrivalPosition = AddZero(aankomst_positie_y.evalXPathToString())+AddZero(aankomst_positie_x.evalXPathToString())+AddZero(aankomst_positie_z.evalXPathToString());
-                stm.setString(6, arrivalPosition);//arrivalPosition
-                stm.setString(7, eigenaar_naam.evalXPathToString()); //owner
-                stm.setInt(8, Integer.parseInt(eigenaar_containernr.evalXPathToString())); //containerNr
+                stm.setString(6, AddZero(aankomst_positie_x.evalXPathToString())); //arrivalPositionX
+                stm.setString(7, AddZero(aankomst_positie_z.evalXPathToString())); //arrivalPositionY
+                stm.setString(8, AddZero(aankomst_positie_y.evalXPathToString())); //arrivalPositionZ
+                stm.setString(9, eigenaar_naam.evalXPathToString()); //owner
+                stm.setInt(10, Integer.parseInt(eigenaar_containernr.evalXPathToString())); //containerNr
                 String vertrekDatum = AddZero(vertrek_datum_j.evalXPathToString()) + "-" + AddZero(vertrek_datum_m.evalXPathToString()) + "-" + AddZero(vertrek_datum_d.evalXPathToString()) + " ";
                 String[] vertrekTijdVan = vertrek_tijd_van.evalXPathToString().split("\\.");
-                stm.setString(9,  vertrekDatum + AddZero(vertrekTijdVan[0]) + ":" +  AddZero(aankomstTijdVan[1])); //departureDateStart
+                stm.setString(11,  vertrekDatum + AddZero(vertrekTijdVan[0]) + ":" +  AddZero(aankomstTijdVan[1])); //departureDateStart
                 String[] vertrekTijdTot = vertrek_tijd_van.evalXPathToString().split("\\.");
-                stm.setString(10, vertrekDatum + AddZero(vertrekTijdTot[0]) + ":" +  AddZero(vertrekTijdTot[1])); //departureDateEnd
-                stm.setString(11, vertrek_soort_vervoer.evalXPathToString()); //departureTransportType
-                stm.setString(12, vertrek_bedrijf.evalXPathToString()); //departureCompany
-                stm.setInt(13, Integer.parseInt(gewicht_leeg.evalXPathToString())); //empty
-                stm.setInt(14, Integer.parseInt(gewicht_inhoud.evalXPathToString())); //weight
-                stm.setString(15, inhoud_naam.evalXPathToString()); //name
-                stm.setString(16, inhoud_soort.evalXPathToString()); //kind
-                stm.setString(17, inhoud_gevaar.evalXPathToString()); //danger
+                stm.setString(12, vertrekDatum + AddZero(vertrekTijdTot[0]) + ":" +  AddZero(vertrekTijdTot[1])); //departureDateEnd
+                stm.setString(13, vertrek_soort_vervoer.evalXPathToString()); //departureTransportType
+                stm.setString(14, vertrek_bedrijf.evalXPathToString()); //departureCompany
+                stm.setInt(15, Integer.parseInt(gewicht_leeg.evalXPathToString())); //empty
+                stm.setInt(16, Integer.parseInt(gewicht_inhoud.evalXPathToString())); //weight
+                stm.setString(17, inhoud_naam.evalXPathToString()); //name
+                stm.setString(18, inhoud_soort.evalXPathToString()); //kind
+                stm.setString(19, inhoud_gevaar.evalXPathToString()); //danger
                 
                 
                 try {

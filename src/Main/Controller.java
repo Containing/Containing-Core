@@ -40,7 +40,7 @@ public class Controller {
      * Class Constructor,
      * Call's the initialize method
      */
-    public Controller()
+    public Controller() throws Exception
     {
         Initialize();
         
@@ -62,7 +62,7 @@ public class Controller {
     /**
      * Initializes the class variables
      **/
-    private void Initialize()
+    private void Initialize() throws Exception
     {
         // Initiallizes the List's variables
         messages = new ArrayList();

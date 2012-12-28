@@ -4,24 +4,37 @@ import Helpers.Vector3f;
 import Main.Container;
 import Pathfinding.Node;
 import Pathfinding.Pathfinder;
-import java.sql.Date;
+import Storage.Storage_Area;
+import java.util.Date;
 
 public class Train extends Vehicle{
 
     private Date arrivalDate;
     private Date departureDate;
-    private Container[] containerList;
+    private String arrivalCompany;
+    public Storage_Area storage;
     private Vector3f position;
     private Node destination;
     private Node[] route;
     private float speed/*= X*/;
    
-    public Train(Date arrivalDate, Date departureDate, int trainLenght, Node startPosition)
+    public Train(Date arrivalDate, Date departureDate, String arrivalCompany, int trainLenght, Node startPosition) throws Exception
     {
-        this.position = startPosition.getPosition();
-        this.arrivalDate = arrivalDate;
-        this.departureDate = departureDate;
-        containerList = new Container[trainLenght];
+        if (arrivalDate == null || departureDate == null || arrivalCompany == null || trainLenght == 0 || startPosition == null){
+            throw new Exception("\nThe input variable can't be null:"+
+                    "\narrivalDate: " + arrivalDate +
+                    "\ndepartureDate: " + departureDate +
+                    "\narrivalCompany: " + arrivalCompany +
+                    "\ntrainLenght: " + trainLenght +
+                    "\nstartPosition: " + startPosition);
+        }
+        else{
+            this.position = startPosition.getPosition();
+            this.arrivalDate = arrivalDate;
+            this.departureDate = departureDate;
+            this.arrivalCompany = arrivalCompany;
+            storage = new Storage_Area(trainLenght, 1, 1, position);
+        }
     }
     
     @Override
@@ -57,33 +70,15 @@ public class Train extends Vehicle{
         } 
     }
     
-    public Container GetContainer(int index) throws Exception {
-        if (containerList.length > index && index > 0){
-            if (containerList[index] != null){
-                return containerList[index];
-            }
-            else{
-                throw new Exception("Their is no container.");
-            }
-        }
-        else{
-            throw new Exception("The index needs to be between 0 and " + containerList.length + 
-                                ".\n Used index: " + index);
-        }
+    public Date GetArrivalDate(){
+        return arrivalDate;
     }
-
-    public void SetContainer(Container container, int index) throws Exception {
-        if (containerList.length > index && index > 0){
-            if (containerList[index] == null){
-                containerList[index] = container;
-            }
-            else{
-                throw new Exception("Their is allready a container.");
-            }
-        }
-        else{
-            throw new Exception("The index needs to be between 0 and " + containerList.length + 
-                                ".\n Used index: " + index);
-        }
+    
+    public Date GetDepartureDate(){
+        return departureDate;
+    }
+    
+    public String GetCompany(){
+        return arrivalCompany;
     }
 }

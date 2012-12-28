@@ -4,23 +4,36 @@ import Helpers.Vector3f;
 import Main.Container;
 import Pathfinding.Node;
 import Pathfinding.Pathfinder;
+import Storage.Storage_Area;
 import java.util.Date;
 
 public class Truck extends Vehicle  {
     
     private Date arrivalDate;
     private Date departureDate;
-    private Container container;
+    private String arrivalCompany;
+    public Storage_Area storage;
     private Vector3f position;
     private Node destination;
     private Node[] route;
     private float speed/*= X*/;
     
-    public Truck(Date arrivalDate, Date departureDate, Node startPosition)
+    public Truck(Date arrivalDate, Date departureDate, String arrivalCompany, Node startPosition) throws Exception
     {
-        this.position = startPosition.getPosition();
-        this.arrivalDate = arrivalDate;
-        this.departureDate = departureDate;
+        if (arrivalDate == null || departureDate == null || arrivalCompany == null || startPosition == null){
+            throw new Exception("\nThe input variable can't be null:"+
+                    "\narrivalDate: " + arrivalDate +
+                    "\ndepartureDate: " + departureDate +
+                    "\narrivalCompany: " + arrivalCompany +
+                    "\nstartPosition: " + startPosition);
+        }
+        else{
+            this.position = startPosition.getPosition();
+            this.arrivalDate = arrivalDate;
+            this.departureDate = departureDate;
+            this.arrivalCompany = arrivalCompany;
+            storage = new Storage_Area(1, 1, 1, position);
+        }
     }
     
     @Override
@@ -55,23 +68,16 @@ public class Truck extends Vehicle  {
             // update position
         } 
     }
-
-    public Container GetContainer() throws Exception {
-        if (container != null){
-           return container;
-        }
-        else{
-            throw new Exception("Their is no container.");
-        }
-   }
-
-    public void SetContainer(Container container) throws Exception{
-        if (container != null){
-            throw new Exception("This vehicle can't carry more then one container.");
-        }
-        else{
-            this.container = container;
-        }
+    
+    public Date GetArrivalDate(){
+        return arrivalDate;
     }
     
+    public Date GetDepartureDate(){
+        return departureDate;
+    }
+    
+    public String GetCompany(){
+        return arrivalCompany;
+    }
 }

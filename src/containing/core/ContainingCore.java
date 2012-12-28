@@ -13,7 +13,7 @@ public class ContainingCore {
     /**
      * @param args the command line arguments
      */
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         Main.Controller c = new Main.Controller();
     }
 }

@@ -102,5 +102,18 @@ public class Container_Stack
             return true;
         }
     }
+    @Override
+    public String toString() {
+        String returnString = "";
+        for (int i = 0; i < _currentHeight; i++) {
+            returnString += ((_containerArray[i] == null) ? "null" : _containerArray[i]) + ",";
+        }
+        if (returnString.length() == 0){
+            return this.getClass().getSimpleName() + " " + (_currentHeight) + "/" + _maxHeight + "\n[]" ;
+        }
+        else{
+            return this.getClass().getSimpleName() + " " + (_currentHeight) + "/" + _maxHeight + "\n[" + returnString.substring(0, returnString.length() - 1) + "]" ;
+        }
+    }
 }
 

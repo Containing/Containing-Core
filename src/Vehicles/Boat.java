@@ -4,6 +4,7 @@ import Helpers.Vector3f;
 import Main.Container;
 import Pathfinding.Node;
 import Pathfinding.Pathfinder;
+import Storage.Storage_Area;
 import java.util.Date;
 
 /**
@@ -14,8 +15,8 @@ public class Boat extends Vehicle {
     
     private Date arrivalDate;
     private Date departureDate;
-    private Ostack[][] containerField;
-    private Vector3f size;
+    private String arrivalCompany;
+    public Storage_Area storage;
     private Vector3f position;
     private Node destination;
     private Node[] route;
@@ -29,13 +30,13 @@ public class Boat extends Vehicle {
      * @param startPosition The spawn position.
      * @throws Exception If a variable is equel to null.
      */
-    public Boat(Date arrivalDate, Date departureDate, Vector3f containerArraySize, Node startPosition) throws Exception
+    public Boat(Date arrivalDate, Date departureDate, String arrivalCompany, Vector3f containerArraySize, Node startPosition) throws Exception
     {
-        if (arrivalDate == null || departureDate == null
-                || containerArraySize == null || startPosition == null){
+        if (arrivalDate == null || departureDate == null || arrivalCompany == null || containerArraySize == null || startPosition == null){
             throw new Exception("\nThe input variable can't be null:"+
                     "\narrivalDate: " + arrivalDate +
                     "\ndepartureDate: " + departureDate +
+                    "\narrivalCompany: " + arrivalCompany +
                     "\ncontainerArraySize: " + containerArraySize +
                     "\nstartPosition: " + startPosition);
         }
@@ -43,16 +44,8 @@ public class Boat extends Vehicle {
             this.position = startPosition.getPosition();
             this.arrivalDate = arrivalDate;
             this.departureDate = departureDate;
-            this.size = containerArraySize;
-
-            this.containerField = new Ostack[(int)size.z][(int)size.x];
-
-            for (int z = 0; z < size.z; z++) {
-                for (int x = 0; x < size.x; x++) {
-                    this.containerField[z][x] = new Ostack<>((int)size.y);
-                }
-            }
-            
+            this.arrivalCompany = arrivalCompany;
+            storage = new Storage_Area((int)containerArraySize.x, (int)containerArraySize.z, (int)containerArraySize.y, position);
         }
     }
     
@@ -87,6 +80,29 @@ public class Boat extends Vehicle {
             // follow route 
             // update position
         } 
+    }
+    
+    public Date GetArrivalDate(){
+        return arrivalDate;
+    }
+    
+    public Date GetDepartureDate(){
+        return departureDate;
+    }
+    
+    public String GetCompany(){
+        return arrivalCompany;
+    }
+    
+    @Override
+    public String toString(){
+        return  "\n" + Container.df.format(arrivalDate) + " <-> " + Container.df.format(departureDate) +
+                "\n" + "ArrivalCompany: " + arrivalCompany +
+                "\n" + "ContainerfieldLenght: " + storage.getLength() + 
+                "\n" + "ContainerfieldWidth: " + storage.getWidth() + 
+                "\n" + "ContainerfieldHeight: " + storage.getHeight() + 
+                "\n" + "_____________________________" + 
+                "\n" + storage;
     }
     
 //    /**
