@@ -8,7 +8,7 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
+import java.util.List;
 
 /**
  *
@@ -19,10 +19,20 @@ public class GenerateVehicles {
     {
         //XML.XMLBinder.GenerateContainerDatabase("C:/one/XML7.xml");
         Database.restoreDump();
-        HashMap<Date,Boat> SeaBoats = GetSeaBoats();
-        //HashMap<Date,Boat> InlandBoats = GetInlandBoats(); Doesn't work yet.
+        //HashMap<Date,Boat> SeaBoats = GetSeaBoats();
+        //HashMap<Date,Boat> InlandBoats = GetInlandBoats(); //Doesn't work yet.
         //HashMap<Date,Train> Trains = GetTrains();
-        HashMap<Date,Truck> Trucks = GetTrucks();
+        //HashMap<Date,Truck> Trucks = GetTrucks();
+        
+        //List<Boat> SeaBoats = GetSeaBoats();
+        //List<Boat> InlandBoats = GetInlandBoats(); //Doesn't work yet.
+        List<Train> Trains = GetTrains();
+        //List<Truck> Trucks = GetTrucks();
+        System.out.println(Trains.size());
+        
+        for (Train train : Trains) {
+            System.out.println(train);
+        }
     }
     
     public static HashMap<Date,Vehicle> GenerateVehicles(){
@@ -31,13 +41,13 @@ public class GenerateVehicles {
         return returnHashMap;
     }
     
-    public static HashMap<Date,Boat> GetSeaBoats() throws Exception{
+    public static List<Boat> GetSeaBoats() throws Exception{
         return GetBoats("zeeschip");
     }
-    public static HashMap<Date,Boat> GetInlandBoats() throws Exception{
+    public static List<Boat> GetInlandBoats() throws Exception{
         return GetBoats("binnenschip");
     }
-    private static HashMap<Date,Boat> GetBoats(String kindSchip) throws Exception{
+    private static List<Boat> GetBoats(String kindSchip) throws Exception{
         ArrayList<Boat> BoatList = new ArrayList<>();
         
         String query = "Select arrivalDateStart, arrivalDateEnd, arrivalCompany, count(*) as containers, MAX(arrivalPositionX) as SizeX, MAX(arrivalPositionY) as SizeY, MAX(arrivalPositionZ) as SizeZ " +
@@ -54,14 +64,19 @@ public class GenerateVehicles {
             int x = getBoats.getInt("SizeX")+1;
             int y = getBoats.getInt("SizeY")+1;
             int z = getBoats.getInt("SizeZ")+1;
-            if (getBoats.getInt("containers") > x*y*z){
-                throw new Exception("To many containers for this boat");
-            }
+            
             Boat boat = new Boat(arrivalDateStart, arrivalDateEnd, arrivalCompany, new Vector3f(x, y, z), /*SpawnNode*/new Node(0, 0));
-
-            BoatList.add(boat);
+            
+            if (getBoats.getInt("containers") > x*y*z){
+                int amount = (getBoats.getInt("containers") / (x*y*z)) + 1;
+                for (int i = 0; i < amount; i++) {
+                    BoatList.add(boat);
+                }
+            }
+            else{
+                BoatList.add(boat);
+            }
         }
-        
         
         query = "Select * " +
                 "from container " +
@@ -77,22 +92,63 @@ public class GenerateVehicles {
             if (!(boat.GetArrivalDate().equals(container.getArrivalDateStart()) && 
                 boat.GetDepartureDate().equals(container.getArrivalDateEnd()) &&
                 boat.GetCompany().equals(container.getArrivalCompany()))){
+                System.out.println(boat);
                 boat = BoatList.get(++counter);
             }
             
+            int arrivalX = (int)container.getArrivalPosition().x;
+            int arrivalZ = (int)container.getArrivalPosition().z;
             
-            boat.storage.PushContainer(container, (int)container.getArrivalPosition().x, (int)container.getArrivalPosition().z);
+            if (!boat.storage.IsFilled(arrivalX, arrivalZ)){
+                boat.storage.PushContainer(container, (int)container.getArrivalPosition().x, (int)container.getArrivalPosition().z);
+            }
+            else if (BoatList.size() > counter){
+                Boat nextBoat = BoatList.get(counter+1);
+                if (nextBoat.GetArrivalDate().equals(boat.GetArrivalDate()) &&
+                    nextBoat.GetDepartureDate().equals(boat.GetDepartureDate()) &&
+                    nextBoat.GetCompany().equals(boat.GetCompany())){
+                    try{
+                        nextBoat.storage.PushContainer(container, (int)container.getArrivalPosition().x, (int)container.getArrivalPosition().z);
+                    }
+                    catch(Exception ex){
+                        
+                    }
+                    //System.out.println("Next boat is the same");
+                    
+                }
+            }
+            else{
+                System.out.println("DumpContainer");
+            }
+
+            
+            if (boat.storage.Count(arrivalX, arrivalZ) <= container.getArrivalPosition().y){
+
+            }
+            else{
+
+//                Boat nextBoat = BoatList.get(counter+1);
+//                
+//                if ((nextBoat.GetArrivalDate().equals(boat.GetArrivalDate()) && 
+//                nextBoat.GetDepartureDate().equals(boat.GetDepartureDate()) &&
+//                nextBoat.GetCompany().equals(boat.GetCompany()))){
+//                    try{
+//                    nextBoat.storage.PushContainer(container, (int)container.getArrivalPosition().x, (int)container.getArrivalPosition().z);
+//                    }
+//                    catch(Exception ex){
+//                        System.out.println("Why :'( ");
+//                    }
+//                }
+                
+            }
         }
+        //System.out.println("+"+BoatList.get(BoatList.size()-3).storage.PeekContainer(0, 0).getContainNr());
+        //System.out.println("+"+BoatList.get(BoatList.size()-2).storage.PeekContainer(0, 0).getContainNr());
+        //System.out.println("+"+BoatList.get(BoatList.size()-1).storage.PeekContainer(0, 0).getContainNr());
         
-        HashMap<Date,Boat> returnHashMap = new HashMap();
-        for (Boat boat : BoatList) {
-            returnHashMap.put(boat.GetArrivalDate(), boat);
-        }
-        return returnHashMap;
+        return BoatList;
     }
-    
-    
-    public static HashMap<Date,Train> GetTrains() throws Exception{
+    public static List<Train> GetTrains() throws Exception{
         ArrayList<Train> TrainList = new ArrayList<>();
         
         String query = "Select arrivalDateStart, arrivalDateEnd, arrivalCompany, count(*) as containers, MAX(arrivalPositionX) as SizeX " +
@@ -101,18 +157,29 @@ public class GenerateVehicles {
                 "Group by arrivalDateStart, arrivalDateEnd, arrivalTransportType, arrivalCompany " +
                 "Order By arrivalDateStart, arrivalCompany ";
         
+        // foreach train generated by the SQL query
         ResultSet getTrains = Database.executeQuery(query);
         while(getTrains.next()){
+            
+            // set variables
             Date arrivalDateStart = Container.df.parse(getTrains.getString("arrivalDateStart"));
             Date arrivalDateEnd = Container.df.parse(getTrains.getString("arrivalDateEnd"));
             String arrivalCompany = getTrains.getString("arrivalCompany");
             int x = getTrains.getInt("SizeX")+1;
+            
+            // if the amount of containers is larger then the train lenght
             if (getTrains.getInt("containers") > x){
-                throw new Exception("To many containers for this train");
+                
+                // calculate and add the amount of trains
+                int amount = (getTrains.getInt("containers") / (x)) + 1;
+                for (int i = 0; i < amount; i++) {
+                    TrainList.add(new Train(arrivalDateStart, arrivalDateEnd, arrivalCompany, x, /*SpawnNode*/new Node(0, 0)));
+                }
             }
-            Train train = new Train(arrivalDateStart, arrivalDateEnd, arrivalCompany, x, /*SpawnNode*/new Node(0, 0));
-
-            TrainList.add(train);
+            else{
+                // add the train
+                TrainList.add(new Train(arrivalDateStart, arrivalDateEnd, arrivalCompany, x, /*SpawnNode*/new Node(0, 0)));
+            }
         }
         
         query = "Select * " +
@@ -120,30 +187,56 @@ public class GenerateVehicles {
                 "Where arrivalTransportType = 'trein' " +
                 "Order By  arrivalDateStart, arrivalCompany, arrivalPositionY ";
         
+        // foreach container selected by the SQL query
         ResultSet fillTrains = Database.executeQuery(query);
         int counter = 0;
         while(fillTrains.next()){
+            
+            // get the train and generate the container
             Train train = TrainList.get(counter);
             Container container = ConvertToContainer(fillTrains);
             
-            if (!(train.GetArrivalDate().equals(container.getArrivalDateStart()) && 
-                train.GetDepartureDate().equals(container.getArrivalDateEnd()) &&
-                train.GetCompany().equals(container.getArrivalCompany()))){
-                train = TrainList.get(++counter);
+            // if the container doesn't match the train, go to the next train.
+            while (!train.MatchesContainer(container)) { 
+                counter++;
+                train = TrainList.get(counter);
             }
-            train.storage.PushContainer(container, (int)container.getArrivalPosition().x, 0);
+            
+            // if the container can be pushed
+            if (train.storage.Count((int)container.getArrivalPosition().x, 0) < train.storage.getHeight()){
+                train.storage.PushContainer(container, (int)container.getArrivalPosition().x, 0);
+            }
+            else{
+                // if their is get the next train, get it.
+                Train nextTrain = (counter+1 < TrainList.size()) ? TrainList.get(counter+1) : null;
+                do{
+                    // if their is a next train
+                    if (nextTrain != null){
+                        // if the next train matches the container
+                        if (nextTrain.MatchesContainer(container)){
+                            // if the container can be pushed, push it and break out the while loop, else go to the next train if their is one.
+                            if (nextTrain.storage.Count((int)container.getArrivalPosition().x, 0) < nextTrain.storage.getHeight()){
+                                nextTrain.storage.PushContainer(container, (int)container.getArrivalPosition().x, 0);
+                                break;
+                            }
+                            else{
+                                nextTrain = (counter+1 < TrainList.size()) ? TrainList.get(counter+1) : null;
+                                // if their is no train left break out the while loop
+                                if (nextTrain == null){
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                // if the next container still matches the container try again.
+                }while(!nextTrain.MatchesContainer(container));
+            }
         }
-        
-        
-        
-        HashMap<Date,Train> returnHashMap = new HashMap();
-        for (Train train : TrainList) {
-            returnHashMap.put(train.GetArrivalDate(), train);
-        }
-        return returnHashMap;
+        return TrainList;
     }
-    public static HashMap<Date,Truck> GetTrucks() throws Exception {
-        HashMap<Date,Truck> returnHashMap = new HashMap();
+
+    public static List<Truck> GetTrucks() throws Exception {
+        ArrayList<Truck> TruckList = new ArrayList<>();
         
         String query = "Select * "+
                         "from container "+
@@ -155,11 +248,16 @@ public class GenerateVehicles {
             Container container = ConvertToContainer(rs);
             Truck truck = new Truck(container.getArrivalDateStart(), container.getArrivalDateEnd(), container.getArrivalCompany(), /*SpawnNode*/new Node(0, 0));
             truck.storage.PushContainer(container, 0, 0);
-            returnHashMap.put(container.getArrivalDateStart(), truck);
+            TruckList.add(truck);
         }
-        return returnHashMap;
+        return TruckList;
     }
-    
+
+    /**
+     * Converts a DB row to a container.
+     * @return The Container formed from a DB row.
+     * @throws Exception If something goes wrong while reading from the DB.
+     */
     private static Container ConvertToContainer(ResultSet rs) throws Exception{
         Container returnContainer = new Container(rs.getString("id"));
         

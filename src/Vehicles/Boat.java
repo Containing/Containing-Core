@@ -101,10 +101,10 @@ public class Boat extends Vehicle {
                 "\n" + "ContainerfieldLenght: " + storage.getLength() + 
                 "\n" + "ContainerfieldWidth: " + storage.getWidth() + 
                 "\n" + "ContainerfieldHeight: " + storage.getHeight() + 
-                "\n" + "_____________________________" + 
+                "\n" + "_____________________________(" + storage.Count() + ")"+ 
                 "\n" + storage;
     }
-    
+
 //    /**
 //     * Gets the bestcontainer from the given row.
 //     * @param rowIndex The row to get the container from.

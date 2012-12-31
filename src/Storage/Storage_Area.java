@@ -60,10 +60,6 @@ public class Storage_Area
         return empty;
     }
     
-    public int Count(){
-        return containerCount;
-    }
-    
     public Container PeekContainer(int x, int z){
         return stackField[x][z].peak();
     }
@@ -89,7 +85,22 @@ public class Storage_Area
     public int getHeight() {
         return _Height;
     }
+ 
+    public int Count(){
+        return containerCount;
+    }
     
+    public int Count(int x, int z){
+        return stackField[x][z].getHeight();
+    }
+    
+    public boolean IsFilled(){
+        return _Length * _Height * _Width == containerCount;
+    }
+    
+    public boolean IsFilled(int x, int z){
+        return stackField[x][z].getHeight() == _Height;
+    }
     
     @Override
     public String toString(){

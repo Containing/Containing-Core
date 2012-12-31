@@ -81,4 +81,22 @@ public class Train extends Vehicle{
     public String GetCompany(){
         return arrivalCompany;
     }
+    
+    public boolean MatchesContainer(Container container){
+        
+        return this.GetArrivalDate().equals(container.getArrivalDateStart()) && 
+                this.GetDepartureDate().equals(container.getArrivalDateEnd()) &&
+                this.GetCompany().equals(container.getArrivalCompany());
+    }
+    
+    @Override
+    public String toString(){
+        return  "\n" + Container.df.format(arrivalDate) + " <-> " + Container.df.format(departureDate) +
+                "\n" + "ArrivalCompany: " + arrivalCompany +
+                "\n" + "ContainerfieldLenght: " + storage.getLength() + 
+                "\n" + "ContainerfieldWidth: " + storage.getWidth() + 
+                "\n" + "ContainerfieldHeight: " + storage.getHeight() + 
+                "\n" + "_____________________________(" + storage.Count() + ")" + 
+                "\n" + storage;
+    }
 }
