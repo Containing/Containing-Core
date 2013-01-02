@@ -7,7 +7,7 @@ import Pathfinding.Pathfinder;
 import Storage.Storage_Area;
 import java.util.Date;
 
-public class Train extends Vehicle{
+public class Train extends TransportVehicle{
 
     private Date arrivalDate;
     private Date departureDate;
@@ -70,20 +70,23 @@ public class Train extends Vehicle{
         } 
     }
     
+    @Override
     public Date GetArrivalDate(){
         return arrivalDate;
     }
     
+    @Override
     public Date GetDepartureDate(){
         return departureDate;
     }
     
+    @Override
     public String GetCompany(){
         return arrivalCompany;
     }
     
-    public boolean MatchesContainer(Container container){
-        
+    @Override
+    public boolean MatchesContainer(Container container){        
         return this.GetArrivalDate().equals(container.getArrivalDateStart()) && 
                 this.GetDepartureDate().equals(container.getArrivalDateEnd()) &&
                 this.GetCompany().equals(container.getArrivalCompany());

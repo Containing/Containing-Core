@@ -11,7 +11,7 @@ import java.util.Date;
  * The boat.
  * @author Tonnie Boersma
  */
-public class Boat extends Vehicle {
+public class Boat extends TransportVehicle {
     
     private Date arrivalDate;
     private Date departureDate;
@@ -92,6 +92,13 @@ public class Boat extends Vehicle {
     
     public String GetCompany(){
         return arrivalCompany;
+    }
+    
+    @Override
+    public boolean MatchesContainer(Container container){        
+        return this.GetArrivalDate().equals(container.getArrivalDateStart()) && 
+                this.GetDepartureDate().equals(container.getArrivalDateEnd()) &&
+                this.GetCompany().equals(container.getArrivalCompany());
     }
     
     @Override

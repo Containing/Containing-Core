@@ -1,7 +1,6 @@
 package Vehicles;
 
 import Helpers.Vector3f;
-import Main.Container;
 import Pathfinding.Node;
 
 /**
@@ -11,26 +10,26 @@ import Pathfinding.Node;
 public abstract class Vehicle {
     
     /**
-     * Set the destination
-     * @param destination The destination Node
+     * Set the destination.
+     * @param destination The destination Node.
      */
     public abstract void setDestination(Node destination);
     
     /**
-     * Get the Destination
+     * Get the Destination.
      * @return The destination node, returns position Node if their is no path.
      */
     public abstract Node getDestination();
     
     /**
-     *
-     * @return
+     * Get the currentPosition.
+     * @return currentPosition.
      */
     public abstract Vector3f getPosition();
     
     /**
-     *
-     * @param gameTime
+     * Update the vehicle
+     * @param gameTime The gameTime.
      */
     public abstract void update(float gameTime) throws Exception;
 }

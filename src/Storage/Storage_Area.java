@@ -98,10 +98,6 @@ public class Storage_Area
         return _Length * _Height * _Width == containerCount;
     }
     
-    public boolean IsFilled(int x, int z){
-        return stackField[x][z].getHeight() == _Height;
-    }
-    
     @Override
     public String toString(){
         String returnString = "";
