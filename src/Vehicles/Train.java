@@ -55,7 +55,7 @@ public class Train extends TransportVehicle{
 
     @Override
     public Vector3f getPosition() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return position;
     }
 
     @Override
