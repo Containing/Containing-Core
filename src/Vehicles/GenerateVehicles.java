@@ -32,7 +32,7 @@ public class GenerateVehicles {
     }
     
     /**
-     * An list with disposed containers, if their are any.
+     * A list with disposed containers, if their are any.
      */
     public static List<Container> DisposedContainers = new ArrayList<>();
     
@@ -100,7 +100,7 @@ public class GenerateVehicles {
             Boat boat = BoatList.get(counter);
             Container container = ConvertToContainer(fillBoats);
             
-            // if the container doesn't match the boat, go to the next train.
+            // if the container doesn't match the boat, go to the next boat.
             while (!boat.MatchesContainer(container)){
                 counter++;
                 boat = BoatList.get(counter);
@@ -121,7 +121,7 @@ public class GenerateVehicles {
                     if (nextBoat != null){
                         // if the next boat matches the container
                         if (nextBoat.MatchesContainer(container)){
-                            // if the container can be pushed, push it and break out the while loop, else go to the next boat if their is one.
+                            // if the container can be pushed, push it and break, else go to the next boat if their is one.
                             if (nextBoat.storage.Count(arrivalX, arrivalZ) < nextBoat.storage.getHeight()){
                                 nextBoat.storage.PushContainer(container, arrivalX, arrivalZ);
                                 break;
@@ -135,7 +135,7 @@ public class GenerateVehicles {
                             }
                         }
                         else{
-                            // add the container to the disposed list
+                            // add the container to the disposed list and break.
                             DisposedContainers.add(container);
                             break;
                         }
@@ -218,7 +218,7 @@ public class GenerateVehicles {
                     if (nextTrain != null){
                         // if the next train matches the container
                         if (nextTrain.MatchesContainer(container)){
-                            // if the container can be pushed, push it and break out the while loop, else go to the next train if their is one.
+                            // if the container can be pushed, push it and break, else go to the next train if their is one.
                             if (nextTrain.storage.Count(arrivalX, 0) < nextTrain.storage.getHeight()){
                                 nextTrain.storage.PushContainer(container, arrivalX, 0);
                                 break;
@@ -232,7 +232,7 @@ public class GenerateVehicles {
                             }
                         }
                         else{
-                            // add the container to the disposed list
+                            // add the container to the disposed list and break.
                             DisposedContainers.add(container);
                             break;
                         }
@@ -262,7 +262,7 @@ public class GenerateVehicles {
             // generate a new truck, and generate a container 
             Container container = ConvertToContainer(rs);
             Truck truck = new Truck(container.getArrivalDateStart(), container.getArrivalDateEnd(), container.getArrivalCompany(), /*SpawnNode*/new Node(0, 0));
-            // place the container on the truck and save it.
+            // push the container on the truck.
             truck.storage.PushContainer(container, 0, 0);
             TruckList.add(truck);
         }

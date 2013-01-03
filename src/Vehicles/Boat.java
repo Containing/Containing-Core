@@ -67,7 +67,7 @@ public class Boat extends TransportVehicle {
 
     @Override
     public Vector3f getPosition() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return position;
     }
 
     @Override
@@ -82,14 +82,17 @@ public class Boat extends TransportVehicle {
         } 
     }
     
+    @Override
     public Date GetArrivalDate(){
         return arrivalDate;
     }
     
+    @Override
     public Date GetDepartureDate(){
         return departureDate;
     }
     
+    @Override
     public String GetCompany(){
         return arrivalCompany;
     }

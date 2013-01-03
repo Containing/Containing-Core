@@ -183,7 +183,6 @@ public class XMLBinder {
                 String departureStartDate = departureDate + vertrek_tijd_van.evalXPathToString().replace('.', ':');
                 String departureEndDate = departureDate + vertrek_tijd_tot.evalXPathToString().replace('.', ':');
                 if(!CheckDate(arrivalStartDate, arrivalEndDate, departureStartDate, departureEndDate)){
-                    System.out.println("a");
                     continue;
                 }
                 
