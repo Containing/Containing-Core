@@ -22,7 +22,7 @@ public class Storage_Area
 
     private int containerCount = 0;
     
-    public Storage_Area (int length, int width, int height, Vector3f pos)
+    public Storage_Area (int length, int width, int height, Vector3f pos) throws Exception
     {
         stackField = new Container_Stack[length][width];
         
@@ -30,7 +30,14 @@ public class Storage_Area
         {
             for (int w = 0; w < width; w++)
             {
-                stackField[l][w] = new Container_Stack(height);
+                try
+                {
+                    stackField[l][w] = new Container_Stack(height);
+                }
+                catch (Exception e)
+                {
+                    throw new Exception("Height must be higher than 0.");
+                }
             }
         }
         
