@@ -13,7 +13,7 @@ import Vehicles.Vehicle;
  */
 public class Message {    
     // Actiontypes for what the requestedObject need's to do   
-    enum ACTION { Load, Unload, Fetch, Deliver }        
+    public enum ACTION { Load, Unload, Fetch, Deliver }        
     // Action for the requested object
     ACTION action;
     

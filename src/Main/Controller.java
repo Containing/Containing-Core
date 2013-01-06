@@ -7,6 +7,7 @@ package Main;
 import Helpers.*;
 import Pathfinding.Node;
 import Vehicles.*;
+import Storage.Storage_Area;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Date;
@@ -30,6 +31,9 @@ public class Controller {
     List<Crane> craneList;
     // List with all current messages
     List<Message> messages;
+    
+    // The storage area where all the containers are stored
+    Storage_Area storageArea;
     
     // Simulation Time
     Date simulationTime;
@@ -125,6 +129,23 @@ public class Controller {
         // When the simulation time is equal or greater than the deliveryTime
         if(simulationTime.getTime() >= deliveryTime.getTime())
         {
+            // Walks around the whole storage area and checks every contianer
+            for(int column = 0; column< storageArea.getWidth(); column++){
+                for(int row =0;row< storageArea.getLength(); row++){
+                    // Checks every container on the stack
+                    for(int stack = storageArea.stackHeight(row, column); stack > 0; stack--){
+                        // When the container needs to be transported
+                        if(simulationTime.getTime() >= 
+                           storageArea.CheckContainer(row, column, stack).getDepartureDateStart().getTime()){
+                            // Adds a fetch message for an AGV
+                            messages.add(new Message(
+                                    storageArea.getClass(),
+                                    AGV.class,
+                                    Message.ACTION.Fetch));
+                        }
+                    }
+                }
+            }
             /**
              * TODO:
              * Get all the contianers that need to be deliverd
