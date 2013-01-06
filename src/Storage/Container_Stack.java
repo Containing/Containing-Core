@@ -53,19 +53,6 @@ public class Container_Stack
         }
     }
     
-    public Container peak(int height) throws EmptyStackException
-    {
-        if(_currentHeight <= height || height < 0)
-        {
-            System.out.println("Exception in Container_Stack : '" + this.toString() + "' Can't peak from an empty stack.");
-            throw new EmptyStackException();
-        } 
-        else
-        {
-            return _containerArray[height];
-        }
-    }
-    
     /**
      * Removes and returns the top container.
      * 

@@ -58,48 +58,8 @@ public class Storage_Area
         }
         
         return empty;
-    }
+    }   
     
-    /**
-     * Checks the container stack on the current row and column,
-     * @param row The row to check
-     * @param column The column to check
-     * @return True if its empty, False otherwise
-     * @throws Exception 
-     */
-    public int stackHeight(int row, int column) throws Exception
-    {
-        if ((row > _Length || row < 0) ||
-            (column > _Width || column < 0))
-        {
-            System.out.println("Exception in Storage_Area : '" + this.toString() + "' Row || Column doesn't exist.");
-            throw new Exception("Row || Column doesn't exist.");
-        }
-        return stackField[row][column].getHeight(); 
-    }
-    
-    /**
-     * Gets a Container reference
-     * @param row The current row
-     * @param column The current column
-     * @param height The current height
-     * @return The container on the given position
-     */
-    public Container CheckContainer(int row, int column, int height)throws Exception
-    {
-        if ((row > _Length || row < 0) ||
-            (column > _Width || column < 0))
-        {
-            System.out.println("Exception in Storage_Area : '" + this.toString() + "' Row || Column doesn't exist.");
-            throw new Exception("Row || Column doesn't exist.");
-        }
-        if(height <0 || height>=  stackField[row][column].getHeight())
-        {    
-            System.out.println("Exception in Storage_Area : '" + this.toString() + "' Height is wrong.");
-            throw new Exception("Height is wrong.");
-        }
-        return stackField[row][column].peak(height);
-    }
     
     public Container PeekContainer(int x, int z){
         return stackField[x][z].peak();

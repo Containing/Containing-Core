@@ -4,6 +4,7 @@
  */
 package Helpers;
 
+import Main.Container;
 import Pathfinding.Node;
 import Vehicles.Vehicle;
 
@@ -21,6 +22,8 @@ public class Message {
     Object destinationObject;
     // Object that is requested
     Object requestedObject;
+    // Container the fetch or deliver
+    Container contianer;
     
     /**
      * When the current action is to deliver a container
@@ -116,5 +119,13 @@ public class Message {
         this.destinationObject = sourceSender;
         this.requestedObject = requestType;
         this.action = action;
+    }
+    
+    public Message(Object sourceSender, Object requestType,ACTION action, Container container)
+    {
+        this.destinationObject = sourceSender;
+        this.requestedObject = requestType;
+        this.action = action;
+        this.contianer = container;
     }
 }
