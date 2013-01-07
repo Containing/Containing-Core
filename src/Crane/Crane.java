@@ -3,10 +3,8 @@ package Crane;
 import Helpers.IMessageReceiver;
 import Helpers.Message;
 import Parkinglot.Parkinglot;
-import Storage.Storage_Area;
 import Vehicles.AGV;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Vector;
 
 /**
  * @author Karel Gerbrands
@@ -22,19 +20,8 @@ public class Crane implements IMessageReceiver
     private int _range;
     public Parkinglot parkinglotAGV;
     public Parkinglot parkinglotTransport;
-    private Storage_Area _Storage;
     
-    private List<Message> assignments;
-    
-    public Crane (int rails, int range, Parkinglot<AGV> parkingAGV, Storage_Area storage)
-    {
-        _rails = rails;
-        _range = range;
-        parkinglotAGV = parkingAGV;
-        _Storage = storage;
-        
-        assignments = new ArrayList();
-    }
+    private Vector<Message> assignments;
     
     public Crane (int rails, int range, Parkinglot<AGV> parkingAGV, Parkinglot parkingTransport)
     {
@@ -42,6 +29,8 @@ public class Crane implements IMessageReceiver
         _range = range;
         parkinglotAGV = parkingAGV;
         parkinglotTransport = parkingTransport;
+        
+        assignments = new Vector<Message>();
     }
     
     public boolean loadContainer ()

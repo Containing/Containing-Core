@@ -13,22 +13,23 @@ import java.util.Vector;
 public class Parkinglot <T>
 {
     private Vector<T> _parkingSpace;
-    private byte _size;
-    private byte _parked;
+    private int _size;
+    private int _parked;
     public Node node;
     
-    public Parkinglot (byte size, Node n)
+    public Parkinglot (int size, Node n)
     {
-        _parkingSpace = new Vector<T>();
-        node = n;
+        _parkingSpace = new Vector<T>();        
         _size = size;
+        node = n;
     }
     
-    public boolean park (T vehicle)
+    public boolean park (T vehicle) throws Exception
     {
         if (_parked == _size)
         {
-            return false;
+            System.out.println("Exception in Parkinglot : '" + this.toString() + "' Can't park the vehicle : '" + vehicle.toString() + "', parkinglot is full.");
+            throw new Exception("Can't park the vehicle in a full parkinglot.");
         }
         
         else
@@ -39,7 +40,7 @@ public class Parkinglot <T>
         }
     }
     
-    public T unPark (T vehicle)
+    public T unPark (T vehicle) throws Exception
     {
         for (T parkedVehicle : _parkingSpace)
         {
@@ -51,6 +52,20 @@ public class Parkinglot <T>
             }
         }
         
-        return null;
+        System.out.println("Exception in Parkinglot : '" + this.toString() + "' Can't unpark the vehicle : '" + vehicle.toString() + "'");
+        throw new Exception("Can't unpark the vehicle from the parkinglot.");
+    }
+    
+    public boolean isFull ()
+    {
+        if (_parked == _size)
+        {
+            return true;
+        }
+        
+        else
+        {
+            return false;
+        }
     }
 }
