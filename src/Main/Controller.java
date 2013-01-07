@@ -39,13 +39,18 @@ public class Controller {
     Date simulationTime;
     // Date when the controller needs to send containers
     Date deliveryTime;
+    // Date when the next shipment comes in
+    Date nextShipment;
     
     // List with all the Vehicles that can arrive
     List<Boat> allSeaShips;
     List<Boat> allBarges;
     List<Train> allTrains;
     List<Truck> allTrucks;
-        
+    
+    /**
+     * The amount of seconds the simulation time increments after each update
+     */
     public int SecondsIncrement;
     
     /**
@@ -76,10 +81,8 @@ public class Controller {
      * Initializes the class variables
      **/
     private void Initialize() throws Exception
-    {
-        simulationTime = Container.df.parse("04-12-01 00:00");        
-        deliveryTime = new Date();
-        
+    {   
+        // Default increment value
         SecondsIncrement = 1;
         
         // Initiallizes the List's variables
@@ -88,13 +91,27 @@ public class Controller {
         agvList = new ArrayList();
         craneList = new ArrayList();      
         
-        // Loads the database dump
-        Database.restoreDump();
+        try{
+            // Loads the database dump
+            Database.restoreDump();
+        }
+        catch(Exception ex)
+        {
+            //XML.XMLBinder.GenerateContainerDatabase();
+            Database.dumpDatabase();         
+        }
         // Loads all the vehicles that come to the harbor
         allSeaShips = GenerateVehicles.GetSeaBoats();
         allBarges = GenerateVehicles.GetInlandBoats();
         allTrains = GenerateVehicles.GetTrains();
         allTrucks = GenerateVehicles.GetTrucks();
+        
+        // Sets the first shipment time
+        GetNextShipmentTime();
+            
+        // Sets the simulationTime 1 hour before the first cargo
+        simulationTime = nextShipment;
+        simulationTime.setHours(simulationTime.getHours() -1);
         
         // Add's 100 AGV's to the class all waiting
         for(int i = 0; i < 100; i++){
@@ -151,7 +168,11 @@ public class Controller {
             vehicle.update(gameTime);
         }        
         
-        UpdateAllVehicles();
+        // When the next shipment arrives
+        if(simulationTime.getTime() >= nextShipment.getTime()){
+            UpdateShipment();
+            GetNextShipmentTime();
+        }
         
         // When the simulation time is equal or greater than the deliveryTime
         if(simulationTime.getTime() >= deliveryTime.getTime())
@@ -159,7 +180,7 @@ public class Controller {
             // Gets all the top containers that need to be transported
             FetchContainers();
             // Gets the next date when the next shipment needs to be transported
-            NextDeliveryDate();
+            GetNextDeliveryTime();
             
             /**
              * TODO : 
@@ -229,7 +250,7 @@ public class Controller {
     /**
      * Updates all the vehicles that still need to arrive
      */
-    private void UpdateAllVehicles()
+    private void UpdateShipment()
     {
         // Checks the trucks
         if(allTrucks.size() > 0){
@@ -298,27 +319,7 @@ public class Controller {
             }
         }
     }
-    
-    /**
-     * Get's the next delivery date 
-     */
-    private void NextDeliveryDate() throws Exception
-    {
-        Date nextDate = new Date();
-        // Walks around the whole storage area and checks every contianer
-        for(int column = 0; column< storageArea.getWidth(); column++){
-            for(int row =0;row< storageArea.getLength(); row++){
-                if(!storageArea.rowEmpty(column)){
-                    if(nextDate.equals(new Date())){
-                        nextDate = storageArea.PeekContainer(column, row).getDepartureDateStart();
-                    }
-                    else if(nextDate.getTime() > storageArea.PeekContainer(column, row).getDepartureDateStart().getTime()){
-                        nextDate = storageArea.PeekContainer(column, row).getDepartureDateStart();
-                    }
-                }
-            }
-        }
-    }
+       
     
     /**
      * When a vehicle dock's
@@ -356,6 +357,55 @@ public class Controller {
                  vehicle,
                  Crane.class,
                  Message.ACTION.Unload));
+        }
+    }
+    
+    /**
+     * Get's the next delivery time 
+     */
+    private void GetNextDeliveryTime() throws Exception
+    {
+        // Krijg ik nog van tonnie
+        
+        
+//        Date nextDate = new Date();
+//        // Walks around the whole storage area and checks every contianer
+//        for(int column = 0; column< storageArea.getWidth(); column++){
+//            for(int row =0;row< storageArea.getLength(); row++){
+//                if(!storageArea.rowEmpty(column)){
+//                    if(nextDate.equals(new Date())){
+//                        nextDate = storageArea.PeekContainer(column, row).getDepartureDateStart();
+//                    }
+//                    else if(nextDate.getTime() > storageArea.PeekContainer(column, row).getDepartureDateStart().getTime()){
+//                        nextDate = storageArea.PeekContainer(column, row).getDepartureDateStart();
+//                    }
+//                }
+//            }
+//        }
+    }
+    
+    /**
+     * Get's the next shipment time
+     */
+    private void GetNextShipmentTime()
+    {
+        if(!allSeaShips.isEmpty()){
+            nextShipment = allSeaShips.get(0).GetArrivalDate();
+        }
+        if(!allBarges.isEmpty()){
+            if(nextShipment.getTime() > allBarges.get(0).GetArrivalDate().getTime()){
+                nextShipment = allBarges.get(0).GetArrivalDate();
+            }
+        }
+        if(!allTrains.isEmpty()){
+            if(nextShipment.getTime() > allTrains.get(0).GetArrivalDate().getTime()){
+                nextShipment = allTrains.get(0).GetArrivalDate();
+            }
+        }
+        if(!allTrucks.isEmpty()){
+            if(nextShipment.getTime() > allTrucks.get(0).GetArrivalDate().getTime()){
+                nextShipment = allTrucks.get(0).GetArrivalDate();
+            }
         }
     }
 }
