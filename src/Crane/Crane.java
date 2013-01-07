@@ -3,14 +3,12 @@ package Crane;
 import Helpers.IMessageReceiver;
 import Helpers.Message;
 import Parkinglot.Parkinglot;
-import Storage.Storage_Area;
 import Vehicles.AGV;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Vector;
 
 /**
  * @author Karel Gerbrands
- * @version 0.1
+ * @version 0.3
  * @since 13-12-2012
  * 
  * This class is used in simulating a crane, which is used to move containers 
@@ -22,19 +20,8 @@ public class Crane implements IMessageReceiver
     private int _range;
     public Parkinglot parkinglotAGV;
     public Parkinglot parkinglotTransport;
-    private Storage_Area _Storage;
     
-    private List<Message> assignments;
-    
-    public Crane (int rails, int range, Parkinglot<AGV> parkingAGV, Storage_Area storage)
-    {
-        _rails = rails;
-        _range = range;
-        parkinglotAGV = parkingAGV;
-        _Storage = storage;
-        
-        assignments = new ArrayList();
-    }
+    private Vector<Message> _Assignments;
     
     public Crane (int rails, int range, Parkinglot<AGV> parkingAGV, Parkinglot parkingTransport)
     {
@@ -42,6 +29,8 @@ public class Crane implements IMessageReceiver
         _range = range;
         parkinglotAGV = parkingAGV;
         parkinglotTransport = parkingTransport;
+        
+        _Assignments = new Vector<Message>();
     }
     
     public boolean loadContainer ()
@@ -54,33 +43,28 @@ public class Crane implements IMessageReceiver
         return false;
     }
     
-    public boolean liftContainer ()
-    {
-        return false;
-    }
-    
     public void update(float gameTime)
     {
         
     }
     
     /**
-     * When there are no assignments for the AGV
+     * When there are no assignments for the AGV.
      * @return 
      */
     @Override
     public boolean Available()
     {
-        return assignments.isEmpty();
+        return _Assignments.isEmpty();
     }
     
     /**
-     * Add's an assignment for the agv
+     * Adds an assignment for the AGV.
      * @param mess 
      */
     @Override
     public void SendMessage(Message mess)
     {
-        assignments.add(mess);
+        _Assignments.add(mess);
     }
 }

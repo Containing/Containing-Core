@@ -5,7 +5,7 @@ import Main.Container;
 
 /**
  * @author Karel Gerbrands
- * @version 0.1
+ * @version 0.3
  * @since 18-12-2012
  * 
  * This class is used in simulating the field where the container stacks are
@@ -13,24 +13,35 @@ import Main.Container;
  */
 public class Storage_Area 
 {
-    public Container_Stack[][] stackField;
     public Vector3f position;
-
+    
+    private Container_Stack[][] _stackField;
     private int _Length;
     private int _Width;
     private int _Height;
-
-    private int containerCount = 0;
+    private int _containerCount = 0;
     
-    public Storage_Area (int length, int width, int height, Vector3f pos)
+    public Storage_Area (int length, int width, int height, Vector3f pos) throws Exception
     {
-        stackField = new Container_Stack[length][width];
+        _stackField = new Container_Stack[length][width];
+        
+        if (length < 1 || width < 1)
+        {
+            throw new Exception("Width or length can't be smaller than 1.");
+        }
         
         for (int l = 0; l < length; l++)
         {
             for (int w = 0; w < width; w++)
             {
-                stackField[l][w] = new Container_Stack(height);
+                try
+                {
+                    _stackField[l][w] = new Container_Stack(height);
+                }
+                catch (Exception e)
+                {
+                    throw new Exception("Height must be higher than 0.");
+                }
             }
         }
         
@@ -49,7 +60,7 @@ public class Storage_Area
         }
         boolean empty = true;
         
-        for (Container_Stack c : stackField[row])
+        for (Container_Stack c : _stackField[row])
         {
             if (c.getHeight() > 0)
             {
@@ -58,53 +69,64 @@ public class Storage_Area
         }
         
         return empty;
+    }   
+    
+    
+    public Container PeekContainer(int x, int z)
+    {
+        return _stackField[x][z].peak();
     }
     
-    public Container PeekContainer(int x, int z){
-        return stackField[x][z].peak();
+    public Container PopContainer(int x, int z)
+    {
+        _containerCount--;
+        return _stackField[x][z].pop();
     }
     
-    public Container PopContainer(int x, int z){
-        containerCount--;
-        return stackField[x][z].pop();
+    public void PushContainer(Container container, int x, int z) throws Exception
+    {
+        _containerCount++;
+        _stackField[x][z].push(container);
     }
     
-    public void PushContainer(Container container, int x, int z) throws Exception{
-        containerCount++;
-        stackField[x][z].push(container);
-    }
-    
-    public int getLength() {
+    public int getLength() 
+    {
         return _Length;
     }
 
-    public int getWidth() {
+    public int getWidth() 
+    {
         return _Width;
     }
 
-    public int getHeight() {
+    public int getHeight() 
+    {
         return _Height;
     }
  
-    public int Count(){
-        return containerCount;
+    public int Count()
+    {
+        return _containerCount;
     }
     
-    public int Count(int x, int z){
-        return stackField[x][z].getHeight();
+    public int Count(int x, int z)
+    {
+        return _stackField[x][z].getHeight();
     }
     
-    public boolean IsFilled(){
-        return _Length * _Height * _Width == containerCount;
+    public boolean IsFilled ()
+    {
+        return _Length * _Height * _Width == _containerCount;
     }
     
     @Override
-    public String toString(){
+    public String toString ()
+    {
         String returnString = "";
         for (int x = 0; x < _Length; x++) {
             returnString += (x == 0) ? "" : "\n";
             for (int z = 0; z < _Width; z++) {
-                returnString += stackField[x][z].getHeight();
+                returnString += _stackField[x][z].getHeight();
             }
         }
         return returnString;

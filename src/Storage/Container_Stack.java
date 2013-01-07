@@ -5,7 +5,7 @@ import java.util.EmptyStackException;
 
 /**
  * @author Karel Gerbrands
- * @version 0.1
+ * @version 0.5
  * @since 12-12-2012
  * 
  * This class is used in simulating a stack of containers, which in essence is
@@ -17,8 +17,12 @@ public class Container_Stack
     private int _maxHeight;
     private Container[] _containerArray;
     
-    public Container_Stack (int height)
+    public Container_Stack (int height) throws Exception
     {
+        if (height < 1)
+        {
+            throw new Exception("Container stack height must be higher than 0.");
+        }
         _containerArray = new Container[height];
         _currentHeight = 0;
         _maxHeight = height;
