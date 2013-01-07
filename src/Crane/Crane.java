@@ -8,7 +8,7 @@ import java.util.Vector;
 
 /**
  * @author Karel Gerbrands
- * @version 0.1
+ * @version 0.3
  * @since 13-12-2012
  * 
  * This class is used in simulating a crane, which is used to move containers 
@@ -21,7 +21,7 @@ public class Crane implements IMessageReceiver
     public Parkinglot parkinglotAGV;
     public Parkinglot parkinglotTransport;
     
-    private Vector<Message> assignments;
+    private Vector<Message> _Assignments;
     
     public Crane (int rails, int range, Parkinglot<AGV> parkingAGV, Parkinglot parkingTransport)
     {
@@ -30,7 +30,7 @@ public class Crane implements IMessageReceiver
         parkinglotAGV = parkingAGV;
         parkinglotTransport = parkingTransport;
         
-        assignments = new Vector<Message>();
+        _Assignments = new Vector<Message>();
     }
     
     public boolean loadContainer ()
@@ -43,33 +43,28 @@ public class Crane implements IMessageReceiver
         return false;
     }
     
-    public boolean liftContainer ()
-    {
-        return false;
-    }
-    
     public void update(float gameTime)
     {
         
     }
     
     /**
-     * When there are no assignments for the AGV
+     * When there are no assignments for the AGV.
      * @return 
      */
     @Override
     public boolean Available()
     {
-        return assignments.isEmpty();
+        return _Assignments.isEmpty();
     }
     
     /**
-     * Add's an assignment for the agv
+     * Adds an assignment for the AGV.
      * @param mess 
      */
     @Override
     public void SendMessage(Message mess)
     {
-        assignments.add(mess);
+        _Assignments.add(mess);
     }
 }

@@ -5,7 +5,7 @@ import java.util.EmptyStackException;
 
 /**
  * @author Karel Gerbrands
- * @version 0.1
+ * @version 0.5
  * @since 12-12-2012
  * 
  * This class is used in simulating a stack of containers, which in essence is

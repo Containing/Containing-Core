@@ -5,7 +5,7 @@ import java.util.Vector;
 
 /**
  * @author Karel Gerbrands
- * @version 0.1
+ * @version 0.3
  * @since 12-12-2012
  * 
  * This class is used in simulating a place where a vehicle can park.
@@ -24,6 +24,31 @@ public class Parkinglot <T>
         node = n;
     }
     
+    /**
+     *  
+     * @return a reference to all the vehicles inside the parkinglot.
+     * @throws Exception when there are no vehicles parked in the parkinglot.
+     */
+    public Vector<T> getVehicles () throws Exception
+    {
+        if (_parked > 0)
+        {
+            return _parkingSpace;
+        }
+        
+        else
+        {
+            System.out.println("Exception in Parkinglot : '" + this.toString() + "' Can't request vehicles from an empty parkinglot.");
+            throw new Exception("Can't request the vehicles from an empty parkinglot.");
+        }
+    }
+    
+    /**
+     * 
+     * @param vehicle The vehicle to be parked.
+     * @return True if succesful.
+     * @throws Exception Is thrown when the vehicle can't be parked.
+     */
     public boolean park (T vehicle) throws Exception
     {
         if (_parked == _size)
@@ -40,6 +65,12 @@ public class Parkinglot <T>
         }
     }
     
+    /**
+     * 
+     * @param vehicle The vehicle to unpark.
+     * @return The vehicle that has been requested to be unparked.
+     * @throws Exception Is thrown when the vehicle can't be unparked.
+     */
     public T unPark (T vehicle) throws Exception
     {
         for (T parkedVehicle : _parkingSpace)
@@ -56,6 +87,10 @@ public class Parkinglot <T>
         throw new Exception("Can't unpark the vehicle from the parkinglot.");
     }
     
+    /**
+     * 
+     * @return Returns whether the parkinglot is full or not.
+     */
     public boolean isFull ()
     {
         if (_parked == _size)
