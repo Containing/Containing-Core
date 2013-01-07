@@ -203,7 +203,7 @@ public class XMLBinder {
                 String vertrekDatum = AddZero(vertrek_datum_j.evalXPathToString()) + "-" + AddZero(vertrek_datum_m.evalXPathToString()) + "-" + AddZero(vertrek_datum_d.evalXPathToString()) + " ";
                 String[] vertrekTijdVan = vertrek_tijd_van.evalXPathToString().split("\\.");
                 stm.setString(11,  vertrekDatum + AddZero(vertrekTijdVan[0]) + ":" +  AddZero(aankomstTijdVan[1])); //departureDateStart
-                String[] vertrekTijdTot = vertrek_tijd_van.evalXPathToString().split("\\.");
+                String[] vertrekTijdTot = vertrek_tijd_tot.evalXPathToString().split("\\.");
                 stm.setString(12, vertrekDatum + AddZero(vertrekTijdTot[0]) + ":" +  AddZero(vertrekTijdTot[1])); //departureDateEnd
                 stm.setString(13, vertrek_soort_vervoer.evalXPathToString()); //departureTransportType
                 stm.setString(14, vertrek_bedrijf.evalXPathToString()); //departureCompany
