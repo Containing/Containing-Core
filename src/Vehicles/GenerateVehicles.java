@@ -20,6 +20,8 @@ public class GenerateVehicles {
      * @throws Exception
      */
     public static void main(String[] args) throws Exception {
+        //XML.XMLBinder.GenerateContainerDatabase("C:/Users/Martin_Notebook/Dropbox/containing/XML files/xml7.xml");
+        //Database.dumpDatabase();
         Database.restoreDump();
         List<Boat> SeaBoats = GetSeaBoats();
         System.out.println("SeaBoats:    "+SeaBoats.size());

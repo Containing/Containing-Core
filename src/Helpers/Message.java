@@ -98,6 +98,15 @@ public class Message {
     }
     
     /**
+     * The current action of this message
+     * @return the action
+     */
+    public ACTION Action()
+    {
+        return action;
+    }
+    
+    /**
      * Object that is requested
      * @return 
      */
@@ -108,12 +117,12 @@ public class Message {
         return requestedObject.getClass();
     }
     
-    /**
-     * Class Constructor
-     * @param sourceSender
-     * @param requestType
-     * @param action 
-     */
+    public Message(Object destination, ACTION action)
+    {
+        this.destinationObject = destination;
+        this.action = action;
+    }
+    
     public Message(Object sourceSender, Object requestType,ACTION action)
     {
         this.destinationObject = sourceSender;
