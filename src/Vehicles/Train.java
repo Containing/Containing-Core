@@ -7,7 +7,7 @@ import Pathfinding.Pathfinder;
 import Storage.Storage_Area;
 import java.util.Date;
 
-public class Train extends Vehicle{
+public class Train extends TransportVehicle{
 
     private Date arrivalDate;
     private Date departureDate;
@@ -55,7 +55,7 @@ public class Train extends Vehicle{
 
     @Override
     public Vector3f getPosition() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return position;
     }
 
     @Override
@@ -70,15 +70,36 @@ public class Train extends Vehicle{
         } 
     }
     
+    @Override
     public Date GetArrivalDate(){
         return arrivalDate;
     }
     
+    @Override
     public Date GetDepartureDate(){
         return departureDate;
     }
     
+    @Override
     public String GetCompany(){
         return arrivalCompany;
+    }
+    
+    @Override
+    public boolean MatchesContainer(Container container){        
+        return this.GetArrivalDate().equals(container.getArrivalDateStart()) && 
+                this.GetDepartureDate().equals(container.getArrivalDateEnd()) &&
+                this.GetCompany().equals(container.getArrivalCompany());
+    }
+    
+    @Override
+    public String toString(){
+        return  "\n" + Container.df.format(arrivalDate) + " <-> " + Container.df.format(departureDate) +
+                "\n" + "ArrivalCompany: " + arrivalCompany +
+                "\n" + "ContainerfieldLenght: " + storage.getLength() + 
+                "\n" + "ContainerfieldWidth: " + storage.getWidth() + 
+                "\n" + "ContainerfieldHeight: " + storage.getHeight() + 
+                "\n" + "_____________________________(" + storage.Count() + ")" + 
+                "\n" + storage;
     }
 }

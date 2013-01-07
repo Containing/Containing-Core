@@ -89,7 +89,7 @@ public class Container_Stack
     {
         if (_currentHeight == _maxHeight)
         {
-            System.out.println("Exception in Container_Stack : '" + this.toString() + "' Can't push a container onto a full stack.");
+            System.out.println("Exception in Container_Stack : " + this.toString() + " Can't push a container onto a full stack.");
             throw new Exception("Can't push a container onto a full stack.");
         }
         
@@ -108,15 +108,15 @@ public class Container_Stack
     }
     @Override
     public String toString() {
-        String returnString = "";
+        String returnString = "\n";
         for (int i = 0; i < _currentHeight; i++) {
-            returnString += ((_containerArray[i] == null) ? "null" : _containerArray[i]) + ",";
+            returnString += ((_containerArray[i] == null) ? "null" : _containerArray[i].getClass().getSimpleName()) + ",";
         }
         if (returnString.length() == 0){
-            return this.getClass().getSimpleName() + " " + (_currentHeight) + "/" + _maxHeight + "\n[]" ;
+            return this.getClass().getSimpleName() + " " + (_currentHeight) + "/" + _maxHeight + "\n[]\n" ;
         }
         else{
-            return this.getClass().getSimpleName() + " " + (_currentHeight) + "/" + _maxHeight + "\n[" + returnString.substring(0, returnString.length() - 1) + "]" ;
+            return this.getClass().getSimpleName() + " " + (_currentHeight) + "/" + _maxHeight + "\n[" + returnString.substring(0, returnString.length() - 1) + "]\n" ;
         }
     }
 }

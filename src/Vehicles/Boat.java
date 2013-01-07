@@ -11,7 +11,7 @@ import java.util.Date;
  * The boat.
  * @author Tonnie Boersma
  */
-public class Boat extends Vehicle {
+public class Boat extends TransportVehicle {
     
     private Date arrivalDate;
     private Date departureDate;
@@ -67,7 +67,7 @@ public class Boat extends Vehicle {
 
     @Override
     public Vector3f getPosition() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return position;
     }
 
     @Override
@@ -82,16 +82,26 @@ public class Boat extends Vehicle {
         } 
     }
     
+    @Override
     public Date GetArrivalDate(){
         return arrivalDate;
     }
     
+    @Override
     public Date GetDepartureDate(){
         return departureDate;
     }
     
+    @Override
     public String GetCompany(){
         return arrivalCompany;
+    }
+    
+    @Override
+    public boolean MatchesContainer(Container container){        
+        return this.GetArrivalDate().equals(container.getArrivalDateStart()) && 
+                this.GetDepartureDate().equals(container.getArrivalDateEnd()) &&
+                this.GetCompany().equals(container.getArrivalCompany());
     }
     
     @Override
@@ -101,10 +111,10 @@ public class Boat extends Vehicle {
                 "\n" + "ContainerfieldLenght: " + storage.getLength() + 
                 "\n" + "ContainerfieldWidth: " + storage.getWidth() + 
                 "\n" + "ContainerfieldHeight: " + storage.getHeight() + 
-                "\n" + "_____________________________" + 
+                "\n" + "_____________________________(" + storage.Count() + ")"+ 
                 "\n" + storage;
     }
-    
+
 //    /**
 //     * Gets the bestcontainer from the given row.
 //     * @param rowIndex The row to get the container from.

@@ -8,6 +8,10 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+/**
+ * Bind the XML file to an in memory database.
+ * @author Tonnie Boersma
+ */
 public class XMLBinder {
     
     public static void main(String[] args) throws Exception 
@@ -16,6 +20,12 @@ public class XMLBinder {
         Database.dumpDatabase();
     }
     
+    /**
+     * Binds the XML file located at the filename path to an inmemory datebase.
+     * And checks the content on minor mistakes: weight, position and dates.
+     * @param fileName The path to the XML file.
+     * @throws Exception If the path isn't directed to an XML file, or if something goes wrong while bindng the file.
+     */
     @SuppressWarnings("empty-statement")
     public static void GenerateContainerDatabase(String fileName) throws Exception{
         
@@ -173,10 +183,10 @@ public class XMLBinder {
                 String departureStartDate = departureDate + vertrek_tijd_van.evalXPathToString().replace('.', ':');
                 String departureEndDate = departureDate + vertrek_tijd_tot.evalXPathToString().replace('.', ':');
                 if(!CheckDate(arrivalStartDate, arrivalEndDate, departureStartDate, departureEndDate)){
-                    System.out.println("a");
                     continue;
                 }
                 
+                // add values to the update query.
                 String aankomstDatum = AddZero(aankomst_datum_j.evalXPathToString()) + "-" + AddZero(aankomst_datum_m.evalXPathToString()) + "-" + AddZero(aankomst_datum_d.evalXPathToString()) + " ";
                 stm.setString(1, "id" + counter); // id
                 String[] aankomstTijdVan = aankomst_tijd_van.evalXPathToString().split("\\.");
@@ -203,7 +213,7 @@ public class XMLBinder {
                 stm.setString(18, inhoud_soort.evalXPathToString()); //kind
                 stm.setString(19, inhoud_gevaar.evalXPathToString()); //danger
                 
-                
+                // try to execute the update query.
                 try {
                     stm.executeUpdate();
                 }
@@ -217,14 +227,32 @@ public class XMLBinder {
         }
     }
     
+    /**
+     * Checks if the weight is a vailid value.
+     * @param weight The weight
+     * @return True if the weight is valid, false otherwise.
+     */
     private static boolean CheckWeight(String weight){
         return Integer.parseInt(weight) > 0;
     }
-    
+    /**
+     * Checks if the given coords are valid
+     * @param x The x
+     * @param y The y
+     * @param z The z
+     * @return True if the coords are valid, false otherwise.
+     */
     private static boolean CheckPosition(String x, String y, String z){
         return (Integer.parseInt(x) >= 0 && Integer.parseInt(y) >= 0 && Integer.parseInt(z) >= 0);
     }
-    
+    /**
+     * Converts the 4 input strings to Date objects and checks if they are valid
+     * @param startDateBegin The startDateBegin.
+     * @param startDateEnd The startDateEnd.
+     * @param endDateBegin The endDateBegin.
+     * @param endDateEnd The endDateEnd.
+     * @return True if the values are valid, false otherwise.
+     */
     private static boolean CheckDate(String startDateBegin, String startDateEnd, String endDateBegin, String endDateEnd){
         DateFormat df = new SimpleDateFormat("dd MM yy HH:mm");
         try{
@@ -244,7 +272,11 @@ public class XMLBinder {
         
         return true;
     }
-    
+    /**
+     * Adds an zero in front the input string if the input lenght is equel to 1
+     * @param input The input.
+     * @return 0input or input
+     */
     private static String AddZero(String input){
         if (input.length() == 1){
             return "0" + input;

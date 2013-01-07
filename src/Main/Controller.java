@@ -7,6 +7,7 @@ package Main;
 import Helpers.*;
 import Pathfinding.Node;
 import Vehicles.*;
+import Storage.Storage_Area;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Date;
@@ -30,6 +31,9 @@ public class Controller {
     List<Crane> craneList;
     // List with all current messages
     List<Message> messages;
+    
+    // The storage area where all the containers are stored
+    Storage_Area storageArea;
     
     // Simulation Time
     Date simulationTime;
@@ -125,10 +129,14 @@ public class Controller {
         // When the simulation time is equal or greater than the deliveryTime
         if(simulationTime.getTime() >= deliveryTime.getTime())
         {
+            // Gets all the top containers that need to be send away
+            FetchContainers();
+            // Gets the next date when the next shipment needs to be transported
+            NextDeliveryDate();
+            
             /**
-             * TODO:
-             * Get all the contianers that need to be deliverd
-             * Send a message for each container that need's to be deliverd
+             * TODO : 
+             * When a container is fetch check if the container below needs to be fetched
              */
         }
         
@@ -182,6 +190,52 @@ public class Controller {
          *  Send messages naar AGV's wat en waar ze wat moeten doen
          *  Send messages to Crane's if the have to load or unload 
          */
+    }
+    
+    /**
+     * Checks all the containers that are on top of each stack
+     * When it needs to be transported it sends a message
+     * @throws Exception 
+     */
+    private void FetchContainers() throws Exception
+    {
+        // Walks around the whole storage area and checks every contianer
+        for(int column = 0; column< storageArea.getWidth(); column++){
+            for(int row =0;row< storageArea.getLength(); row++){
+                if(!storageArea.rowEmpty(column)){
+                    // Checks if the cotainer needs to be transported
+                    if(storageArea.PeekContainer(column, row).getDepartureDateStart().getTime() <= simulationTime.getTime()){                    
+                        // Adds a fetch message for an AGV
+                        messages.add(new Message(
+                                storageArea.getClass(),
+                                AGV.class,
+                                Message.ACTION.Fetch,
+                                storageArea.PeekContainer(column, row)));                        
+                    }
+                }
+            }
+        }
+    }
+    
+    /**
+     * Get's the next delivery date 
+     */
+    private void NextDeliveryDate() throws Exception
+    {
+        Date nextDate = new Date();
+        // Walks around the whole storage area and checks every contianer
+        for(int column = 0; column< storageArea.getWidth(); column++){
+            for(int row =0;row< storageArea.getLength(); row++){
+                if(!storageArea.rowEmpty(column)){
+                    if(nextDate.equals(new Date())){
+                        nextDate = storageArea.PeekContainer(column, row).getDepartureDateStart();
+                    }
+                    else if(nextDate.getTime() > storageArea.PeekContainer(column, row).getDepartureDateStart().getTime()){
+                        nextDate = storageArea.PeekContainer(column, row).getDepartureDateStart();
+                    }
+                }
+            }
+        }
     }
     
     /**
