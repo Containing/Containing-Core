@@ -2,6 +2,7 @@ package Vehicles;
 
 import Helpers.Vector3f;
 import Pathfinding.Node;
+import Storage.Storage_Area;
 
 /**
  * The abstract class for Vehicles
@@ -32,5 +33,9 @@ public abstract class Vehicle {
      * @param gameTime The gameTime.
      */
     public abstract void update(float gameTime) throws Exception;
+    
+    public abstract Storage_Area GetStorage() throws Exception;
+    
+    public abstract void SetStorage(Storage_Area sa) throws Exception;
 }
 

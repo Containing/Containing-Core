@@ -101,4 +101,14 @@ public class Truck extends TransportVehicle  {
                 "\n" + "_____________________________(" + storage.Count() + ")" + 
                 "\n" + storage;
     }
+
+    @Override
+    public Storage_Area GetStorage() {
+        return storage;
+    }
+
+    @Override
+    public void SetStorage(Storage_Area sa) {
+        storage = sa;
+    }
 }

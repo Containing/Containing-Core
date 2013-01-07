@@ -10,7 +10,7 @@ import java.util.List;
 
 public class AGV extends Vehicle implements IMessageReceiver {
 
-    private Storage_Area storage;
+    public Storage_Area storage;
     private Node destination;
     private Vector3f position;
     private Node[] route;
@@ -125,6 +125,16 @@ public class AGV extends Vehicle implements IMessageReceiver {
     public void SendMessage(Message mess)
     {
         assignments.add(mess);
+    }
+    
+    @Override
+    public Storage_Area GetStorage() {
+        return storage;
+    }
+
+    @Override
+    public void SetStorage(Storage_Area sa) {
+        storage = sa;
     }
 }
 

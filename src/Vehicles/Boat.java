@@ -115,6 +115,16 @@ public class Boat extends TransportVehicle {
                 "\n" + storage;
     }
 
+    @Override
+    public Storage_Area GetStorage() {
+        return storage;
+    }
+
+    @Override
+    public void SetStorage(Storage_Area sa) {
+        storage = sa;
+    }
+    
 //    /**
 //     * Gets the bestcontainer from the given row.
 //     * @param rowIndex The row to get the container from.
