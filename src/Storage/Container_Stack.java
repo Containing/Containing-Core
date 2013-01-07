@@ -43,12 +43,12 @@ public class Container_Stack
      * @return Returns the top container of the stack. If a null is returned,
      * the stack is empty.
      */
-    public Container peak () throws EmptyStackException
+    public Container peak () throws Exception
     {
         if (_currentHeight == 0)
         {
-            System.out.println("Exception in Container_Stack : '" + this.toString() + "' Can't peak from an empty stack.");
-            throw new EmptyStackException();
+            //System.out.println("Exception in Container_Stack : '" + this.toString() + "' Can't peak from an empty stack.");
+            throw new Exception("Can't peak from an empty stack.");
         }
         
         else
@@ -63,12 +63,12 @@ public class Container_Stack
      * @return Returns the top container of the stack. If a null is returned,
      * the stack is empty.
      */
-    public Container pop ()
+    public Container pop () throws Exception
     {
         if (_currentHeight == 0)
         {
-            System.out.println("Exception in Container_Stack : '" + this.toString() + "' Can't pop a container from an empty stack.");
-            throw new EmptyStackException();
+            //System.out.println("Exception in Container_Stack : '" + this.toString() + "' Can't pop a container from an empty stack.");
+            throw new Exception("Can't pop a container from an empty stack.");
         }
         
         else
@@ -89,13 +89,13 @@ public class Container_Stack
     {
         if (_currentHeight == _maxHeight)
         {
-            System.out.println("Exception in Container_Stack : " + this.toString() + " Can't push a container onto a full stack.");
+            //System.out.println("Exception in Container_Stack : " + this.toString() + " Can't push a container onto a full stack.");
             throw new Exception("Can't push a container onto a full stack.");
         }
         
         else if (container == null)
         {
-            System.out.println("Exception in Container_Stack : '" + this.toString() + "' Container can't be null.");
+            //System.out.println("Exception in Container_Stack : '" + this.toString() + "' Container can't be null.");
             throw new Exception("Container can't be null.");
         }
         
