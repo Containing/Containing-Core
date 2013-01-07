@@ -5,6 +5,7 @@
 package Crane;
 
 import Helpers.Vector3f;
+import Main.Container;
 import Parkinglot.Parkinglot;
 import Storage.Storage_Area;
 import Vehicles.AGV;
@@ -33,13 +34,19 @@ public class StorageCrane extends Crane
         _storageField = storage;
     }
     
-    public boolean getContainer ()
+    public Container getContainer ()
     {
-        return false;
+        return null;
     }
 
-    public boolean storeContainer ()
+    public boolean storeContainer (Container container) throws Exception
     {
-        return false;
+        if (_storageField.IsFilled() == true)
+        {
+            //System.out.println("Exception in StorageCrane : '" + this.toString() + "' Can't store a container in a full storage area.");
+            throw new Exception("Can't store a container in a full storage area.");
+        }
+        
+        else { return true; }
     }
 }

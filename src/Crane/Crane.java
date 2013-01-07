@@ -16,10 +16,11 @@ import java.util.Vector;
  */
 public class Crane implements IMessageReceiver
 {
-    private int _rails;
-    private int _range;
     public Parkinglot parkinglotAGV;
     public Parkinglot parkinglotTransport;
+    
+    private final int _rails;
+    private final int _range;
     
     private Vector<Message> _Assignments;
     
@@ -43,14 +44,14 @@ public class Crane implements IMessageReceiver
         return false;
     }
     
-    public void update(float gameTime)
+    public void update(float updateTime)
     {
         
     }
     
     /**
-     * When there are no assignments for the AGV.
-     * @return 
+     * 
+     * @return Returns whether there are assignments for the crane.
      */
     @Override
     public boolean Available()
@@ -59,7 +60,7 @@ public class Crane implements IMessageReceiver
     }
     
     /**
-     * Adds an assignment for the AGV.
+     * Adds an assignment for the crane.
      * @param mess 
      */
     @Override

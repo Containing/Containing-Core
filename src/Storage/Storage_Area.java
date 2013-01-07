@@ -72,12 +72,12 @@ public class Storage_Area
     }   
     
     
-    public Container PeekContainer(int x, int z)
+    public Container PeekContainer(int x, int z) throws Exception
     {
         return _stackField[x][z].peak();
     }
     
-    public Container PopContainer(int x, int z)
+    public Container PopContainer(int x, int z) throws Exception
     {
         _containerCount--;
         return _stackField[x][z].pop();

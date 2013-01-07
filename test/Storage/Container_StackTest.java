@@ -49,10 +49,19 @@ public class Container_StackTest {
     @Test
     public void testGetHeight() 
     {
-        stack = new Container_Stack(6);
+        try
+        {
+            stack = new Container_Stack(6);
+        }
+        catch (Exception E) { }
         
-        stack.push(container);
-        stack.push(container);
+        try
+        {
+            stack.push(container);
+            stack.push(container); 
+        }        
+        catch (Exception E) { }
+        
         
         int result = stack.getHeight();
         int expResult = 2;
@@ -66,19 +75,29 @@ public class Container_StackTest {
     @Test
     public void testPop() 
     {
-        stack = new Container_Stack(6);
-        
-        stack.push(container);
-        
-        if (stack.pop() == null)
+        try
         {
-            fail("The method doesn't return a container.");
+            stack = new Container_Stack(6);
         }
+        catch (Exception E) { }
         
-        if (stack.pop() != null)
+        try
         {
-            fail("The method doesn't return a null while the stack is empty.");
+            stack.push(container);
         }
+        catch (Exception E) { }
+        
+        try
+        {
+            stack.pop();
+        }
+        catch (Exception E) { fail("The method throws an exception when it shouldn't."); }
+        
+        try
+        {
+            stack.pop();
+        }
+        catch (Exception E) { fail("The method doesn't throw an exception when it should."); }
     }
 
     /**
@@ -87,16 +106,28 @@ public class Container_StackTest {
     @Test
     public void testPeak() 
     {
-        stack = new Container_Stack(6);
-        
-        stack.push(container);
-        
-        Container cont = stack.peak();
-        
-        if (cont.getId() != "Cont")
+        try
         {
-            fail("Doesn't return the right container");
+            stack = new Container_Stack(6);
         }
+        catch (Exception E) { }
+        
+        try
+        {
+            stack.push(container);
+        }
+        catch (Exception E) { }
+        
+        try
+        {
+            Container cont = stack.peak();
+            
+            if (cont.getId().matches("Cont") == false)
+            {
+                fail("Doesn't return the right container");
+            }
+        }
+        catch (Exception E) { fail("Doesn't return a container."); }
     }
 
     /**
@@ -105,17 +136,19 @@ public class Container_StackTest {
     @Test
     public void testPush() 
     {        
-        stack = new Container_Stack(6);
-        
-        if (stack.push(null) == true)
+        try
         {
-            fail("Null is accepted.");
+            stack = new Container_Stack(6);
         }
+        catch (Exception E) { }
         
-        if (stack.push(container) == false)
-        {
-            fail("Push doesn't return true when given a valid container.");
-        }
+        boolean nullTest = false;
+        
+        try { stack.push(null); }
+        catch (Exception E) { nullTest = true; }
+        
+        try { stack.push(container); }
+        catch (Exception E) { fail("Push returns an exception when it shouldn't..");  }
         
         if(stack.getHeight() != 1)
         {
