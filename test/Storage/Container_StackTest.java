@@ -96,8 +96,9 @@ public class Container_StackTest {
         try
         {
             stack.pop();
+            fail("The method doesn't throw an exception when it should.");
         }
-        catch (Exception E) { fail("The method doesn't throw an exception when it should."); }
+        catch (Exception E) { }
     }
 
     /**
@@ -148,11 +149,110 @@ public class Container_StackTest {
         catch (Exception E) { nullTest = true; }
         
         try { stack.push(container); }
-        catch (Exception E) { fail("Push returns an exception when it shouldn't..");  }
+        catch (Exception E) { fail("Push returns an exception when it shouldn't.");  }
         
         if(stack.getHeight() != 1)
         {
             fail("There's more than 1 container ");
         }
+    }
+    
+    @Test
+    public void testHeight()
+    {
+        try
+        {
+            stack = new Container_Stack(6);
+        }
+        catch (Exception E) { }
+        
+        try
+        {
+            for (int i = 0; i < 7; i++)
+            {
+                stack.push(container);           
+            }
+            
+            fail("No exception is thrown when it needs to be thrown.");
+        }
+        catch(Exception E) {  } 
+    }
+    
+    @Test
+    public void testDepth()
+    {
+        try
+        {
+            stack = new Container_Stack(6);
+        }
+        catch (Exception E) { }
+        
+        try
+        {
+            for (int i = 0; i < 3; i++)
+            {
+                stack.pop();           
+            }
+            
+            fail("No exception is thrown when it needs to be thrown.");
+        }
+        catch(Exception E) {  } 
+    }
+    
+    @Test
+    public void testAddRemove()
+    {
+        try
+        {
+            stack = new Container_Stack(6);
+        }
+        catch (Exception E) { }
+        
+        try
+        {
+            for (int i = 0; i < 3; i++)
+            {
+                stack.push(container);
+                stack.pop();           
+            }
+            
+            for (int i = 0; i < 3; i++)
+            {
+                stack.push(container);          
+            }
+            
+            for (int i = 0; i < 3; i++)
+            {
+                stack.pop();           
+            }
+            
+            for (int i = 0; i < 6; i++)
+            {
+                stack.push(container);          
+            }
+            
+            for (int i = 0; i < 6; i++)
+            {
+                stack.pop();          
+            }
+        }
+        catch(Exception E) { fail("Exception is thrown when none should be.");  } 
+    }
+    
+    @Test
+    public void testNull ()
+    {
+        try
+        {
+            stack = new Container_Stack(6);
+        }
+        catch (Exception E) { }
+        
+        try
+        {
+            stack.push(null);
+            fail("No exception is thrown when it needs to be thrown.");
+        }
+        catch (Exception E) { }
     }
 }
