@@ -4,8 +4,11 @@
  */
 package Helpers;
 
+import Crane.Crane;
 import Main.Container;
 import Pathfinding.Node;
+import Vehicles.AGV;
+import Vehicles.TransportVehicle;
 import Vehicles.Vehicle;
 
 /**
@@ -28,27 +31,38 @@ public class Message {
     /**
      * Constructs a new message
      * @param sourceSender The object that requests an object
-     * @param requestType The object that's requested
+     * @param requestedType The object that's requested
      * @param action The action for the requested object
      */
-    public Message(Object sourceSender, Object requestType,ACTION action)
+    public Message(Object sourceSender, Object requestedType,ACTION action,Container container) throws Exception
     {
+        if(sourceSender == null){
+            throw new Exception("Source Sender can't be null");
+        }
+        if(sourceSender != TransportVehicle.class && sourceSender != Crane.class){
+            throw new Exception("Source Sender must be a crane or transportVehicle");
+        }
+        if(sourceSender == requestedType){
+            throw new Exception("Can't request the same type of object");
+        }
+        
+        if(requestedType == null){
+            throw new Exception("Requested type can't be null");
+        }
+        if(requestedType != AGV.class && requestedType != Crane.class){
+            throw new Exception("Requested type must be a crane or an agv");
+        }
+        
+        if(action == null){
+            throw new Exception("action can't be null");
+        }
+        
+        if(container != null && requestedType != AGV.class){
+            throw new Exception("Only agvs can have a container in there message");
+        }
+        
         this.destinationObject = sourceSender;
-        this.requestedObject = requestType;
-        this.action = action;
-    }
-    
-    /**
-     * Constructs a new message
-     * @param sourceSender The object that requests an object
-     * @param requestType The object that's requested
-     * @param action The action for the requested object
-     * @param container A container
-     */
-    public Message(Object sourceSender, Object requestType,ACTION action, Container container)
-    {
-        this.destinationObject = sourceSender;
-        this.requestedObject = requestType;
+        this.requestedObject = requestedType;
         this.action = action;
         this.container = container;
     }
@@ -65,11 +79,7 @@ public class Message {
      * When the current action is to deliver a container
      * @return True if Action is deliver, False otherwise
      */
-    public boolean Deliver() throws Exception
-    {
-        if(action != null){
-            throw new Exception("Action isn't initialized");      
-        }
+    public boolean Deliver(){
         return action.equals(ACTION.Deliver);
     }
     
@@ -77,10 +87,7 @@ public class Message {
      * When the current action is to fetch a container
      * @return True if Action is fetch, False otherwise
      */
-    public boolean Fetch() throws Exception
-    {
-        if(action != null)
-            throw new Exception("Action isn't initialized");  
+    public boolean Fetch(){
         return action.equals(ACTION.Fetch);
     }
     
@@ -88,11 +95,7 @@ public class Message {
      * When the current action is to load a vehicle
      * @return True if Action is load, False otherwise
      */
-    public boolean Load() throws Exception
-    {
-        if(action != null){
-            throw new Exception("Action isn't initialized");  
-        }
+    public boolean Load(){
         return action.equals(ACTION.Load);
     }
     
@@ -100,11 +103,7 @@ public class Message {
      * When the current action is to unload a vehicle
      * @return True if Action is unload, False otherwise
      */
-    public boolean UnLoad() throws Exception
-    {
-        if(action != null){
-            throw new Exception("Action isn't initialized");  
-        }
+    public boolean UnLoad(){
         return action.equals(ACTION.Unload);
     }
     
@@ -116,9 +115,13 @@ public class Message {
     {
         if(destinationObject == null){
              throw new Exception("No destinationNode initialized");
-        }
-        if(destinationObject.getClass() == Vehicle.class){
-            return ((Vehicle)destinationObject).getDestination();    
+        }       
+        
+        if(destinationObject.getClass() == TransportVehicle.class){            
+            if(((TransportVehicle)destinationObject).equals(null)){
+                throw new Exception("destination node is null");
+            }
+            return ((TransportVehicle)destinationObject).getDestination();    
         }        
         throw new Exception("Message send from unknown source");
     }
@@ -127,11 +130,8 @@ public class Message {
      * Gets the container that needs to be fetched or deliverd
      * @return The container
      */
-    public Container GetContainer() throws Exception
+    public Container GetContainer()
     {
-        if(container == null){
-            throw new Exception("Container isn't initialized");
-        }
         return container;
     }
     
@@ -139,11 +139,8 @@ public class Message {
      * Gets the object that send the request
      * @return The destination object
      */
-    public Object DestinationObject() throws Exception
+    public Object DestinationObject()
     {
-        if(destinationObject == null)      {     
-            throw new Exception("DestinationObject isn't initialized");
-        }
         return destinationObject;
     }
     
@@ -151,11 +148,8 @@ public class Message {
      * Gets the object that's requested
      * @return The requested object
      */
-    public Object RequestedObject() throws Exception
+    public Object RequestedObject()
     {
-        if(requestedObject == null){
-            throw new Exception("RequestedObject isn't initialized");
-        }
         return requestedObject.getClass();
     }
 }

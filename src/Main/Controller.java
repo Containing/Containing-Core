@@ -230,7 +230,8 @@ public class Controller {
                             messageQueue.add(new Message(
                                 crane,
                                 AGV.class,
-                                Message.ACTION.Fetch));
+                                Message.ACTION.Fetch,
+                                null));
                         }                            
                         //Message was handeld so remove it
                         messageQueue.remove(message);
@@ -244,7 +245,7 @@ public class Controller {
      * Updates all the vehicles that still need to arrive
      * When it arrives messageQueue will be send so the cranes will go to work
      */
-    private void UpdateShipment()
+    private void UpdateShipment() throws Exception
     {
         // Checks if trucks arrive
         if(allTrucks.size() > 0){
@@ -256,7 +257,8 @@ public class Controller {
                 messageQueue.add(new Message(
                     allTrucks.get(0),
                     Crane.class,
-                    Message.ACTION.Unload));
+                    Message.ACTION.Unload,
+                    null));
                 // Remove the truck that arrived
                 allTrucks.remove(0);
                 // When there are no trucks left 
@@ -276,7 +278,8 @@ public class Controller {
                     messageQueue.add(new Message(
                         allTrains.get(0),
                         Crane.class,
-                        Message.ACTION.Unload));
+                        Message.ACTION.Unload,
+                        null));
                 }
                 // Removes the train that arrived
                 allTrains.remove(0);
@@ -297,7 +300,8 @@ public class Controller {
                     messageQueue.add(new Message(
                         allBarges.get(0),
                         Crane.class,
-                        Message.ACTION.Unload));
+                        Message.ACTION.Unload,
+                        null));
                 }
                 // Removes the barge that arrived
                 allBarges.remove(0);
@@ -318,7 +322,8 @@ public class Controller {
                     messageQueue.add(new Message(
                         allSeaShips.get(0),
                         Crane.class,
-                        Message.ACTION.Unload));
+                        Message.ACTION.Unload,
+                        null));
                 }
                 // Removes the seaShip that arrived
                 allSeaShips.remove(0);
@@ -361,7 +366,7 @@ public class Controller {
      * When a vehicle arrives in the harbor
      * @param vehicle The vehicle that arrives in the border
      */
-    public void VehicleArrives(Vehicle vehicle)
+    public void VehicleArrives(Vehicle vehicle) throws Exception
     {      
         // Add the arrived vehicle to the present Vehicles 
         presentVehicles.add(vehicle);
@@ -391,7 +396,8 @@ public class Controller {
             messageQueue.add(new Message(
                  vehicle,
                  Crane.class,
-                 Message.ACTION.Unload));
+                 Message.ACTION.Unload,
+                 null));
         }
     }
     
