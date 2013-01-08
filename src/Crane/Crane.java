@@ -2,7 +2,9 @@ package Crane;
 
 import Helpers.IMessageReceiver;
 import Helpers.Message;
+import Main.Container;
 import Parkinglot.Parkinglot;
+import Storage.Storage_Area;
 import Vehicles.AGV;
 import java.util.Vector;
 
@@ -21,6 +23,7 @@ public class Crane implements IMessageReceiver
     
     private final int _rails;
     private final int _range;
+    private Container _carriedContainer;
     
     private Vector<Message> _Assignments;
     
@@ -34,14 +37,57 @@ public class Crane implements IMessageReceiver
         _Assignments = new Vector<Message>();
     }
     
-    public boolean loadContainer ()
+    public Storage_Area loadContainer (Storage_Area storage) throws Exception
     {
-        return false;
+        if (_carriedContainer == null)
+        { throw new Exception("Can't place a container when one isn't being carried."); }
+        
+        else if (storage.isFilled() == true) 
+        { throw new Exception("Can't place a container in a full vehicle."); }
+                
+        else if (storage.getWidth() == 1)
+        {
+            for (int i = 0; i > storage.getLength(); i++)
+            {
+                if (storage.rowEmpty(i) == true)
+                {
+                    storage.pushContainer(_carriedContainer, i, 0);
+                    _carriedContainer = null;
+                    break;
+                }
+                
+                else 
+                { throw new Exception("Can't place a container in a full vehicle."); }
+            }
+        }
+        
+        return storage;
     }
     
-    public boolean unloadContainer ()
+    public Storage_Area unloadContainer (Storage_Area storage) throws Exception
     {
-        return false;
+        if (_carriedContainer != null)
+        { throw new Exception("Can't grab a container when one is already being carried."); }
+        
+        else if (storage.Count() == 0)
+        { throw new Exception("Can't grab a container from an empty vehicle."); }
+
+        else if (storage.getWidth() == 1)
+        {
+            for (int i = 0; i > storage.getLength(); i++)
+            {
+                if (storage.rowEmpty(i) == false)
+                {
+                    _carriedContainer = storage.popContainer(i, 0);
+                    break;
+                }
+                
+                else 
+                { throw new Exception("Can't place a container in a full vehicle."); }
+            }
+        }
+        
+            return storage;
     }
     
     public void update(float updateTime)
@@ -61,7 +107,7 @@ public class Crane implements IMessageReceiver
     
     /**
      * Adds an assignment for the crane.
-     * @param mess 
+     * @param mess Message to be added.
      */
     @Override
     public void SendMessage(Message mess)

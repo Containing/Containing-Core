@@ -113,7 +113,7 @@ public class GenerateVehicles {
             
             // if the container can be pushed
             if (boat.storage.Count(arrivalX, arrivalZ) < boat.storage.getHeight()){
-                boat.storage.PushContainer(container, arrivalX, arrivalZ);
+                boat.storage.pushContainer(container, arrivalX, arrivalZ);
             }
             else{
                 // if their is get the next boat.
@@ -125,7 +125,7 @@ public class GenerateVehicles {
                         if (nextBoat.MatchesContainer(container)){
                             // if the container can be pushed, push it and break, else go to the next boat if their is one.
                             if (nextBoat.storage.Count(arrivalX, arrivalZ) < nextBoat.storage.getHeight()){
-                                nextBoat.storage.PushContainer(container, arrivalX, arrivalZ);
+                                nextBoat.storage.pushContainer(container, arrivalX, arrivalZ);
                                 break;
                             }
                             else{
@@ -210,7 +210,7 @@ public class GenerateVehicles {
             
             // if the container can be pushed
             if (train.storage.Count(arrivalX, 0) < train.storage.getHeight()){
-                train.storage.PushContainer(container, arrivalX, 0);
+                train.storage.pushContainer(container, arrivalX, 0);
             }
             else{
                 // if their is get the next train.
@@ -222,7 +222,7 @@ public class GenerateVehicles {
                         if (nextTrain.MatchesContainer(container)){
                             // if the container can be pushed, push it and break, else go to the next train if their is one.
                             if (nextTrain.storage.Count(arrivalX, 0) < nextTrain.storage.getHeight()){
-                                nextTrain.storage.PushContainer(container, arrivalX, 0);
+                                nextTrain.storage.pushContainer(container, arrivalX, 0);
                                 break;
                             }
                             else{
@@ -265,7 +265,7 @@ public class GenerateVehicles {
             Container container = ConvertToContainer(rs);
             Truck truck = new Truck(container.getArrivalDateStart(), container.getArrivalDateEnd(), container.getArrivalCompany(), /*SpawnNode*/new Node(0, 0));
             // push the container on the truck.
-            truck.storage.PushContainer(container, 0, 0);
+            truck.storage.pushContainer(container, 0, 0);
             TruckList.add(truck);
         }
         return TruckList;

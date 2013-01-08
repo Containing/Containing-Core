@@ -41,7 +41,7 @@ public class StorageCrane extends Crane
 
     public boolean storeContainer (Container container) throws Exception
     {
-        if (_storageField.IsFilled() == true)
+        if (_storageField.isFilled() == true)
         {
             //System.out.println("Exception in StorageCrane : '" + this.toString() + "' Can't store a container in a full storage area.");
             throw new Exception("Can't store a container in a full storage area.");

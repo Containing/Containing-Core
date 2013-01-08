@@ -55,11 +55,12 @@ public class Storage_Area
     {
         if (row > _Length || row < 0)
         {
-            System.out.println("Exception in Storage_Area : '" + this.toString() + "' Row doesn't exist.");
+            //System.out.println("Exception in Storage_Area : '" + this.toString() + "' Row doesn't exist.");
             throw new Exception("Row doesn't exist.");
         }
+
         boolean empty = true;
-        
+
         for (Container_Stack c : _stackField[row])
         {
             if (c.getHeight() > 0)
@@ -67,23 +68,22 @@ public class Storage_Area
                 empty = false;
             }
         }
-        
+
         return empty;
     }   
-    
-    
-    public Container PeekContainer(int x, int z) throws Exception
+
+    public Container peakContainer(int x, int z) throws Exception
     {
         return _stackField[x][z].peak();
     }
     
-    public Container PopContainer(int x, int z) throws Exception
+    public Container popContainer(int x, int z) throws Exception
     {
         _containerCount--;
         return _stackField[x][z].pop();
     }
     
-    public void PushContainer(Container container, int x, int z) throws Exception
+    public void pushContainer(Container container, int x, int z) throws Exception
     {
         _containerCount++;
         _stackField[x][z].push(container);
@@ -114,7 +114,7 @@ public class Storage_Area
         return _stackField[x][z].getHeight();
     }
     
-    public boolean IsFilled ()
+    public boolean isFilled ()
     {
         return _Length * _Height * _Width == _containerCount;
     }
