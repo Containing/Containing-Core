@@ -69,6 +69,10 @@ public class Boat extends TransportVehicle {
     public Vector3f getPosition() {
         return position;
     }
+    
+    public void setPostion(Vector3f position){
+        this.position = position;        
+    }
 
     @Override
     public void update(float gameTime) throws Exception {
