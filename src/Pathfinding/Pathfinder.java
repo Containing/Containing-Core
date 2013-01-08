@@ -97,8 +97,7 @@ public class Pathfinder {
     }
     
 
-    public static Node findClosestNode(Vector3f position) throws Exception{
-        if(position==null)throw new Exception("Can't use empty position");
+    public static Node findClosestNode(Vector3f position){
         NodeScore[] nscore = new NodeScore[Nodes.length];
         for(int i = 0 ; i < Nodes.length ; i++){
             nscore[i] = new NodeScore(Nodes[i], Vector3f.distance(Nodes[i].getPosition(), position) , null);
