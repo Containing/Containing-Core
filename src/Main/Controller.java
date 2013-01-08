@@ -286,13 +286,13 @@ public class Controller {
             for(int row =0;row< storageArea.getLength(); row++){
                 if(!storageArea.rowEmpty(column)){
                     // Checks if the cotainer needs to be transported
-                    if(storageArea.PeekContainer(column, row).getDepartureDateStart().getTime() <= simulationTime.getTime()){                    
+                    if(storageArea.peakContainer(column, row).getDepartureDateStart().getTime() <= simulationTime.getTime()){                    
                         // Adds a fetch message for an AGV
                         messages.add(new Message(
                                 storageArea.getClass(),
                                 AGV.class,
                                 Message.ACTION.Fetch,
-                                storageArea.PeekContainer(column, row)));                        
+                                storageArea.peakContainer(column, row)));                        
                     }
                 }
             }
@@ -310,10 +310,10 @@ public class Controller {
             for(int row =0;row< storageArea.getLength(); row++){
                 if(!storageArea.rowEmpty(column)){
                     if(nextDate.equals(new Date())){
-                        nextDate = storageArea.PeekContainer(column, row).getDepartureDateStart();
+                        nextDate = storageArea.peakContainer(column, row).getDepartureDateStart();
                     }
-                    else if(nextDate.getTime() > storageArea.PeekContainer(column, row).getDepartureDateStart().getTime()){
-                        nextDate = storageArea.PeekContainer(column, row).getDepartureDateStart();
+                    else if(nextDate.getTime() > storageArea.peakContainer(column, row).getDepartureDateStart().getTime()){
+                        nextDate = storageArea.peakContainer(column, row).getDepartureDateStart();
                     }
                 }
             }
