@@ -65,7 +65,7 @@ public class updateTimer implements Runnable{
                 //Logger.getLogger(updateTimer.class.getName()).log(Level.SEVERE, null, ex);
             } catch (InvocationTargetException ex) {
                 System.out.println("ERROR3");
-               // Logger.getLogger(updateTimer.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(updateTimer.class.getName()).log(Level.SEVERE, null, ex);
             }
 
             prevTime = curTime;

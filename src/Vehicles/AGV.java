@@ -26,6 +26,7 @@ public class AGV extends Vehicle implements IMessageReceiver {
         }
         else{
             this.position = startPosition.getPosition();
+            this.destination = startPosition;
             storage = new Storage_Area(1, 1, 1, position);
         }
         assignments = new ArrayList();

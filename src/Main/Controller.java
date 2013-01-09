@@ -82,7 +82,7 @@ public class Controller {
     private void Initialize() throws Exception
     {   
         // Default increment value
-        SecondsIncrement = 1;
+        SecondsIncrement = 6;
         
         // Initializes new ArrayLists
         messageQueue = new ArrayList();
@@ -106,7 +106,12 @@ public class Controller {
         GetNextShipmentTime();
             
         // Sets the simulationTime 1 hour before the first shipment
-        simulationTime = nextShipment;
+        
+        deliveryTime = new Date();
+        deliveryTime.setTime(nextShipment.getTime());
+        
+        simulationTime = new Date();
+        simulationTime.setTime(nextShipment.getTime());
         simulationTime.setHours(simulationTime.getHours() -1);
         
         // Adds 100 AGVs
@@ -362,7 +367,7 @@ public class Controller {
      * When a vehicle arrives in the harbor
      * @param vehicle The vehicle that arrives in the border
      */
-    public void VehicleArrives(Vehicle vehicle) throws Exception
+    public void VehicleArrives(TransportVehicle vehicle) throws Exception
     {      
         // Add the arrived vehicle to the present Vehicles 
         presentVehicles.add(vehicle);

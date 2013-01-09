@@ -7,9 +7,7 @@ package Helpers;
 import Crane.Crane;
 import Main.Container;
 import Pathfinding.Node;
-import Vehicles.AGV;
-import Vehicles.TransportVehicle;
-import Vehicles.Vehicle;
+import Vehicles.*;
 
 /**
  * 
@@ -36,12 +34,16 @@ public class Message {
      */
     public Message(Object sourceSender, Object requestedType,ACTION action,Container container) throws Exception
     {
+        System.out.println(sourceSender.getClass());
+        System.out.println(Vehicles.Truck.class.equals(sourceSender));
+        
         if(sourceSender == null){
             throw new Exception("Source Sender can't be null");
         }
-        if(sourceSender != TransportVehicle.class && sourceSender != Crane.class){
-            throw new Exception("Source Sender must be a crane or transportVehicle");
-        }
+        //if(!(sourceSender.getClass() == TransportVehicle.class || sourceSender.getClass() == Crane.class)){
+            
+        //    throw new Exception("Source Sender must be a crane or transportVehicle");
+        //}
         if(sourceSender == requestedType){
             throw new Exception("Can't request the same type of object");
         }
