@@ -96,10 +96,10 @@ public class Controller {
             Database.dumpDatabase();
         }        
         // Loads all the vehicles that come to the harbor
-        allSeaShips = GenerateVehicles.GetSeaBoats();
-        allBarges = GenerateVehicles.GetInlandBoats();
-        allTrains = GenerateVehicles.GetTrains();
-        allTrucks = GenerateVehicles.GetTrucks();
+        allSeaShips = GenerateArrivalVehicles.GetSeaBoats();
+        allBarges = GenerateArrivalVehicles.GetInlandBoats();
+        allTrains = GenerateArrivalVehicles.GetTrains();
+        allTrucks = GenerateArrivalVehicles.GetTrucks();
         
         // Initializes the dates
         deliveryTime = new Date(); 

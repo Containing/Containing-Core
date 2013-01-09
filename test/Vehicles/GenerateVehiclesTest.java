@@ -46,7 +46,7 @@ public class GenerateVehiclesTest {
     public void testMain() throws Exception {
         System.out.println("main");
         String[] args = null;
-        GenerateVehicles.main(args);
+        GenerateArrivalVehicles.main(args);
         // TODO review the generated test code and remove the default call to fail.
         fail("The test case is a prototype.");
     }
@@ -57,7 +57,7 @@ public class GenerateVehiclesTest {
     @Test
     public void testGetSeaBoats() throws Exception {
         System.out.println("GetSeaBoats");
-        List<Boat> result = GenerateVehicles.GetSeaBoats();
+        List<Boat> result = GenerateArrivalVehicles.GetSeaBoats();
         int count = 13;
         
         // check if their are enough boats
@@ -83,7 +83,7 @@ public class GenerateVehiclesTest {
     @Test
     public void testGetInlandBoats() throws Exception {
         System.out.println("GetInlandBoats");
-        List<Boat> result = GenerateVehicles.GetInlandBoats();
+        List<Boat> result = GenerateArrivalVehicles.GetInlandBoats();
         int count = 60;
         
         // check if their are enough boats
@@ -103,7 +103,7 @@ public class GenerateVehiclesTest {
     public void testGetTrains() throws Exception {
         System.out.println("GetTrains");
         List expResult = null;
-        List result = GenerateVehicles.GetTrains();
+        List result = GenerateArrivalVehicles.GetTrains();
         assertEquals(expResult, result);
         // TODO review the generated test code and remove the default call to fail.
         fail("The test case is a prototype.");
@@ -116,7 +116,7 @@ public class GenerateVehiclesTest {
     public void testGetTrucks() throws Exception {
         System.out.println("GetTrucks");
         List expResult = null;
-        List result = GenerateVehicles.GetTrucks();
+        List result = GenerateArrivalVehicles.GetTrucks();
         assertEquals(expResult, result);
         // TODO review the generated test code and remove the default call to fail.
         fail("The test case is a prototype.");

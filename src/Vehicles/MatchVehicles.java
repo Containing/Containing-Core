@@ -37,8 +37,8 @@ public class MatchVehicles {
     
     private static List<Boat> GetBoats(String kindSchip) throws Exception{
         ArrayList<Boat> BoatList = new ArrayList<>();
-        List<Boat> arrivalBoatList = kindSchip.equals("zeeschip") ? GenerateVehicles.GetSeaBoats() :GenerateVehicles.GetInlandBoats();
-        List<Boat> departureBoatList = kindSchip.equals("zeeschip") ? GenerateVehicles2.GetSeaBoats() :GenerateVehicles2.GetInlandBoats();
+        List<Boat> arrivalBoatList = kindSchip.equals("zeeschip") ? GenerateArrivalVehicles.GetSeaBoats() :GenerateArrivalVehicles.GetInlandBoats();
+        List<Boat> departureBoatList = kindSchip.equals("zeeschip") ? GenerateDepartureVehicles.GetSeaBoats() :GenerateDepartureVehicles.GetInlandBoats();
         if (arrivalBoatList.isEmpty() && departureBoatList.isEmpty()){
             return BoatList;
         }

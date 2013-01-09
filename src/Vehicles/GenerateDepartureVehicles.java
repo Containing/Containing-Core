@@ -14,7 +14,7 @@ import java.util.List;
  *
  * @author Tonnie Boersma
  */
-public class GenerateVehicles2 {
+public class GenerateDepartureVehicles {
         /**
      * Test the code
      * @param args
