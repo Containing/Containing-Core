@@ -1,5 +1,6 @@
 package Vehicles;
 
+import Helpers.Vector3f;
 import Main.Container;
 import Storage.Storage_Area;
 import java.util.Date;
@@ -10,28 +11,59 @@ import java.util.Date;
  */
 public abstract class TransportVehicle extends Vehicle {
     
+    protected Date arrivalDate;
+    protected Date departureDate;
+    protected String arrivalCompany;
+    protected float speed/*= X*/;
+    
+    public void setPostion(Vector3f position){
+        this.position = position;        
+    
+    }
+    @Override
+    public void update(int gameTime) throws Exception {
+        if (position == destination.getPosition()){
+            // send message
+            // wait for message depart
+        }
+        else{
+            // follow route 
+            // update position
+        } 
+    }
+    
     /**
      * Get the arrival date.
      * @return arrivalDate.
      */
-    public abstract Date GetArrivalDate();
+    public Date GetArrivalDate(){
+        return arrivalDate;
+    }
 
     /**
      * Get the departure date.
      * @return departureDate.
      */
-    public abstract Date GetDepartureDate();
+    public Date GetDepartureDate(){
+        return departureDate;
+    }
     
     /**
      * Get the Company.
      * @return Company.
      */
-    public abstract String GetCompany();
+    public String GetCompany(){
+        return arrivalCompany;
+    }
     
     /**
      * Matches the container properties with the vehicle properties,
      * @param container The container to match.
      * @return True if the container matches the vehicle, false otherwise.
      */
-    public abstract boolean MatchesContainer(Container container);
+    public boolean MatchesContainer(Container container){        
+        return this.GetArrivalDate().equals(container.getArrivalDateStart()) && 
+                this.GetDepartureDate().equals(container.getArrivalDateEnd()) &&
+                this.GetCompany().equals(container.getArrivalCompany());
+    }
 }
