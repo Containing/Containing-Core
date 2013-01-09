@@ -2,6 +2,7 @@ package Vehicles;
 
 import Helpers.Vector3f;
 import Pathfinding.Node;
+import Pathfinding.Pathfinder;
 import Storage.Storage_Area;
 
 /**
@@ -9,24 +10,40 @@ import Storage.Storage_Area;
  * @author Tonnie Boersma
  */
 public abstract class Vehicle {
+      
+    public Storage_Area storage;
+    protected Node destination;
+    protected Vector3f position;
+    protected Node[] route;
     
     /**
      * Set the destination.
      * @param destination The destination Node.
      */
-    public abstract void setDestination(Node destination);
+    public void setDestination(Node destination) {
+        try {
+            route = Pathfinding.Pathfinder.findShortest(Pathfinder.findClosestNode(position), destination, storage.Count() == 0);
+            this.destination = route[route.length-1];
+        } 
+        catch (Exception ex) {
+        }
+    }
     
     /**
      * Get the Destination.
      * @return The destination node, returns position Node if their is no path.
      */
-    public abstract Node getDestination();
+    public Node getDestination() {
+        return (route.length == 0) ? Pathfinder.findClosestNode(position) : route[0];
+    }
     
     /**
      * Get the currentPosition.
      * @return currentPosition.
      */
-    public abstract Vector3f getPosition();
+    public Vector3f getPosition() {
+        return position;
+    }
     
     /**
      * Update the vehicle
@@ -34,8 +51,12 @@ public abstract class Vehicle {
      */
     public abstract void update(int gameTime) throws Exception;
     
-    public abstract Storage_Area GetStorage() throws Exception;
+    public Storage_Area GetStorage() {
+        return storage;
+    }
     
-    public abstract void SetStorage(Storage_Area sa) throws Exception;
+    public void SetStorage(Storage_Area sa) {
+        storage = sa;
+    }
 }
 

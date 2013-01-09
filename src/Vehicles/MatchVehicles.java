@@ -35,6 +35,51 @@ public class MatchVehicles {
         return GetBoats("binnenschip");
     }
     
+//    private static <T> List<T> Compare(List<T> BoatList, List<T> arrivalBoatList, List<T> departureBoatList){        
+//        while(arrivalBoatList.size() > 0 || departureBoatList.size() > 0){    
+//            if (arrivalBoatList.isEmpty()){
+//                BoatList.add(departureBoatList.get(0));
+//                departureBoatList.remove(0);
+//            }
+//            else if (departureBoatList.isEmpty()){
+//                BoatList.add(arrivalBoatList.get(0));
+//                arrivalBoatList.remove(0);
+//            }
+//            else{
+//                
+//                Date ss = ((TransportVehicle)arrivalBoatList.get(0)).GetArrivalDate();
+//                Date se = ((TransportVehicle)arrivalBoatList.get(0)).GetDepartureDate();
+//                Date es = ((TransportVehicle)departureBoatList.get(0)).GetArrivalDate();
+//                Date ee = ((TransportVehicle)departureBoatList.get(0)).GetDepartureDate();
+//                
+//                if (DateEquel(ss, es)){
+//                    BoatList.add(arrivalBoatList.get(0));
+//                    arrivalBoatList.remove(0);
+//                    departureBoatList.remove(0);
+//                }
+//                else
+//                {
+//                    if(DateBefore(ss, es)){
+//                        BoatList.add(arrivalBoatList.get(0));
+//                        arrivalBoatList.remove(0);
+//                    }
+//                    else{
+//                        BoatList.add(departureBoatList.get(0));
+//                        departureBoatList.remove(0);
+//                    }
+//                }
+//            }
+//        }
+//        
+//        for (T boat : BoatList) {
+//            System.out.println(((TransportVehicle)boat).GetArrivalDate() + " <-> " + 
+//                    ((TransportVehicle)boat).GetDepartureDate()+ " Count:" + 
+//                    boat.equals(Boat.class) ?((Boat)boat).storage.Count() : ());
+//        }
+//        
+//        return BoatList;
+//    }
+    
     private static List<Boat> GetBoats(String kindSchip) throws Exception{
         ArrayList<Boat> BoatList = new ArrayList<>();
         List<Boat> arrivalBoatList = kindSchip.equals("zeeschip") ? GenerateArrivalVehicles.GetSeaBoats() :GenerateArrivalVehicles.GetInlandBoats();
@@ -48,7 +93,7 @@ public class MatchVehicles {
         if (departureBoatList.isEmpty()){
             return arrivalBoatList;
         }
-        
+        //return Compare(BoatList, arrivalBoatList, departureBoatList);
         while(arrivalBoatList.size() > 0 || departureBoatList.size() > 0){    
             if (arrivalBoatList.isEmpty()){
                 BoatList.add(departureBoatList.get(0));

@@ -10,10 +10,6 @@ import java.util.List;
 
 public class AGV extends Vehicle implements IMessageReceiver {
 
-    public Storage_Area storage;
-    private Node destination;
-    private Vector3f position;
-    private Node[] route;
     private final float SpeedWithContainer = 72;
     private final float SpeedWithoutContainer = 144;    
     private List<Message> assignments;
@@ -30,26 +26,6 @@ public class AGV extends Vehicle implements IMessageReceiver {
             storage = new Storage_Area(1, 1, 1, position);
         }
         assignments = new ArrayList();
-    }
-    
-    @Override
-    public void setDestination(Node destination) {
-        try {
-            route = Pathfinding.Pathfinder.findShortest(Pathfinder.findClosestNode(position), destination, storage.Count() == 0);
-            this.destination = route[route.length-1];
-        } 
-        catch (Exception ex) {
-        }
-    }
-
-    @Override
-    public Node getDestination() {
-        return (route.length == 0) ? Pathfinder.findClosestNode(position) : route[0];
-    }
-
-    @Override
-    public Vector3f getPosition() {
-        return position;
     }
 
     @Override
@@ -126,16 +102,6 @@ public class AGV extends Vehicle implements IMessageReceiver {
     public void SendMessage(Message mess)
     {
         assignments.add(mess);
-    }
-    
-    @Override
-    public Storage_Area GetStorage() {
-        return storage;
-    }
-
-    @Override
-    public void SetStorage(Storage_Area sa) {
-        storage = sa;
     }
 }
 
