@@ -10,12 +10,13 @@ import Storage.Storage_Area;
  * @author Tonnie Boersma
  */
 public abstract class Vehicle {
-      
+    public enum VehicleType {truck, train, seaBoat, inlandBoat, AGV};
     public Storage_Area storage;
     protected Node destination;
     protected Vector3f position;
+    protected float rotation;
     protected Node[] route;
-    
+    protected VehicleType vehicleType;
     /**
      * Set the destination.
      * @param destination The destination Node.

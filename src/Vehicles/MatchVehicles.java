@@ -21,20 +21,12 @@ public class MatchVehicles {
 //        System.out.println("SeaBoats:    "+SeaBoats.size());
 //        List<Boat> InlandBoats = GetInlandBoats();
 //        System.out.println("InlandBoats: "+InlandBoats.size());
-        List<Train> Trains = GetTrains();
+        List<TransportVehicle> Trains = GetTrains();
         System.out.println("Trains:      "+Trains.size());
 //        List<Truck> Trucks = GetTrucks();
 //        System.out.println("Trucks:      "+Trucks.size());
     }
-    
-    public static List<Boat> GetSeaBoats() throws Exception{
-        return GetBoats("zeeschip");
-    }
-
-    public static List<Boat> GetInlandBoats() throws Exception{
-        return GetBoats("binnenschip");
-    }
-    
+   
 //    private static <T> List<T> Compare(List<T> BoatList, List<T> arrivalBoatList, List<T> departureBoatList){        
 //        while(arrivalBoatList.size() > 0 || departureBoatList.size() > 0){    
 //            if (arrivalBoatList.isEmpty()){
@@ -80,10 +72,68 @@ public class MatchVehicles {
 //        return BoatList;
 //    }
     
-    private static List<Boat> GetBoats(String kindSchip) throws Exception{
+    private static List<TransportVehicle> MatchVehicles(List<TransportVehicle> arrivalList, List<TransportVehicle> departureList){
+        ArrayList<TransportVehicle> transportVehicleList = new ArrayList<>();
+        if (arrivalList.isEmpty() && departureList.isEmpty()){
+            return transportVehicleList;
+        }
+        if (arrivalList.isEmpty()){
+            return departureList;
+        }
+        if (departureList.isEmpty()){
+            return arrivalList;
+        }
+        
+        while(arrivalList.size() > 0 || departureList.size() > 0){    
+            if (arrivalList.isEmpty()){
+                transportVehicleList.add(departureList.get(0));
+                departureList.remove(0);
+            }
+            else if (departureList.isEmpty()){
+                transportVehicleList.add(arrivalList.get(0));
+                arrivalList.remove(0);
+            }
+            else{
+                
+                Date ss = arrivalList.get(0).GetArrivalDate();
+                Date es = departureList.get(0).GetArrivalDate();
+                
+                if (DateEqual(ss, es)){
+                    transportVehicleList.add(arrivalList.get(0));
+                    arrivalList.remove(0);
+                    departureList.remove(0);
+                }
+                else
+                {
+                    if(DateBefore(ss, es)){
+                        transportVehicleList.add(arrivalList.get(0));
+                        arrivalList.remove(0);
+                    }
+                    else{
+                        transportVehicleList.add(departureList.get(0));
+                        departureList.remove(0);
+                    }
+                }
+            }
+        }
+        for (TransportVehicle TranspottVehicle : transportVehicleList) {
+            System.out.println(TranspottVehicle.GetArrivalDate() + " <-> " + TranspottVehicle.GetDepartureDate() + " Count:" + TranspottVehicle.storage.Count());
+        }
+        return transportVehicleList;
+    }
+    
+    public static List<TransportVehicle> GetSeaBoats() throws Exception{
+        return null;
+    }
+
+    public static List<TransportVehicle> GetInlandBoats() throws Exception{
+        return null;
+    }
+    /*
+    private static List<Boat> GetBoats(String kindShip) throws Exception{
         ArrayList<Boat> BoatList = new ArrayList<>();
-        List<Boat> arrivalBoatList = kindSchip.equals("zeeschip") ? GenerateArrivalVehicles.GetSeaBoats() :GenerateArrivalVehicles.GetInlandBoats();
-        List<Boat> departureBoatList = kindSchip.equals("zeeschip") ? GenerateDepartureVehicles.GetSeaBoats() :GenerateDepartureVehicles.GetInlandBoats();
+        List<Boat> arrivalBoatList = kindShip.equals("zeeschip") ? GenerateArrivalVehicles.GetSeaBoats() :GenerateArrivalVehicles.GetInlandBoats();
+        List<Boat> departureBoatList = kindShip.equals("zeeschip") ? GenerateDepartureVehicles.GetSeaBoats() :GenerateDepartureVehicles.GetInlandBoats();
         if (arrivalBoatList.isEmpty() && departureBoatList.isEmpty()){
             return BoatList;
         }
@@ -110,7 +160,7 @@ public class MatchVehicles {
                 Date es = departureBoatList.get(0).GetArrivalDate();
                 Date ee = departureBoatList.get(0).GetDepartureDate();
                 
-                if (DateEquel(ss, es)){
+                if (DateEqual(ss, es)){
                     BoatList.add(arrivalBoatList.get(0));
                     arrivalBoatList.remove(0);
                     departureBoatList.remove(0);
@@ -133,24 +183,21 @@ public class MatchVehicles {
         }
         return BoatList;
     }
-
-    public static List<Train> GetTrains() throws Exception{
-        ArrayList<Train> TrainList = new ArrayList<>();
-
-        for (Train train : TrainList) {
-            System.out.println(train.GetArrivalDate() + " <-> " + train.GetDepartureDate() + " Count:" + train.storage.Count());
-        }
+    */
+    public static List<TransportVehicle> GetTrains() throws Exception{
+        ArrayList<TransportVehicle> TrainList = new ArrayList<>();
         return TrainList;
     }
 
-    public static List<Truck> GetTrucks() throws Exception {
-        ArrayList<Truck> TruckList = new ArrayList<>();
+    public static List<TransportVehicle> GetTrucks() throws Exception {
+        ArrayList<TransportVehicle> TruckList = new ArrayList<>();
         return TruckList;
     }
+    
     private static boolean DateBefore(Date Start, Date End){
         return Start.before(End);
     }
-    private static boolean DateEquel(Date Start, Date End){
+    private static boolean DateEqual(Date Start, Date End){
         return Start.equals(End);
     }
 }

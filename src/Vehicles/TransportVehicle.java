@@ -2,7 +2,6 @@ package Vehicles;
 
 import Helpers.Vector3f;
 import Main.Container;
-import Storage.Storage_Area;
 import java.util.Date;
 
 /**
@@ -65,5 +64,16 @@ public abstract class TransportVehicle extends Vehicle {
         return this.GetArrivalDate().equals(container.getArrivalDateStart()) && 
                 this.GetDepartureDate().equals(container.getArrivalDateEnd()) &&
                 this.GetCompany().equals(container.getArrivalCompany());
+    }
+    
+    @Override	
+    public String toString(){
+        return  "\n" + Container.df.format(arrivalDate) + " <-> " + Container.df.format(departureDate) +
+                "\n" + "ArrivalCompany: " + arrivalCompany +
+                "\n" + "ContainerfieldLenght: " + storage.getLength() + 
+                "\n" + "ContainerfieldWidth: " + storage.getWidth() + 
+                "\n" + "ContainerfieldHeight: " + storage.getHeight() + 
+                "\n" + "_____________________________(" + storage.Count() + ")"+ 
+                "\n" + storage;
     }
 }
