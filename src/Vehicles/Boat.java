@@ -42,6 +42,7 @@ public class Boat extends TransportVehicle {
         }
         else{
             this.position = startPosition.getPosition();
+            this.destination = startPosition;
             this.arrivalDate = arrivalDate;
             this.departureDate = departureDate;
             this.arrivalCompany = arrivalCompany;
