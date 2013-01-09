@@ -50,7 +50,7 @@ public class Truck extends TransportVehicle  {
 
     @Override
     public Node getDestination() {
-        return (destination == null) ? Pathfinder.findClosestNode(position) : destination;
+        return (route.length == 0) ? Pathfinder.findClosestNode(position) : route[0];
     }
 
     @Override
