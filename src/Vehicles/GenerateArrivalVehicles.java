@@ -13,7 +13,7 @@ import java.util.List;
  * Generates the TransportVehicles from a in memory database.
  * @author Tonnie Boersma
  */
-public class GenerateVehicles {
+public class GenerateArrivalVehicles {
     /**
      * Test the code
      * @param args

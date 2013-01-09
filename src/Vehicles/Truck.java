@@ -50,7 +50,7 @@ public class Truck extends TransportVehicle  {
 
     @Override
     public Node getDestination() {
-        return (destination == null) ? Pathfinder.findClosestNode(position) : destination;
+        return (route.length == 0) ? Pathfinder.findClosestNode(position) : route[0];
     }
 
     @Override
@@ -59,7 +59,7 @@ public class Truck extends TransportVehicle  {
     }
 
     @Override
-    public void update(float gameTime) throws Exception {
+    public void update(int gameTime) throws Exception {
         if (position == destination.getPosition()){
             // send message
             // wait for message depart

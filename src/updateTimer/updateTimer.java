@@ -58,12 +58,15 @@ public class updateTimer implements Runnable{
             try {
                 updateMethod.invoke(updateObject, (curTime-prevTime)/1000000000f);
             } catch (IllegalAccessException ex) {
+                ex.printStackTrace();
                 System.out.println("ERROR1");
-                //Logger.getLogger(updateTimer.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(updateTimer.class.getName()).log(Level.SEVERE, null, ex);
             } catch (IllegalArgumentException ex) {
+                ex.printStackTrace();
                 System.out.println("ERROR2");
-                //Logger.getLogger(updateTimer.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(updateTimer.class.getName()).log(Level.SEVERE, null, ex);
             } catch (InvocationTargetException ex) {
+                ex.printStackTrace();
                 System.out.println("ERROR3");
                 Logger.getLogger(updateTimer.class.getName()).log(Level.SEVERE, null, ex);
             }

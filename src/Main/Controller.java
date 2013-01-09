@@ -41,7 +41,7 @@ public class Controller {
     // The date when the next container needs to be send
     Date deliveryTime;
     // The date when the next shipment arrives
-    Date nextShipment;
+    Date shipmentTime;
     
     // List with all the Vehicles that will arrive
     List<Boat> allSeaShips;
@@ -52,7 +52,7 @@ public class Controller {
     /**
      * The amount of seconds the simulation time will increment after each update
      */
-    public int SecondsIncrement;
+    public int secondsIncrement;
     
     /**
      * Constructs a new controller
@@ -81,8 +81,8 @@ public class Controller {
      **/
     private void Initialize() throws Exception
     {   
-        // Default increment value
-        SecondsIncrement = 6;
+        // Default seconds increment value
+        secondsIncrement = 6;
         
         // Initializes new ArrayLists
         messageQueue = new ArrayList();
@@ -94,24 +94,24 @@ public class Controller {
             // When it doesn't exists
             XML.XMLBinder.GenerateContainerDatabase("src/XML/xml7.xml");
             Database.dumpDatabase();
-        }
-        
+        }        
         // Loads all the vehicles that come to the harbor
-        allSeaShips = GenerateVehicles.GetSeaBoats();
-        allBarges = GenerateVehicles.GetInlandBoats();
-        allTrains = GenerateVehicles.GetTrains();
-        allTrucks = GenerateVehicles.GetTrucks();
+        allSeaShips = GenerateArrivalVehicles.GetSeaBoats();
+        allBarges = GenerateArrivalVehicles.GetInlandBoats();
+        allTrains = GenerateArrivalVehicles.GetTrains();
+        allTrucks = GenerateArrivalVehicles.GetTrucks();
         
-        // Initializes the first shipment time
-        GetNextShipmentTime();
-            
-        // Sets the simulationTime 1 hour before the first shipment
-        
-        deliveryTime = new Date();
-        deliveryTime.setTime(nextShipment.getTime());
-        
+        // Initializes the dates
+        deliveryTime = new Date(); 
+        shipmentTime = new Date();
         simulationTime = new Date();
-        simulationTime.setTime(nextShipment.getTime());
+        
+        // Gets the first shipment
+        GetNextArrivalDate();        
+        
+        // Sets the simulationTime equal to the first shipment
+        simulationTime.setTime(shipmentTime.getTime());
+        // Sets the simulationTime 1 hour before the first shipment  
         simulationTime.setHours(simulationTime.getHours() -1);
         
         // Adds 100 AGVs
@@ -150,33 +150,35 @@ public class Controller {
     public void Update(float gameTime ) throws Exception
     {
         System.out.println(simulationTime);
-        simulationTime.setSeconds(simulationTime.getSeconds() + SecondsIncrement);
+        simulationTime.setSeconds(simulationTime.getSeconds() + secondsIncrement);
         System.out.println(gameTime);
         
         // Updates the logic of each AGV
         for(Vehicle agv : agvList){
-            agv.update(gameTime);
+            agv.update(secondsIncrement);
         }
         // Updates the logic of each crane
         for(Crane crane : craneList){
-            crane.update(gameTime);
+            crane.update(secondsIncrement);
         }
         // Updates the logic of each docked vehicle
         for(Vehicle vehicle : presentVehicles){
-            vehicle.update(gameTime);
+            vehicle.update(secondsIncrement);
         }        
         
         // When the next shipment arrives
-        if(simulationTime.getTime() >= nextShipment.getTime()){
+        if(simulationTime.getTime() >= shipmentTime.getTime()){
+            // Gets all the shipments that can arrive
             UpdateShipment();
-            GetNextShipmentTime();
+            // Gets the next shipment time
+            GetNextArrivalDate();
         }        
         // When the simulation time is equal or greater than the deliveryTime
         if(simulationTime.getTime() >= deliveryTime.getTime()){
             // Gets all the top containers that need to be transported
             FetchContainers();
             // Gets the next date when the next shipment needs to be transported
-            GetNextDeliveryTime();
+            GetNextDeliverDate();
             
             /**
              * TODO : 
@@ -191,8 +193,7 @@ public class Controller {
      * Updates all the messageQueue 
      * @throws Exception 
      */
-    private void UpdateMessages() throws Exception
-    {
+    private void UpdateMessages() throws Exception{
         // Checks every message
         for(Message message : messageQueue){
             // When the message requests an AGV 
@@ -246,8 +247,7 @@ public class Controller {
      * Updates all the vehicles that still need to arrive
      * When it arrives messageQueue will be send so the cranes will go to work
      */
-    private void UpdateShipment() throws Exception
-    {
+    private void UpdateShipment() throws Exception{
         // Checks if trucks arrive
         if(allTrucks.size() > 0){
             // When the simulation time is equal or greater than the arrivalDate
@@ -342,8 +342,7 @@ public class Controller {
      * When it needs to be transported it will sends a message
      * @throws Exception 
      */
-    private void FetchContainers() throws Exception
-    {
+    private void FetchContainers() throws Exception{
         // Walks around the whole storage area and checks every contianer
 //        for(int column = 0; column< storageArea.getWidth(); column++){
 //            for(int row =0;row< storageArea.getLength(); row++){
@@ -361,52 +360,11 @@ public class Controller {
 //            }
 //        }
     }
-       
-    
-    /**
-     * When a vehicle arrives in the harbor
-     * @param vehicle The vehicle that arrives in the border
-     */
-    public void VehicleArrives(TransportVehicle vehicle) throws Exception
-    {      
-        // Add the arrived vehicle to the present Vehicles 
-        presentVehicles.add(vehicle);
-        // Holds the amount of cranes the arrived vehicle can hold for loading and unloading
-        int cranesRequested = 0;
         
-        //When the vehicle is a train
-        if(vehicle.getClass() == Train.class){
-            // A train can hold 2 cranes
-            cranesRequested = 2;
-        }
-        // When the vehicle is a boat
-        else if (vehicle.getClass() == Boat.class){            
-            
-            //TODO Boat crane request
-            //TODO 2 different types of boat's a SeaShip, Barge
-        }
-        // When this vehicle is a Truck
-        else if (vehicle.getClass() == Truck.class)
-        {
-            // Truck's can hold 1 crane
-            cranesRequested = 1;
-        }
-        
-        // While the vehicle can hold more cranes            
-        while(cranesRequested-- > 0){
-            messageQueue.add(new Message(
-                 vehicle,
-                 Crane.class,
-                 Message.ACTION.Unload,
-                 null));
-        }
-    }
-    
     /**
      * Get's the next delivery time 
      */
-    private void GetNextDeliveryTime() throws Exception
-    {
+    private void GetNextDeliverDate() throws Exception{
         // Krijg ik nog van tonnie
         
         
@@ -429,32 +387,57 @@ public class Controller {
     /**
      * Gets the date when the next shipment arrives
      */
-    private void GetNextShipmentTime()
-    {
+    private void GetNextArrivalDate(){
         // When there are still seaShips that need to arrive
         if(!allSeaShips.isEmpty()){
-            nextShipment = allSeaShips.get(0).GetArrivalDate();
+            shipmentTime = allSeaShips.get(0).GetArrivalDate();
         }
         // When there are still barges that need to arrive
         if(!allBarges.isEmpty()){
             // When the first barge arrives earlier than the other shipment
-            if(nextShipment.getTime() > allBarges.get(0).GetArrivalDate().getTime()){
-                nextShipment = allBarges.get(0).GetArrivalDate();
+            if(shipmentTime.getTime() > allBarges.get(0).GetArrivalDate().getTime()){
+                shipmentTime = allBarges.get(0).GetArrivalDate();
             }
         }
         // When there are still trains that need to arrive
         if(!allTrains.isEmpty()){
             // When the first train arrives earlier than the other shipment
-            if(nextShipment.getTime() > allTrains.get(0).GetArrivalDate().getTime()){
-                nextShipment = allTrains.get(0).GetArrivalDate();
+            if(shipmentTime.getTime() > allTrains.get(0).GetArrivalDate().getTime()){
+                shipmentTime = allTrains.get(0).GetArrivalDate();
             }
         }
         // When there are still trucks that need to arrive
         if(!allTrucks.isEmpty()){
             // When the first truck arrives earlier than the other shipment
-            if(nextShipment.getTime() > allTrucks.get(0).GetArrivalDate().getTime()){
-                nextShipment = allTrucks.get(0).GetArrivalDate();
+            if(shipmentTime.getTime() > allTrucks.get(0).GetArrivalDate().getTime()){
+                shipmentTime = allTrucks.get(0).GetArrivalDate();
             }
         }
+    }
+    
+    /**
+     * Sets the simulation seconds increment time
+     * @param value Value from 0 till 100
+     */
+    public void SetSecondsIncrement(int value){
+        // When the value is below 0
+        if(value < 0){
+            return;
+        }        
+        // When the value is above 100
+        if(value > 100 ){
+            secondsIncrement = 100;
+        }
+        else{
+            secondsIncrement = value;
+        }
+    }
+    
+    /**
+     * Gets the simulation seconds increment time
+     * @return seconds increment
+     */
+    public int GetSecondsIncrement(){
+        return secondsIncrement;
     }
 }

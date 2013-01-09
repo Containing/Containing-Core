@@ -32,7 +32,7 @@ public abstract class Vehicle {
      * Update the vehicle
      * @param gameTime The gameTime.
      */
-    public abstract void update(float gameTime) throws Exception;
+    public abstract void update(int gameTime) throws Exception;
     
     public abstract Storage_Area GetStorage() throws Exception;
     
