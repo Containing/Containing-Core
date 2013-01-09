@@ -1,7 +1,6 @@
 package Storage;
 
 import Main.Container;
-import java.util.EmptyStackException;
 
 /**
  * @author Karel Gerbrands

@@ -9,6 +9,10 @@ import Helpers.Vector3f;
 public class Node {
     private Vector3f position;
     
+    public Node(){
+        position = new Vector3f(0, 0, 0);
+    }
+    
     /**
      * 
      * @param x
