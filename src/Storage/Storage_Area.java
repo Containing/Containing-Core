@@ -70,7 +70,28 @@ public class Storage_Area
         }
 
         return empty;
-    }   
+    }
+    
+    public boolean rowFull(int row) throws Exception
+    {
+        if (row > _Length || row < 0)
+        {
+            //System.out.println("Exception in Storage_Area : '" + this.toString() + "' Row doesn't exist.");
+            throw new Exception("Row doesn't exist.");
+        }
+        
+        boolean full = true;
+
+        for (Container_Stack c : _stackField[row])
+        {
+            if (c.getHeight() < _Height)
+            {
+                full = false;
+            }
+        }
+
+        return full;
+    }
 
     public Container peakContainer(int x, int z) throws Exception
     {

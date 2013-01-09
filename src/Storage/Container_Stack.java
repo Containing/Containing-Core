@@ -36,7 +36,7 @@ public class Container_Stack
         return _currentHeight;
     }
     
-        /**
+    /**
      * Shows the top container but doesn't remove it. Only to be used if data
      * has to be checked on the top container.
      * 
@@ -106,6 +106,7 @@ public class Container_Stack
             return true;
         }
     }
+    
     @Override
     public String toString() {
         String returnString = "\n";

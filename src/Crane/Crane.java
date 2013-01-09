@@ -25,9 +25,9 @@ public class Crane implements IMessageReceiver
     private final int _rails;
     private final int _range;
     private Container _carriedContainer;
-    private int currentRow;
-    private Date maxRowDate;
-    private Date minRowDate;
+    private int _currentRow;
+    private Date _maxRowDate;
+    private Date _minRowDate;
     
     private ArrayList<Message> _Assignments;
     
@@ -64,14 +64,14 @@ public class Crane implements IMessageReceiver
         return 0;
     }
     
-    public void findLowestRowDate (Storage_Area storage, int rowIndex) throws Exception
+    public void setLowestRowDate (Storage_Area storage, int rowIndex) throws Exception
     {
         if (0 > rowIndex || rowIndex > storage.getWidth())
         { throw new Exception("Row " + rowIndex + " doesn't exist on this storage."); }
 
         else
         {
-            Date max = null;
+            Date min = null;
 
             for (int w = 0; w < storage.getWidth(); w++) 
             {
@@ -79,17 +79,19 @@ public class Crane implements IMessageReceiver
                 {
                     Date now = storage.peakContainer(rowIndex, w).getDepartureDateStart();
 
-                    if (max == null)
-                        { max = now; }
+                    if (min == null)
+                        { min = now; }
                     
-                    else if (max.before(now))
-                        { max = now; }
+                    else if (min.before(now))
+                        { min = now; }
                 }
             }
+            
+            _minRowDate = min;
         }
     }
     
-    public void findHighestRowDate (Storage_Area storage, int rowIndex) throws Exception
+    public void setHighestRowDate (Storage_Area storage, int rowIndex) throws Exception
     {
         if (0 > rowIndex || rowIndex > storage.getWidth())
         { throw new Exception("Row " + rowIndex + " doesn't exist on this storage."); }
@@ -111,6 +113,8 @@ public class Crane implements IMessageReceiver
                         { max = now; }
                 }
             }
+            
+            _maxRowDate = max;
         }
     }
     
@@ -123,42 +127,43 @@ public class Crane implements IMessageReceiver
     public Storage_Area loadContainer (Storage_Area storage) throws Exception
     {
         if (_carriedContainer == null)
-        { throw new Exception("Can't place an container when one isn't being carried."); }
+            { throw new Exception("Can't place an container when one isn't being carried."); }
         
         else if (storage.isFilled() == true) 
-        { throw new Exception("Can't place an container in a full storage."); }
-                
-        else if (storage.getWidth() == 1)
+            { throw new Exception("Can't place an container in a full storage."); }
+        
+        else if (storage.rowFull(_currentRow) == false)
+            { throw new Exception("Can't place an container in a full row."); }
+
+        else
         {
-            for (int i = 0; i > storage.getLength(); i++)
+            for (int w = 0; w > storage.getWidth(); w++)
             {
-                if (storage.Count(i, 0) != storage.getHeight())
+                if (storage.Count(_currentRow, w) < storage.getHeight())
                 {
-                    storage.pushContainer(_carriedContainer, i, 0);
+                    storage.pushContainer(_carriedContainer, _currentRow, w);
                     _carriedContainer = null;
-                    break;
+                     break;
                 }
-                
-                else 
-                { throw new Exception("Can't place an container on a full stack."); }
             }
         }
-        
+
         return storage;
     }
     
     public Storage_Area loadContainer (Storage_Area storage, int row, int column) throws Exception
     {
         if (_carriedContainer == null)
-        { throw new Exception("Can't place an container when one isn't being carried."); }
+            { throw new Exception("Can't place an container when one isn't being carried."); }
         
         else if (storage.isFilled() == true) 
-        { throw new Exception("Can't place an container in a full storage."); }
+            { throw new Exception("Can't place an container in a full storage."); }
+        
+        else if (row < 0 || row > storage.getLength() || column < 0 || column > storage.getWidth())
+            { throw new Exception("Row or column don't exist."); }
                 
         else if (storage.Count(row, column) == storage.getHeight())
-        {
             { throw new Exception("Can't stack containers higher than 6."); }
-        }
         
         storage.pushContainer(_carriedContainer, row, column);
         
@@ -168,23 +173,23 @@ public class Crane implements IMessageReceiver
     public Storage_Area unloadContainer (Storage_Area storage) throws Exception
     {
         if (_carriedContainer != null)
-        { throw new Exception("Can't grab an container when one is already being carried."); }
+            { throw new Exception("Can't grab an container when one is already being carried."); }
         
         else if (storage.Count() == 0)
-        { throw new Exception("Can't grab an container from an empty storage."); }
+            { throw new Exception("Can't grab an container from an empty storage."); }
+        
+        else if (storage.rowEmpty(_currentRow) == true)
+            { throw new Exception("Can't grab an container from an empty row."); }
 
-        else if (storage.getWidth() == 1)
+        else
         {
-            for (int i = 0; i > storage.getLength(); i++)
+            for (int w = 0; w > storage.getWidth(); w++)
             {
-                if (storage.Count(i, 0) != 0)
+                if (storage.Count(_currentRow, w) > 0)
                 {
-                    _carriedContainer = storage.popContainer(i, 0);
-                    break;
+                    _carriedContainer = storage.popContainer(_currentRow, w);
+                     break;
                 }
-                
-                else 
-                { throw new Exception("Can't pick up an container from an empty stack."); }
             }
         }
         
@@ -194,13 +199,16 @@ public class Crane implements IMessageReceiver
     public Storage_Area unloadContainer (Storage_Area storage, int row, int column) throws Exception
     {
         if (_carriedContainer != null)
-        { throw new Exception("Can't grab an container when one is already being carried."); }
+            { throw new Exception("Can't grab an container when one is already being carried."); }
         
         else if (storage.Count() == 0)
-        { throw new Exception("Can't grab an container from an empty storage."); }
+            { throw new Exception("Can't grab an container from an empty storage."); }
+        
+        else if (row < 0 || row > storage.getLength() || column < 0 || column > storage.getWidth())
+            { throw new Exception("Row or column don't exist."); }
 
         else if (storage.Count(row, column) == 0)
-        { throw new Exception("Can't grab an container from an empty stack."); }
+            { throw new Exception("Can't grab an container from an empty stack."); }
         
         return storage;
     }
