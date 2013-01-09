@@ -53,7 +53,7 @@ public class AGV extends Vehicle implements IMessageReceiver {
     }
 
     @Override
-    public void update(float gameTime) throws Exception {
+    public void update(int gameTime) throws Exception {
         if (position == destination.getPosition()){
             // send message arrived
         }

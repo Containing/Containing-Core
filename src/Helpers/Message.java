@@ -35,15 +35,17 @@ public class Message {
     public Message(Object sourceSender, Object requestedType,ACTION action,Container container) throws Exception
     {
         System.out.println(sourceSender.getClass());
-        System.out.println(Vehicles.Truck.class.equals(sourceSender));
+        System.out.println(Vehicles.Truck.class.equals(sourceSender.getClass()));
         
         if(sourceSender == null){
             throw new Exception("Source Sender can't be null");
         }
-        //if(!(sourceSender.getClass() == TransportVehicle.class || sourceSender.getClass() == Crane.class)){
-            
-        //    throw new Exception("Source Sender must be a crane or transportVehicle");
-        //}
+        if(!Vehicles.Boat.class.equals(sourceSender.getClass())&&
+           !Crane.class.equals(sourceSender.getClass())&&
+           !Vehicles.Truck.class.equals(sourceSender.getClass())&&
+           !Vehicles.Train.class.equals(sourceSender.getClass())){            
+            throw new Exception("Source Sender must be a crane or transportVehicle");
+        }
         if(sourceSender == requestedType){
             throw new Exception("Can't request the same type of object");
         }

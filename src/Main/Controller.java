@@ -155,15 +155,15 @@ public class Controller {
         
         // Updates the logic of each AGV
         for(Vehicle agv : agvList){
-            agv.update(gameTime);
+            agv.update(SecondsIncrement);
         }
         // Updates the logic of each crane
         for(Crane crane : craneList){
-            crane.update(gameTime);
+            crane.update(SecondsIncrement);
         }
         // Updates the logic of each docked vehicle
         for(Vehicle vehicle : presentVehicles){
-            vehicle.update(gameTime);
+            vehicle.update(SecondsIncrement);
         }        
         
         // When the next shipment arrives
