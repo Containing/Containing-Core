@@ -11,7 +11,7 @@ import java.util.Date;
 
 /**
  * @author Karel Gerbrands
- * @version 0.3
+ * @version 0.5
  * @since 13-12-2012
  * 
  * This class is used in simulating a crane, which is used to move containers 
@@ -41,27 +41,27 @@ public class Crane implements IMessageReceiver
         _Assignments = new ArrayList<Message>();
     }
     
-    public int getBestRowIndex(Storage_Area storage, int rowIndex, Date date) throws Exception 
+    public int getBestRowIndex(Storage_Area storage, int columnIndex, Date date) throws Exception 
     {        
         if (date == null)
             { throw new Exception("The date can't be null."); }
         
-        if (0 > rowIndex || rowIndex > storage.getWidth())
-            { throw new Exception("Row " + rowIndex + " doesn't exist on this storage."); }        
+        if (0 > columnIndex || columnIndex > storage.getWidth())
+            { throw new Exception("Row " + columnIndex + " doesn't exist on this storage."); }        
 
         else
         {
             for (int w = 0; w < storage.getWidth(); w++) 
             {
-                if (storage.Count(rowIndex, w) > 0)
+                if (storage.Count(columnIndex, w) > 0)
                 {
-                    if (date == storage.peakContainer(rowIndex, w).getDepartureDateStart())
+                    if (date == storage.peakContainer(columnIndex, w).getDepartureDateStart())
                         { return w; }
                 }
             }
         }
         
-        return 0;
+        return -1;
     }
     
     public void setLowestRowDate (Storage_Area storage, int rowIndex) throws Exception
@@ -123,6 +123,7 @@ public class Crane implements IMessageReceiver
      * @param storage
      * @return
      * @throws Exception When no container is being carried, when the storage is full,
+     * when the current row is full.
      */
     public Storage_Area loadContainer (Storage_Area storage) throws Exception
     {
@@ -183,13 +184,14 @@ public class Crane implements IMessageReceiver
 
         else
         {
-            for (int w = 0; w > storage.getWidth(); w++)
+            int columnIndex = getBestRowIndex(storage, _currentRow, _minRowDate);
+            
+            if (columnIndex == -1)
+                { throw new Exception("Can't find the right row index."); }
+            
+            else if (storage.Count(_currentRow, columnIndex) > 0)
             {
-                if (storage.Count(_currentRow, w) > 0)
-                {
-                    _carriedContainer = storage.popContainer(_currentRow, w);
-                     break;
-                }
+                _carriedContainer = storage.popContainer(_currentRow, columnIndex);
             }
         }
         
