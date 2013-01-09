@@ -31,36 +31,31 @@ public class Message {
      * @param sourceSender The object that requests an object
      * @param requestedType The object that's requested
      * @param action The action for the requested object
+     * @param container The container that's on transport
      */
     public Message(Object sourceSender, Object requestedType,ACTION action,Container container) throws Exception
-    {
-        System.out.println(sourceSender.getClass());
-        System.out.println(Vehicles.Truck.class.equals(sourceSender.getClass()));
-        
+    {        
         if(sourceSender == null){
             throw new Exception("Source Sender can't be null");
         }
         if(!Vehicles.Boat.class.equals(sourceSender.getClass())&&
-           !Crane.class.equals(sourceSender.getClass())&&
            !Vehicles.Truck.class.equals(sourceSender.getClass())&&
-           !Vehicles.Train.class.equals(sourceSender.getClass())){            
+           !Vehicles.Train.class.equals(sourceSender.getClass()) &&                
+           !Crane.class.equals(sourceSender.getClass())){            
             throw new Exception("Source Sender must be a crane or transportVehicle");
         }
         if(sourceSender == requestedType){
             throw new Exception("Can't request the same type of object");
-        }
-        
+        }        
         if(requestedType == null){
             throw new Exception("Requested type can't be null");
         }
         if(requestedType != AGV.class && requestedType != Crane.class){
             throw new Exception("Requested type must be a crane or an agv");
-        }
-        
+        }        
         if(action == null){
             throw new Exception("action can't be null");
-        }
-        
+        }        
         if(container != null && requestedType != AGV.class){
             throw new Exception("Only agvs can have a container in there message");
         }
