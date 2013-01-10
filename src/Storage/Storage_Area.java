@@ -19,7 +19,7 @@ public class Storage_Area
     private int _Length;
     private int _Width;
     private int _Height;
-    private int _containerCount = 0;
+    private int _containerCount;
     private boolean[] _rowFullMap;
     private boolean[] _rowEmptyMap;
     
@@ -53,6 +53,7 @@ public class Storage_Area
         _Height = height;
         _rowFullMap = new boolean[length];
         _rowEmptyMap = new boolean[length];
+        _containerCount = 0;
         
         for (int i = 0; i < length; i++)
         {

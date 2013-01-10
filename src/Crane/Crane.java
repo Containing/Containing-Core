@@ -5,7 +5,6 @@ import Helpers.Message;
 import Main.Container;
 import Parkinglot.Parkinglot;
 import Storage.Storage_Area;
-import Vehicles.AGV;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -25,13 +24,11 @@ public class Crane implements IMessageReceiver
     protected final int _rails;
     protected final int _range;
     protected Container _carriedContainer;
-    private int _currentRow;
-    private Date _maxRowDate;
-    private Date _minRowDate;
+    protected int _currentRow;
     
     private ArrayList<Message> _Assignments;
     
-    public Crane (int rails, int range, Parkinglot<AGV> parkingAGV, Parkinglot parkingTransport)
+    public Crane (int rails, int range, Parkinglot parkingAGV, Parkinglot parkingTransport)
     {
         parkinglotAGV = parkingAGV;
         parkinglotTransport = parkingTransport;
@@ -40,82 +37,38 @@ public class Crane implements IMessageReceiver
         _range = range;
         _Assignments = new ArrayList<Message>();
     }
-    
-    public int getBestRowIndex(Storage_Area storage, int columnIndex, Date date) throws Exception 
-    {        
-        if (date == null)
-            { throw new Exception("The date can't be null."); }
-        
+
+    public int getBestRowIndex(Storage_Area storage, int columnIndex) throws Exception 
+    {
         if (0 > columnIndex || columnIndex > storage.getWidth())
             { throw new Exception("Row " + columnIndex + " doesn't exist on this storage."); }        
 
-        else
+            Date date = null;
+
+        for (int w = 0; w < storage.getWidth(); w++) 
         {
-            for (int w = 0; w < storage.getWidth(); w++) 
+            if (storage.Count(columnIndex, w) > 0)
             {
-                if (storage.Count(columnIndex, w) > 0)
-                {
-                    if (date == storage.peakContainer(columnIndex, w).getDepartureDateStart())
-                        { return w; }
-                }
+                Date now = storage.peakContainer(columnIndex, w).getDepartureDateStart();
+
+                if (date == null)
+                    { date = now; }
+                    
+                else if (date.before(now))
+                    { date = now; }
             }
         }
         
+        for (int w = 0; w < storage.getWidth(); w++) 
+        {
+            if (storage.Count(columnIndex, w) > 0)
+            {
+                if (date == storage.peakContainer(columnIndex, w).getDepartureDateStart())
+                    { return w; }
+            }
+        }
+
         return -1;
-    }
-    
-    public void setLowestRowDate (Storage_Area storage, int rowIndex) throws Exception
-    {
-        if (0 > rowIndex || rowIndex > storage.getWidth())
-        { throw new Exception("Row " + rowIndex + " doesn't exist on this storage."); }
-
-        else
-        {
-            Date min = null;
-
-            for (int w = 0; w < storage.getWidth(); w++) 
-            {
-                if (storage.Count(rowIndex, w) > 0)
-                {
-                    Date now = storage.peakContainer(rowIndex, w).getDepartureDateStart();
-
-                    if (min == null)
-                        { min = now; }
-                    
-                    else if (min.before(now))
-                        { min = now; }
-                }
-            }
-            
-            _minRowDate = min;
-        }
-    }
-    
-    public void setHighestRowDate (Storage_Area storage, int rowIndex) throws Exception
-    {
-        if (0 > rowIndex || rowIndex > storage.getWidth())
-        { throw new Exception("Row " + rowIndex + " doesn't exist on this storage."); }
-
-        else
-        {
-            Date max = null;
-
-            for (int w = 0; w < storage.getWidth(); w++) 
-            {
-                if (storage.Count(rowIndex, w) > 0)
-                {
-                    Date now = storage.peakContainer(rowIndex, w).getDepartureDateStart();
-
-                    if (max == null)
-                        { max = now; }
-                    
-                    else if (max.after(now))
-                        { max = now; }
-                }
-            }
-            
-            _maxRowDate = max;
-        }
     }
     
     /**
@@ -133,20 +86,23 @@ public class Crane implements IMessageReceiver
         else if (storage.isFilled() == true) 
             { throw new Exception("Can't place an container in a full storage."); }
         
-        else if (storage.rowFull(_currentRow) == false)
+        else if (storage.rowFull(_currentRow) == true)
             { throw new Exception("Can't place an container in a full row."); }
 
         else
         {
-            for (int w = 0; w > storage.getWidth(); w++)
+            for (int w = 0; w < storage.getWidth(); w++)
             {
                 if (storage.Count(_currentRow, w) < storage.getHeight())
                 {
                     storage.pushContainer(_carriedContainer, _currentRow, w);
                     _carriedContainer = null;
                      break;
-                }
+                }             
             }
+            
+            if (_carriedContainer != null)
+                { throw new Exception("Couldn't place container."); }
         }
 
         return storage;
@@ -166,7 +122,9 @@ public class Crane implements IMessageReceiver
         else if (storage.Count(row, column) == storage.getHeight())
             { throw new Exception("Can't stack containers higher than 6."); }
         
-        storage.pushContainer(_carriedContainer, row, column);
+        _currentRow = row;
+        storage.pushContainer(_carriedContainer, _currentRow, column);
+        _carriedContainer = null;
         
         return storage;
     }
@@ -184,10 +142,18 @@ public class Crane implements IMessageReceiver
 
         else
         {
-            int columnIndex = getBestRowIndex(storage, _currentRow, _minRowDate);
+            int columnIndex = getBestRowIndex(storage, _currentRow);
             
             if (columnIndex == -1)
-                { throw new Exception("Can't find the right row index."); }
+            { 
+                for (int column = 0; column < storage.getWidth(); column++)
+                {
+                    if (storage.Count(_currentRow, column) > 0)
+                    {
+                        _carriedContainer = storage.popContainer(_currentRow, column);
+                    }
+                }
+            }
             
             else if (storage.Count(_currentRow, columnIndex) > 0)
             {
@@ -211,6 +177,9 @@ public class Crane implements IMessageReceiver
 
         else if (storage.Count(row, column) == 0)
             { throw new Exception("Can't grab an container from an empty stack."); }
+        
+        _currentRow = row;
+        _carriedContainer = storage.popContainer(_currentRow, column);
         
         return storage;
     }
@@ -238,5 +207,10 @@ public class Crane implements IMessageReceiver
     public void SendMessage(Message mess)
     {
         _Assignments.add(mess);
+    }
+    
+    public void setRow (int row)
+    {
+        _currentRow = row;
     }
 }
