@@ -55,7 +55,16 @@ public class Pathfinder {
     }
     
     public static void generateArea(){
+        Nodes = new Node[100];
+        Paths = new Path[100];
         
+        Nodes[0] = new Node(10, 10);
+        Nodes[1] = new Node(20, 20);
+        Paths[0] = new Path(Nodes[0], Nodes[1]);
+        Paths[0].OneWay = true;
+        // storage = 1550 meter lang en 600 
+        // weg er om heen is 4 * de AGV breedte * 1,5
+        // 
     }
     
     /**
