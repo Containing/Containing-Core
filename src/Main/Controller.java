@@ -147,8 +147,8 @@ public class Controller {
         }
     }
     
-    private List<Container> GetDepartureContainers(Vehicle.VehicleType vehicleType, Date now) throws Exception{
-        List<Container> containerList = new ArrayList<>();
+    private List<Id_Position> GetDepartureContainers(Vehicle.VehicleType vehicleType, Date now) throws Exception{
+        List<Id_Position> id_positionList = new ArrayList<>();
         String type = "";
         switch(vehicleType){
             case AGV:
@@ -167,17 +167,28 @@ public class Controller {
             break;
         }
         
-        String query = "Select * " +
+        String query = "Select locationId, storageLocation " +
                         "from container " +
                         "Where departureDateStart = '" + Container.df.format(now) + "' " +
                         "Where departureTransportType = '" + type + "' " +
                         "Order By departureDateStart ";
         
-        ResultSet getContainers = Database.executeQuery(query);
-        while(getContainers.next()){
-            containerList.add(GenerateArrivalVehicles.ConvertToContainer(getContainers));
+        ResultSet getLocationId_storageLocation = Database.executeQuery(query);
+        while(getLocationId_storageLocation.next()){
+            String Id = getLocationId_storageLocation.getString("locationId");
+            String position = getLocationId_storageLocation.getString("storageLocation");
+            id_positionList.add(new Id_Position(Id, StorageLocationToVector3f(position)));
         }
-        return containerList;
+        return id_positionList;
+    }
+    
+    private Vector3f StorageLocationToVector3f(String input){
+        char[] inputC = input.toCharArray();
+        String a = Character.toString(inputC[0]);
+        int x = Integer.parseInt(Character.toString(inputC[2]) + Character.toString(inputC[3]));
+        int y = Integer.parseInt(Character.toString(inputC[0]) + Character.toString(inputC[1]));
+        int z = Integer.parseInt(Character.toString(inputC[4]) + Character.toString(inputC[5]));
+        return new Vector3f(x, y, z);
     }
     
     /**
