@@ -25,7 +25,7 @@ public class Controller {
     updateTimer timer;
     
     // List with all the present transport vehicles
-    List<Vehicle> presentVehicles;
+    List<TransportVehicle> presentVehicles;
     // List with all AGVs
     List<Vehicle> agvList;
     // List with all Cranes
@@ -44,15 +44,15 @@ public class Controller {
     Date shipmentTime;
     
     // List with all the Vehicles that will arrive
-    List<Boat> allSeaShips;
-    List<Boat> allBarges;
-    List<Train> allTrains;
-    List<Truck> allTrucks;
+    List<Boat> seaShipsToArrive;
+    List<Boat> bargesToArrive;
+    List<Train> trainsToArrive;
+    List<Truck> trucksToArrive;
     
     /**
      * The amount of seconds the simulation time will increment after each update
      */
-    public int secondsIncrement;
+    public int secondsToIncrement;
     
     /**
      * Constructs a new controller
@@ -82,7 +82,7 @@ public class Controller {
     private void Initialize() throws Exception
     {   
         // Default seconds increment value
-        secondsIncrement = 6;
+        secondsToIncrement = 6;
         
         // Initializes new ArrayLists
         messageQueue = new ArrayList();
@@ -96,10 +96,10 @@ public class Controller {
             Database.dumpDatabase();
         }        
         // Loads all the vehicles that come to the harbor
-        allSeaShips = GenerateArrivalVehicles.GetSeaBoats();
-        allBarges = GenerateArrivalVehicles.GetInlandBoats();
-        allTrains = GenerateArrivalVehicles.GetTrains();
-        allTrucks = GenerateArrivalVehicles.GetTrucks();
+        seaShipsToArrive = GenerateArrivalVehicles.GetSeaBoats();
+        bargesToArrive = GenerateArrivalVehicles.GetInlandBoats();
+        trainsToArrive = GenerateArrivalVehicles.GetTrains();
+        trucksToArrive = GenerateArrivalVehicles.GetTrucks();
         
         // Initializes the dates
         deliveryTime = new Date(); 
@@ -150,21 +150,21 @@ public class Controller {
     public void Update(float gameTime ) throws Exception
     {
         System.out.println(simulationTime);
-        simulationTime.setSeconds(simulationTime.getSeconds() + secondsIncrement);
+        simulationTime.setSeconds(simulationTime.getSeconds() + secondsToIncrement);
         System.out.println(gameTime);
         
         // Updates the logic of each AGV
         for(Vehicle agv : agvList){
-            agv.update(secondsIncrement);
+            agv.update(secondsToIncrement);
         }
         // Updates the logic of each crane
         for(Crane crane : craneList){
-            crane.update(secondsIncrement);
+            crane.update(secondsToIncrement);
         }
         // Updates the logic of each docked vehicle
         for(Vehicle vehicle : presentVehicles){
-            vehicle.update(secondsIncrement);
-        }        
+            vehicle.update(secondsToIncrement);
+        }     
         
         // When the next shipment arrives
         if(simulationTime.getTime() >= shipmentTime.getTime()){
@@ -249,93 +249,133 @@ public class Controller {
      */
     private void UpdateShipment() throws Exception{
         // Checks if trucks arrive
-        if(allTrucks.size() > 0){
+        if(trucksToArrive.size() > 0){
             // When the simulation time is equal or greater than the arrivalDate
-            while(simulationTime.getTime() >= allTrucks.get(0).GetArrivalDate().getTime()){
+            while(simulationTime.getTime() >= trucksToArrive.get(0).GetArrivalDate().getTime()){
                 // Add the truck that arrived
-                presentVehicles.add(allTrucks.get(0));
+                presentVehicles.add(trucksToArrive.get(0));
                 // Request 1 crane
                 messageQueue.add(new Message(
-                    allTrucks.get(0),
+                    trucksToArrive.get(0),
                     Crane.class,
                     Message.ACTION.Unload,
                     null));
                 // Remove the truck that arrived
-                allTrucks.remove(0);
+                trucksToArrive.remove(0);
                 // When there are no trucks left 
-                if(allTrucks.isEmpty()){
+                if(trucksToArrive.isEmpty()){
                     break;
                 }
             }
         }
         // Checks if trains arrive
-        if(allTrains.size() > 0){
+        if(trainsToArrive.size() > 0){
             // When the simulation time is equal or greater than the arrivalDate
-            while(simulationTime.getTime() >= allTrains.get(0).GetArrivalDate().getTime()){
+            while(simulationTime.getTime() >= trainsToArrive.get(0).GetArrivalDate().getTime()){
                 // Add the train that arrived
-                presentVehicles.add(allTrains.get(0)); 
+                presentVehicles.add(trainsToArrive.get(0)); 
                 // Request 2 cranes
                 for(int i = 0; i < 2; i++){
                     messageQueue.add(new Message(
-                        allTrains.get(0),
+                        trainsToArrive.get(0),
                         Crane.class,
                         Message.ACTION.Unload,
                         null));
                 }
                 // Removes the train that arrived
-                allTrains.remove(0);
+                trainsToArrive.remove(0);
                 // When there are no trains left
-                if(allTrains.isEmpty()){
+                if(trainsToArrive.isEmpty()){
                     break;
                 }
             }
         }
         // Checks if barges arrive
-        if(allBarges.size() > 0){
+        if(bargesToArrive.size() > 0){
             // When the simulation time is equal or greater than the arrivalDate
-            while(simulationTime.getTime() >= allBarges.get(0).GetArrivalDate().getTime()){
+            while(simulationTime.getTime() >= bargesToArrive.get(0).GetArrivalDate().getTime()){
                 // Add the barge that arrived
-                presentVehicles.add(allBarges.get(0)); 
+                presentVehicles.add(bargesToArrive.get(0)); 
                 // Request 4 cranes
                 for(int i = 0; i < 4; i++){
                     messageQueue.add(new Message(
-                        allBarges.get(0),
+                        bargesToArrive.get(0),
                         Crane.class,
                         Message.ACTION.Unload,
                         null));
                 }
                 // Removes the barge that arrived
-                allBarges.remove(0);
+                bargesToArrive.remove(0);
                 // When there are no barges left
-                if(allBarges.isEmpty()){
+                if(bargesToArrive.isEmpty()){
                     break;
                 }
             }
         }
         // Checks if seaShips arrive
-        if(allSeaShips.size() > 0){
+        if(seaShipsToArrive.size() > 0){
             // When the simulation time is equal or greater than the arrivalDate
-            while(simulationTime.getTime() >= allSeaShips.get(0).GetArrivalDate().getTime()){
+            while(simulationTime.getTime() >= seaShipsToArrive.get(0).GetArrivalDate().getTime()){
                 // Add the seaShip that arrived
-                presentVehicles.add(allSeaShips.get(0));
+                presentVehicles.add(seaShipsToArrive.get(0));
                 // Request 10 cranes
                 for(int i = 0 ; i < 10; i++){
                     messageQueue.add(new Message(
-                        allSeaShips.get(0),
+                        seaShipsToArrive.get(0),
                         Crane.class,
                         Message.ACTION.Unload,
                         null));
                 }
                 // Removes the seaShip that arrived
-                allSeaShips.remove(0);
+                seaShipsToArrive.remove(0);
                 // When there are no seaShips left
-                if(allSeaShips.isEmpty()){
+                if(seaShipsToArrive.isEmpty()){
                     break;
                 }
             }
         }
+        
+//        seaShipsToArrive = CheckArrival(seaShipsToArrive, 10);
+//        bargesToArrive = CheckArrival(bargesToArrive, 4);
+//        trainsToArrive = CheckArrival(trainsToArrive, 2);
+//        trucksToArrive = CheckArrival(trucksToArrive, 1);
     }
     
+    /**
+     * Checks if from the given list vehicles are arriving
+     * @param toCheck The list to check
+     * @return The list without the arrived vehicles
+     * @throws Exception 
+     */
+    private List<TransportVehicle> CheckArrival(List<TransportVehicle> toCheck, int requests) throws Exception
+    {
+        if (toCheck == null){
+            throw new Exception("toCheck isn't initialized");
+        }
+        // Checks if seaShips arrive
+        if(toCheck.size() > 0){
+            // When the simulation time is equal or greater than the arrivalDate
+            while(simulationTime.getTime() >= toCheck.get(0).GetArrivalDate().getTime()){
+                // Add the vehicle that arrived
+                presentVehicles.add(toCheck.get(0));
+                // Request cranes
+                for(int i = 0 ; i < requests; i++){
+                    messageQueue.add(new Message(
+                        toCheck.get(0),
+                        Crane.class,
+                        Message.ACTION.Unload,
+                        null));
+                }
+                // Removes the vehicle that arrived
+                toCheck.remove(0);
+                // When there are no vehicles left
+                if(toCheck.isEmpty()){
+                    break;
+                }
+            }
+        }
+        return toCheck;
+    }
     
     /**
      * Checks all the containers that are on top of each stack
@@ -389,28 +429,28 @@ public class Controller {
      */
     private void GetNextArrivalDate(){
         // When there are still seaShips that need to arrive
-        if(!allSeaShips.isEmpty()){
-            shipmentTime = allSeaShips.get(0).GetArrivalDate();
+        if(!seaShipsToArrive.isEmpty()){
+            shipmentTime = seaShipsToArrive.get(0).GetArrivalDate();
         }
         // When there are still barges that need to arrive
-        if(!allBarges.isEmpty()){
+        if(!bargesToArrive.isEmpty()){
             // When the first barge arrives earlier than the other shipment
-            if(shipmentTime.getTime() > allBarges.get(0).GetArrivalDate().getTime()){
-                shipmentTime = allBarges.get(0).GetArrivalDate();
+            if(shipmentTime.getTime() > bargesToArrive.get(0).GetArrivalDate().getTime()){
+                shipmentTime = bargesToArrive.get(0).GetArrivalDate();
             }
         }
         // When there are still trains that need to arrive
-        if(!allTrains.isEmpty()){
+        if(!trainsToArrive.isEmpty()){
             // When the first train arrives earlier than the other shipment
-            if(shipmentTime.getTime() > allTrains.get(0).GetArrivalDate().getTime()){
-                shipmentTime = allTrains.get(0).GetArrivalDate();
+            if(shipmentTime.getTime() > trainsToArrive.get(0).GetArrivalDate().getTime()){
+                shipmentTime = trainsToArrive.get(0).GetArrivalDate();
             }
         }
         // When there are still trucks that need to arrive
-        if(!allTrucks.isEmpty()){
+        if(!trucksToArrive.isEmpty()){
             // When the first truck arrives earlier than the other shipment
-            if(shipmentTime.getTime() > allTrucks.get(0).GetArrivalDate().getTime()){
-                shipmentTime = allTrucks.get(0).GetArrivalDate();
+            if(shipmentTime.getTime() > trucksToArrive.get(0).GetArrivalDate().getTime()){
+                shipmentTime = trucksToArrive.get(0).GetArrivalDate();
             }
         }
     }
@@ -426,10 +466,10 @@ public class Controller {
         }        
         // When the value is above 100
         if(value > 100 ){
-            secondsIncrement = 100;
+            secondsToIncrement = 100;
         }
         else{
-            secondsIncrement = value;
+            secondsToIncrement = value;
         }
     }
     
@@ -438,6 +478,6 @@ public class Controller {
      * @return seconds increment
      */
     public int GetSecondsIncrement(){
-        return secondsIncrement;
+        return secondsToIncrement;
     }
 }
