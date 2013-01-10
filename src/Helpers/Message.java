@@ -38,9 +38,7 @@ public class Message {
         if(sourceSender == null){
             throw new Exception("Source Sender can't be null");
         }
-        if(!Vehicles.Boat.class.equals(sourceSender.getClass())&&
-           !Vehicles.Truck.class.equals(sourceSender.getClass())&&
-           !Vehicles.Train.class.equals(sourceSender.getClass()) &&                
+        if(!Vehicles.TransportVehicle.class.equals(sourceSender.getClass())&&           
            !Crane.class.equals(sourceSender.getClass())){            
             throw new Exception("Source Sender must be a crane or transportVehicle");
         }
@@ -117,7 +115,7 @@ public class Message {
         }       
         
         if(destinationObject.getClass() == TransportVehicle.class){            
-            if(((TransportVehicle)destinationObject).equals(null)){
+            if(destinationObject == null){
                 throw new Exception("destination node is null");
             }
             return ((TransportVehicle)destinationObject).getDestination();    

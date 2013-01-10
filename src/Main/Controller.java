@@ -44,10 +44,10 @@ public class Controller {
     Date shipmentTime;
     
     // List with all the Vehicles that will arrive
-    List<Boat> seaShipsToArrive;
-    List<Boat> bargesToArrive;
-    List<Train> trainsToArrive;
-    List<Truck> trucksToArrive;
+    List<TransportVehicle> seaShipsToArrive;
+    List<TransportVehicle> bargesToArrive;
+    List<TransportVehicle> trainsToArrive;
+    List<TransportVehicle> trucksToArrive;
     
     /**
      * The amount of seconds the simulation time will increment after each update
@@ -249,96 +249,96 @@ public class Controller {
      */
     private void UpdateShipment() throws Exception{
         // Checks if trucks arrive
-        if(trucksToArrive.size() > 0){
-            // When the simulation time is equal or greater than the arrivalDate
-            while(simulationTime.getTime() >= trucksToArrive.get(0).GetArrivalDate().getTime()){
-                // Add the truck that arrived
-                presentVehicles.add(trucksToArrive.get(0));
-                // Request 1 crane
-                messageQueue.add(new Message(
-                    trucksToArrive.get(0),
-                    Crane.class,
-                    Message.ACTION.Unload,
-                    null));
-                // Remove the truck that arrived
-                trucksToArrive.remove(0);
-                // When there are no trucks left 
-                if(trucksToArrive.isEmpty()){
-                    break;
-                }
-            }
-        }
-        // Checks if trains arrive
-        if(trainsToArrive.size() > 0){
-            // When the simulation time is equal or greater than the arrivalDate
-            while(simulationTime.getTime() >= trainsToArrive.get(0).GetArrivalDate().getTime()){
-                // Add the train that arrived
-                presentVehicles.add(trainsToArrive.get(0)); 
-                // Request 2 cranes
-                for(int i = 0; i < 2; i++){
-                    messageQueue.add(new Message(
-                        trainsToArrive.get(0),
-                        Crane.class,
-                        Message.ACTION.Unload,
-                        null));
-                }
-                // Removes the train that arrived
-                trainsToArrive.remove(0);
-                // When there are no trains left
-                if(trainsToArrive.isEmpty()){
-                    break;
-                }
-            }
-        }
-        // Checks if barges arrive
-        if(bargesToArrive.size() > 0){
-            // When the simulation time is equal or greater than the arrivalDate
-            while(simulationTime.getTime() >= bargesToArrive.get(0).GetArrivalDate().getTime()){
-                // Add the barge that arrived
-                presentVehicles.add(bargesToArrive.get(0)); 
-                // Request 4 cranes
-                for(int i = 0; i < 4; i++){
-                    messageQueue.add(new Message(
-                        bargesToArrive.get(0),
-                        Crane.class,
-                        Message.ACTION.Unload,
-                        null));
-                }
-                // Removes the barge that arrived
-                bargesToArrive.remove(0);
-                // When there are no barges left
-                if(bargesToArrive.isEmpty()){
-                    break;
-                }
-            }
-        }
-        // Checks if seaShips arrive
-        if(seaShipsToArrive.size() > 0){
-            // When the simulation time is equal or greater than the arrivalDate
-            while(simulationTime.getTime() >= seaShipsToArrive.get(0).GetArrivalDate().getTime()){
-                // Add the seaShip that arrived
-                presentVehicles.add(seaShipsToArrive.get(0));
-                // Request 10 cranes
-                for(int i = 0 ; i < 10; i++){
-                    messageQueue.add(new Message(
-                        seaShipsToArrive.get(0),
-                        Crane.class,
-                        Message.ACTION.Unload,
-                        null));
-                }
-                // Removes the seaShip that arrived
-                seaShipsToArrive.remove(0);
-                // When there are no seaShips left
-                if(seaShipsToArrive.isEmpty()){
-                    break;
-                }
-            }
-        }
+//        if(trucksToArrive.size() > 0){
+//            // When the simulation time is equal or greater than the arrivalDate
+//            while(simulationTime.getTime() >= trucksToArrive.get(0).GetArrivalDate().getTime()){
+//                // Add the truck that arrived
+//                presentVehicles.add(trucksToArrive.get(0));
+//                // Request 1 crane
+//                messageQueue.add(new Message(
+//                    trucksToArrive.get(0),
+//                    Crane.class,
+//                    Message.ACTION.Unload,
+//                    null));
+//                // Remove the truck that arrived
+//                trucksToArrive.remove(0);
+//                // When there are no trucks left 
+//                if(trucksToArrive.isEmpty()){
+//                    break;
+//                }
+//            }
+//        }
+//        // Checks if trains arrive
+//        if(trainsToArrive.size() > 0){
+//            // When the simulation time is equal or greater than the arrivalDate
+//            while(simulationTime.getTime() >= trainsToArrive.get(0).GetArrivalDate().getTime()){
+//                // Add the train that arrived
+//                presentVehicles.add(trainsToArrive.get(0)); 
+//                // Request 2 cranes
+//                for(int i = 0; i < 2; i++){
+//                    messageQueue.add(new Message(
+//                        trainsToArrive.get(0),
+//                        Crane.class,
+//                        Message.ACTION.Unload,
+//                        null));
+//                }
+//                // Removes the train that arrived
+//                trainsToArrive.remove(0);
+//                // When there are no trains left
+//                if(trainsToArrive.isEmpty()){
+//                    break;
+//                }
+//            }
+//        }
+//        // Checks if barges arrive
+//        if(bargesToArrive.size() > 0){
+//            // When the simulation time is equal or greater than the arrivalDate
+//            while(simulationTime.getTime() >= bargesToArrive.get(0).GetArrivalDate().getTime()){
+//                // Add the barge that arrived
+//                presentVehicles.add(bargesToArrive.get(0)); 
+//                // Request 4 cranes
+//                for(int i = 0; i < 4; i++){
+//                    messageQueue.add(new Message(
+//                        bargesToArrive.get(0),
+//                        Crane.class,
+//                        Message.ACTION.Unload,
+//                        null));
+//                }
+//                // Removes the barge that arrived
+//                bargesToArrive.remove(0);
+//                // When there are no barges left
+//                if(bargesToArrive.isEmpty()){
+//                    break;
+//                }
+//            }
+//        }
+//        // Checks if seaShips arrive
+//        if(seaShipsToArrive.size() > 0){
+//            // When the simulation time is equal or greater than the arrivalDate
+//            while(simulationTime.getTime() >= seaShipsToArrive.get(0).GetArrivalDate().getTime()){
+//                // Add the seaShip that arrived
+//                presentVehicles.add(seaShipsToArrive.get(0));
+//                // Request 10 cranes
+//                for(int i = 0 ; i < 10; i++){
+//                    messageQueue.add(new Message(
+//                        seaShipsToArrive.get(0),
+//                        Crane.class,
+//                        Message.ACTION.Unload,
+//                        null));
+//                }
+//                // Removes the seaShip that arrived
+//                seaShipsToArrive.remove(0);
+//                // When there are no seaShips left
+//                if(seaShipsToArrive.isEmpty()){
+//                    break;
+//                }
+//            }
+//        }
         
-//        seaShipsToArrive = CheckArrival(seaShipsToArrive, 10);
-//        bargesToArrive = CheckArrival(bargesToArrive, 4);
-//        trainsToArrive = CheckArrival(trainsToArrive, 2);
-//        trucksToArrive = CheckArrival(trucksToArrive, 1);
+        seaShipsToArrive = CheckArrival(seaShipsToArrive, 10);
+        bargesToArrive = CheckArrival(bargesToArrive, 4);
+        trainsToArrive = CheckArrival(trainsToArrive, 2);
+        trucksToArrive = CheckArrival(trucksToArrive, 1);
     }
     
     /**
