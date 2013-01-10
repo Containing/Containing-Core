@@ -12,3 +12,4 @@ build/
 nbbuild/
 db/backup.db
 src/Main/schema.sql
+*.orig
