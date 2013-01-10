@@ -23,13 +23,13 @@ public class GenerateArrivalVehicles {
         //XML.XMLBinder.GenerateContainerDatabase("C:/Users/Martin_Notebook/Dropbox/containing/XML files/xml7.xml");
         //Database.dumpDatabase();
         Database.restoreDump();
-        List<Boat> SeaBoats = GetSeaBoats();
+        List<TransportVehicle> SeaBoats = GetSeaBoats();
         System.out.println("SeaBoats:    "+SeaBoats.size());
-        List<Boat> InlandBoats = GetInlandBoats();
+        List<TransportVehicle> InlandBoats = GetInlandBoats();
         System.out.println("InlandBoats: "+InlandBoats.size());
-        List<Train> Trains = GetTrains();
+        List<TransportVehicle> Trains = GetTrains();
         System.out.println("Trains:      "+Trains.size());
-        List<Truck> Trucks = GetTrucks();
+        List<TransportVehicle> Trucks = GetTrucks();
         System.out.println("Trucks:      "+Trucks.size());
     }
     
@@ -43,7 +43,7 @@ public class GenerateArrivalVehicles {
      * @return List with boats, ordered by arrivalDate
      * @throws Exception If something goes wrong while excecuting the query
      */
-    public static List<Boat> GetSeaBoats() throws Exception{
+    public static List<TransportVehicle> GetSeaBoats() throws Exception{
         return GetBoats("zeeschip");
     }
     /**
@@ -51,11 +51,11 @@ public class GenerateArrivalVehicles {
      * @return List with boats, ordered by arrivalDate
      * @throws Exception If something goes wrong while excecuting the query
      */
-    public static List<Boat> GetInlandBoats() throws Exception{
+    public static List<TransportVehicle> GetInlandBoats() throws Exception{
         return GetBoats("binnenschip");
     }
-    private static List<Boat> GetBoats(String kindSchip) throws Exception{
-        ArrayList<Boat> BoatList = new ArrayList<>();
+    private static List<TransportVehicle> GetBoats(String kindSchip) throws Exception{
+        ArrayList<TransportVehicle> BoatList = new ArrayList<>();
         
         String query = "Select arrivalDateStart, arrivalDateEnd, arrivalCompany, count(*) as containers, MAX(arrivalPositionX) as SizeX, MAX(arrivalPositionY) as SizeY, MAX(arrivalPositionZ) as SizeZ " +
                         "from container " +
@@ -79,12 +79,13 @@ public class GenerateArrivalVehicles {
                 // calculate and add the amount of boats
                 int amount = (getBoats.getInt("containers") / (x*y*z)) + 1;
                 for (int i = 0; i < amount; i++) {
-                    BoatList.add(new Boat(arrivalDateStart, arrivalDateEnd, arrivalCompany, new Vector3f(x, y, z), /*SpawnNode*/new Node(0, 0)));
+                    //BoatList.add(new Boat(arrivalDateStart, arrivalDateEnd, arrivalCompany, new Vector3f(x, y, z), /*SpawnNode*/new Node(0, 0)));
+                    BoatList.add(new TransportVehicle(arrivalDateStart, arrivalDateEnd, arrivalCompany, new Vector3f(x, y, z), new Node()));
                 }
             }
             else{
                 // add one boat
-                BoatList.add(new Boat(arrivalDateStart, arrivalDateEnd, arrivalCompany, new Vector3f(x, y, z), /*SpawnNode*/new Node(0, 0)));
+                BoatList.add(new TransportVehicle(arrivalDateStart, arrivalDateEnd, arrivalCompany, new Vector3f(x, y, z), new Node()));
             }
         }
         
@@ -99,7 +100,7 @@ public class GenerateArrivalVehicles {
         while(fillBoats.next()){
             
             // get the boat and generate the container
-            Boat boat = BoatList.get(counter);
+            TransportVehicle boat = BoatList.get(counter);
             Container container = ConvertToContainer(fillBoats);
             
             // if the container doesn't match the boat, go to the next boat.
@@ -117,7 +118,7 @@ public class GenerateArrivalVehicles {
             }
             else{
                 // if their is get the next boat.
-                Boat nextBoat = BoatList.get(counter+1);
+                TransportVehicle nextBoat = BoatList.get(counter+1);
                 do{
                     // if their is a next boat
                     if (nextBoat != null){
@@ -154,8 +155,8 @@ public class GenerateArrivalVehicles {
      * @return List with trains, ordered by arrivalDate
      * @throws Exception If something goes wrong while excecuting the query
      */
-    public static List<Train> GetTrains() throws Exception{
-        ArrayList<Train> TrainList = new ArrayList<>();
+    public static List<TransportVehicle> GetTrains() throws Exception{
+        ArrayList<TransportVehicle> TrainList = new ArrayList<>();
         
         String query = "Select arrivalDateStart, arrivalDateEnd, arrivalCompany, count(*) as containers, MAX(arrivalPositionX) as SizeX " +
                 "from container " +
@@ -177,12 +178,13 @@ public class GenerateArrivalVehicles {
                 // calculate and add the amount of trains
                 int amount = (getTrains.getInt("containers") / (x)) + 1;
                 for (int i = 0; i < amount; i++) {
-                    TrainList.add(new Train(arrivalDateStart, arrivalDateEnd, arrivalCompany, x, /*SpawnNode*/new Node(0, 0)));
+                    //TrainList.add(new Train(arrivalDateStart, arrivalDateEnd, arrivalCompany, x, /*SpawnNode*/new Node(0, 0)));
+                    TrainList.add(new TransportVehicle(arrivalDateStart, arrivalDateEnd, arrivalCompany, new Vector3f(x, 1, 1), new Node()));
                 }
             }
             else{
                 // add one train
-                TrainList.add(new Train(arrivalDateStart, arrivalDateEnd, arrivalCompany, x, /*SpawnNode*/new Node(0, 0)));
+                TrainList.add(new TransportVehicle(arrivalDateStart, arrivalDateEnd, arrivalCompany, new Vector3f(x, 1, 1), new Node()));
             }
         }
         
@@ -197,7 +199,7 @@ public class GenerateArrivalVehicles {
         while(fillTrains.next()){
             
             // get the train and generate the container
-            Train train = TrainList.get(counter);
+            TransportVehicle train = TrainList.get(counter);
             Container container = ConvertToContainer(fillTrains);
             
             // if the container doesn't match the train, go to the next train.
@@ -214,7 +216,7 @@ public class GenerateArrivalVehicles {
             }
             else{
                 // if their is get the next train.
-                Train nextTrain = (counter+1 < TrainList.size()) ? TrainList.get(counter+1) : null;
+                TransportVehicle nextTrain = (counter+1 < TrainList.size()) ? TrainList.get(counter+1) : null;
                 do{
                     // if their is a next train
                     if (nextTrain != null){
@@ -250,8 +252,8 @@ public class GenerateArrivalVehicles {
      * @return List with trucks, ordered by arrivalDate
      * @throws Exception If something goes wrong while excecuting the query
      */
-    public static List<Truck> GetTrucks() throws Exception {
-        ArrayList<Truck> TruckList = new ArrayList<>();
+    public static List<TransportVehicle> GetTrucks() throws Exception {
+        ArrayList<TransportVehicle> TruckList = new ArrayList<>();
         
         String query = "Select * "+
                         "from container "+
@@ -263,7 +265,8 @@ public class GenerateArrivalVehicles {
         while(rs.next()){
             // generate a new truck, and generate a container 
             Container container = ConvertToContainer(rs);
-            Truck truck = new Truck(container.getArrivalDateStart(), container.getArrivalDateEnd(), container.getArrivalCompany(), /*SpawnNode*/new Node(0, 0));
+            //Truck truck = new Truck(container.getArrivalDateStart(), container.getArrivalDateEnd(), container.getArrivalCompany(), /*SpawnNode*/new Node(0, 0));
+            TransportVehicle truck = new TransportVehicle(container.getArrivalDateStart(), container.getArrivalDateEnd(), container.getArrivalCompany(), new Vector3f(1, 1, 1), new Node());
             // push the container on the truck.
             truck.storage.pushContainer(container, 0, 0);
             TruckList.add(truck);
