@@ -13,7 +13,6 @@ public class AGV extends Vehicle implements IMessageReceiver {
     private final float SpeedWithoutContainer = 144;    
     private List<Message> assignments;
     
-    
     public AGV(Node startPosition) throws Exception{
         if (startPosition == null){
             throw new Exception("\nThe input variable can't be null:"+
@@ -43,16 +42,31 @@ public class AGV extends Vehicle implements IMessageReceiver {
             }
         }   
         // When the AGV has assignments
-        if(!Available())
-        {
+        if(!Available()){
             // When the AGV need's the fetch a container
-            if(assignments.get(0).Fetch())
-            {
+            if(assignments.get(0).Fetch()){
                 // When the AGV has a container on him
-                if(storage.Count() > 0)
-                {
+                if(storage.Count() > 0){
+                    Container.TransportType transportType = storage.peakContainer(0, 0).getDepartureTransportType();
+                    switch(transportType){
+                        case trein:
+                            //destination = trein parking node
+                            break;
+                        case zeeschip:
+                            //destination = zeeschip parking node
+                            break;
+                        case binnenschip:
+                            //destination = binnenship parking node
+                            break;
+                        case vrachtauto :
+                            //destination = vrachtauto parking node
+                            break;
+                    }
                     // Remove assingment because the container is fetched
-                    assignments.remove(0);                  
+                    assignments.remove(0);    
+                    if(!assignments.isEmpty()){
+                        destination = assignments.get(0).DestinationNode();
+                    }
                 }
             }
             // When the AGV need's to deliver a container
@@ -63,6 +77,9 @@ public class AGV extends Vehicle implements IMessageReceiver {
                 {
                     // Remove assingment because the contianer is deliverd
                     assignments.remove(0); 
+                    if(!assignments.isEmpty()){
+                        destination = assignments.get(0).DestinationNode();
+                    }
                 }
             }
             else
@@ -88,8 +105,7 @@ public class AGV extends Vehicle implements IMessageReceiver {
      * @return 
      */
     @Override
-    public boolean Available()
-    {
+    public boolean Available(){
         return assignments.isEmpty();
     }
     
