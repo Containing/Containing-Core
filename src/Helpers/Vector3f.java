@@ -25,6 +25,23 @@ public class Vector3f {
         return "[X:" + (int)x + ",Y:" + (int)y + ",Z:" + (int)z + "]";
     }
     
+    public void normalize(){
+        float length = length();
+        x/=length;
+        y/=length;
+        z/=length;
+    }
+    
+    public float length(){
+        float tx = x;
+        float ty = y;
+        float tz = z;
+        if(tx<0)tx=-tx;
+        if(ty<0)ty=-ty;
+        if(tz<0)tz=-tz;
+        
+        return (float)Math.sqrt( Math.pow(tx, 2) + Math.pow(ty, 2) + Math.pow(tz, 2) );
+    }
     
     public static float distance(Vector3f v1, Vector3f v2){
         float distX = v1.x - v2.x;
@@ -33,6 +50,7 @@ public class Vector3f {
         if(distX<0)distX*=-1;
         if(distY<0)distY*=-1;
         if(distZ<0)distZ*=-1;
+        
         return (float)Math.sqrt( Math.pow(distX, 2) + Math.pow(distY, 2) + Math.pow(distZ, 2)  );  
     }
 }
