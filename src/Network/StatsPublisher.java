@@ -44,7 +44,7 @@ public class StatsPublisher {
             //System.out.println(new String(baos.toByteArray()));
             
             try {
-                Thread.sleep(1000);
+                Thread.sleep(250);
             }
             catch(InterruptedException e) {
                 System.out.println(e.getMessage());
