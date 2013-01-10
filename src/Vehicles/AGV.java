@@ -1,5 +1,7 @@
 package Vehicles;
 
+import Crane.Crane;
+import Crane.StorageCrane;
 import Helpers.*;
 import Main.Container;
 import Pathfinding.Node;
@@ -29,6 +31,16 @@ public class AGV extends Vehicle implements IMessageReceiver {
     @Override
     public void update(int gameTime) throws Exception {
         if (position == destination.getPosition()){
+            if(!assignments.isEmpty()){
+                if(assignments.get(0).DestinationObject().getClass() == Crane.class){
+                    Crane crane = (Crane)(assignments.get(0).DestinationObject());
+                    crane.parkinglotAGV.park(this);
+                }
+                else if (assignments.get(0).DestinationObject().getClass() == StorageCrane.class){
+                    StorageCrane crane = (StorageCrane)(assignments.get(0).DestinationObject());
+                    crane.parkinglotAGV.park(this);
+                }
+            }
             // send message arrived
         }
         else{
