@@ -4,6 +4,7 @@ import Helpers.Vector3f;
 import Main.Container;
 import Main.Database;
 import Pathfinding.Node;
+import Vehicles.Vehicle.VehicleType;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Date;
@@ -80,12 +81,14 @@ public class GenerateArrivalVehicles {
                 int amount = (getBoats.getInt("containers") / (x*y*z)) + 1;
                 for (int i = 0; i < amount; i++) {
                     //BoatList.add(new Boat(arrivalDateStart, arrivalDateEnd, arrivalCompany, new Vector3f(x, y, z), /*SpawnNode*/new Node(0, 0)));
-                    BoatList.add(new TransportVehicle(arrivalDateStart, arrivalDateEnd, arrivalCompany, new Vector3f(x, y, z), new Node()));
+                    BoatList.add(new TransportVehicle(arrivalDateStart, arrivalDateEnd, arrivalCompany, 
+                            kindSchip.equals("zeeschip") ? VehicleType.seaBoat : VehicleType.inlandBoat, new Vector3f(x, y, z), new Node()));
                 }
             }
             else{
                 // add one boat
-                BoatList.add(new TransportVehicle(arrivalDateStart, arrivalDateEnd, arrivalCompany, new Vector3f(x, y, z), new Node()));
+                BoatList.add(new TransportVehicle(arrivalDateStart, arrivalDateEnd, arrivalCompany,
+                        kindSchip.equals("zeeschip") ? VehicleType.seaBoat : VehicleType.inlandBoat, new Vector3f(x, y, z), new Node()));
             }
         }
         
@@ -179,12 +182,14 @@ public class GenerateArrivalVehicles {
                 int amount = (getTrains.getInt("containers") / (x)) + 1;
                 for (int i = 0; i < amount; i++) {
                     //TrainList.add(new Train(arrivalDateStart, arrivalDateEnd, arrivalCompany, x, /*SpawnNode*/new Node(0, 0)));
-                    TrainList.add(new TransportVehicle(arrivalDateStart, arrivalDateEnd, arrivalCompany, new Vector3f(x, 1, 1), new Node()));
+                    TrainList.add(new TransportVehicle(arrivalDateStart, arrivalDateEnd, arrivalCompany,
+                            VehicleType.train ,new Vector3f(x, 1, 1), new Node()));
                 }
             }
             else{
                 // add one train
-                TrainList.add(new TransportVehicle(arrivalDateStart, arrivalDateEnd, arrivalCompany, new Vector3f(x, 1, 1), new Node()));
+                    TrainList.add(new TransportVehicle(arrivalDateStart, arrivalDateEnd, arrivalCompany,
+                            VehicleType.train ,new Vector3f(x, 1, 1), new Node()));
             }
         }
         
@@ -266,7 +271,8 @@ public class GenerateArrivalVehicles {
             // generate a new truck, and generate a container 
             Container container = ConvertToContainer(rs);
             //Truck truck = new Truck(container.getArrivalDateStart(), container.getArrivalDateEnd(), container.getArrivalCompany(), /*SpawnNode*/new Node(0, 0));
-            TransportVehicle truck = new TransportVehicle(container.getArrivalDateStart(), container.getArrivalDateEnd(), container.getArrivalCompany(), new Vector3f(1, 1, 1), new Node());
+            TransportVehicle truck = new TransportVehicle(container.getArrivalDateStart(), container.getArrivalDateEnd(), container.getArrivalCompany(), 
+                    VehicleType.truck ,new Vector3f(1, 1, 1), new Node());
             // push the container on the truck.
             truck.storage.pushContainer(container, 0, 0);
             TruckList.add(truck);
@@ -278,7 +284,7 @@ public class GenerateArrivalVehicles {
      * @return The Container formed from a DB row.
      * @throws Exception If something goes wrong while excecuting the query
      */
-    private static Container ConvertToContainer(ResultSet rs) throws Exception{
+    public static Container ConvertToContainer(ResultSet rs) throws Exception{
         Container returnContainer = new Container(rs.getString("id"));
         
         returnContainer.setArrival( Container.df.parse(rs.getString("arrivalDateStart")), 

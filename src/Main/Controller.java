@@ -14,6 +14,8 @@ import java.util.Date;
 import java.util.List;
 import updateTimer.updateTimer;
 import Crane.Crane;
+import Vehicles.Vehicle.VehicleType;
+import java.sql.ResultSet;
 
 
 /**
@@ -141,6 +143,39 @@ public class Controller {
             // Add 20 truckCranes
             //craneList.add(Crane);
         }
+    }
+    
+    private List<Container> GetDepartureContainers(Vehicle.VehicleType vehicleType, Date now) throws Exception{
+        List<Container> containerList = new ArrayList<>();
+        String type = "";
+        switch(vehicleType){
+            case AGV:
+            throw  new Exception("Agv's don't have departure containers");
+            case inlandBoat:
+            type = "binnenschip";
+            break;
+            case seaBoat:
+            type = "zeeschip";
+            break;
+            case train:
+            type = "trein";
+            break;
+            case truck:
+            type = "vrachtauto";
+            break;
+        }
+        
+        String query = "Select * " +
+                        "from container " +
+                        "Where departureDateStart = '" + Container.df.format(now) + "' " +
+                        "Where departureTransportType = '" + type + "' " +
+                        "Order By departureDateStart ";
+        
+        ResultSet getContainers = Database.executeQuery(query);
+        while(getContainers.next()){
+            containerList.add(GenerateArrivalVehicles.ConvertToContainer(getContainers));
+        }
+        return containerList;
     }
     
     /**

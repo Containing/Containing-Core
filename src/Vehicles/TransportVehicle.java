@@ -17,13 +17,14 @@ public class TransportVehicle extends Vehicle {
     protected String arrivalCompany;
     protected float speed/*= X*/;
     
-    public TransportVehicle(Date arrivalDate, Date departureDate, String arrivalCompany, Vector3f containerArraySize, Node startPosition) throws Exception
+    public TransportVehicle(Date arrivalDate, Date departureDate, String arrivalCompany, VehicleType vehicleType, Vector3f containerArraySize, Node startPosition) throws Exception
     {
-        if (arrivalDate == null || departureDate == null || arrivalCompany == null || containerArraySize == null || startPosition == null){
+        if (arrivalDate == null || departureDate == null || arrivalCompany == null || containerArraySize == null || startPosition == null || vehicleType == null){
             throw new Exception("\nThe input variable can't be null:"+
                     "\narrivalDate: " + arrivalDate +
                     "\ndepartureDate: " + departureDate +
                     "\narrivalCompany: " + arrivalCompany +
+                    "\nvehicleType: " + vehicleType +
                     "\ncontainerArraySize: " + containerArraySize +
                     "\nstartPosition: " + startPosition);
         }
@@ -33,6 +34,7 @@ public class TransportVehicle extends Vehicle {
             this.arrivalDate = arrivalDate;
             this.departureDate = departureDate;
             this.arrivalCompany = arrivalCompany;
+            this.vehicleType = vehicleType;
             this.storage = new Storage_Area((int)containerArraySize.x, (int)containerArraySize.z, (int)containerArraySize.y, position);
         }
     }
