@@ -17,13 +17,14 @@ public class Pathfinder {
      * 
      */
     public static Path[] Paths;
-    
+
     /**
      * 
      */
     public static void generateGrid(){
         int width = 10;
         int height = 10;
+        int multiplier = -50;
         
         Nodes = new Node[width*height];
         Paths = new Path[351];
@@ -31,7 +32,7 @@ public class Pathfinder {
         int pathCounter = 0;
         for(int j = 0 ; j < height; j++){
             for(int i = 0 ; i < width; i++){
-                Nodes[i + j*width] = new Node(i,j);
+                Nodes[i + j*width] = new Node(i*multiplier,j*multiplier);
                 
                 //Connect with previous nodes
                 if(i>0){
