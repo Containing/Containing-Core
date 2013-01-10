@@ -166,13 +166,15 @@ public class Controller {
             type = "vrachtauto";
             break;
         }
-        
+        Date after = new Date();
+        after = now;
+        after.setSeconds(after.getSeconds() - secondsToIncrement);
         String query = "Select locationId, storageLocation " +
                         "from container " +
-                        "Where departureDateStart = '" + Container.df.format(now) + "' " +
+                        "Where departureDateStart between '" + Container.df.format(after) + "' and '" + Container.df.format(Container.df.format(now)) + "' " +
                         "Where departureTransportType = '" + type + "' " +
                         "Order By departureDateStart ";
-        
+        System.out.println(now + " <-> " + after);
         ResultSet getLocationId_storageLocation = Database.executeQuery(query);
         while(getLocationId_storageLocation.next()){
             String Id = getLocationId_storageLocation.getString("locationId");
