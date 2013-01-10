@@ -59,5 +59,9 @@ public abstract class Vehicle {
     public void SetStorage(Storage_Area sa) {
         storage = sa;
     }
+    
+    public VehicleType GetVehicleType(){
+        return vehicleType;
+    }
 }
 

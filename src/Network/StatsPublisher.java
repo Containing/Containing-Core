@@ -17,7 +17,7 @@ public class StatsPublisher {
         ZMQ.Socket publisher = context.socket(ZMQ.PUB);
 
         System.out.println("Publisher");
-        publisher.bind("tcp://192.168.0.5:6000");
+        publisher.bind("tcp://*:6000");
         
         Random rnd = new Random();
         for(;;) {
@@ -25,7 +25,9 @@ public class StatsPublisher {
             msg.containers_incoming = rnd.nextInt(50000);
             msg.containers_outgoing = rnd.nextInt(50000);
             String[] areas = {"Area 1", "Area 2", "Area 3", "Area 4", "Area 5",
-                              "Area 6", "Area 7", "Area 8", "Area 9", "Area 10"};
+                              "Area 6", "Area 7", "Area 8", "Area 9", "Area 10",
+                              "Area 11", "Area 12", "Area 13", "Area 14", "Area 15",
+                              "Area 16", "Area 17", "Area 18", "Area 19", "Area 20"};
             for(int k = 0; k < areas.length; k++) {
                 msg.areas.put(areas[k], rnd.nextInt(50));
             }
@@ -44,7 +46,7 @@ public class StatsPublisher {
             //System.out.println(new String(baos.toByteArray()));
             
             try {
-                Thread.sleep(1000);
+                Thread.sleep(250);
             }
             catch(InterruptedException e) {
                 System.out.println(e.getMessage());

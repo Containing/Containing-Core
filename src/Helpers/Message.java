@@ -5,6 +5,7 @@
 package Helpers;
 
 import Crane.Crane;
+import Crane.StorageCrane;
 import Main.Container;
 import Pathfinding.Node;
 import Vehicles.*;
@@ -39,7 +40,8 @@ public class Message {
             throw new Exception("Source Sender can't be null");
         }
         if(!Vehicles.TransportVehicle.class.equals(sourceSender.getClass())&&           
-           !Crane.class.equals(sourceSender.getClass())){            
+           !Crane.class.equals(sourceSender.getClass())&&
+           !StorageCrane.class.equals(sourceSender.getClass())){            
             throw new Exception("Source Sender must be a crane or transportVehicle");
         }
         if(sourceSender == requestedType){
