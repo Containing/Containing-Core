@@ -17,7 +17,7 @@ public class StatsPublisher {
         ZMQ.Socket publisher = context.socket(ZMQ.PUB);
 
         System.out.println("Publisher");
-        publisher.bind("tcp://192.168.0.5:6000");
+        publisher.bind("tcp://*:6000");
         
         Random rnd = new Random();
         for(;;) {
