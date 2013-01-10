@@ -20,6 +20,8 @@ public class Storage_Area
     private int _Width;
     private int _Height;
     private int _containerCount = 0;
+    private boolean[] _rowFullMap;
+    private boolean[] _rowEmptyMap;
     
     public Storage_Area (int length, int width, int height, Vector3f pos) throws Exception
     {
@@ -49,48 +51,54 @@ public class Storage_Area
         _Length = length;
         _Width = width;
         _Height = height;
+        _rowFullMap = new boolean[length];
+        _rowEmptyMap = new boolean[length];
+        
+        for (int i = 0; i < length; i++)
+        {
+            _rowFullMap[i] = false;
+            _rowEmptyMap[i] = true;
+        }
     }
 
-    public boolean rowEmpty(int row) throws Exception
+    private void checkRow(int row) throws Exception
     {
         if (row > _Length || row < 0)
-        {
-            //System.out.println("Exception in Storage_Area : '" + this.toString() + "' Row doesn't exist.");
-            throw new Exception("Row doesn't exist.");
-        }
-
-        boolean empty = true;
-
+            { throw new Exception("Row doesn't exist."); }
+        
         for (Container_Stack c : _stackField[row])
         {
             if (c.getHeight() > 0)
             {
-                empty = false;
+                _rowEmptyMap[row] = false;
+                break;
             }
-        }
 
-        return empty;
+            else
+                { _rowEmptyMap[row] = true; }
+        }
+        
+        for (Container_Stack c : _stackField[row])
+        {
+            if (c.getHeight() != _Height)
+            {
+                _rowFullMap[row] = false;
+                break;
+            }
+            
+            else
+                { _rowFullMap[row] = true; }
+        }
+    }
+    
+    public boolean rowEmpty(int row) throws Exception
+    {
+        return _rowEmptyMap[row];
     }
     
     public boolean rowFull(int row) throws Exception
     {
-        if (row > _Length || row < 0)
-        {
-            //System.out.println("Exception in Storage_Area : '" + this.toString() + "' Row doesn't exist.");
-            throw new Exception("Row doesn't exist.");
-        }
-        
-        boolean full = true;
-
-        for (Container_Stack c : _stackField[row])
-        {
-            if (c.getHeight() < _Height)
-            {
-                full = false;
-            }
-        }
-
-        return full;
+        return _rowFullMap[row];
     }
 
     public Container peakContainer(int x, int z) throws Exception
@@ -101,13 +109,18 @@ public class Storage_Area
     public Container popContainer(int x, int z) throws Exception
     {
         _containerCount--;
-        return _stackField[x][z].pop();
+        Container r = _stackField[x][z].pop();
+        
+        checkRow(x);
+        
+        return r;
     }
     
     public void pushContainer(Container container, int x, int z) throws Exception
     {
         _containerCount++;
         _stackField[x][z].push(container);
+        checkRow(x);
     }
     
     public int getLength() 

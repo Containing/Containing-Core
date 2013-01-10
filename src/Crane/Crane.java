@@ -22,9 +22,9 @@ public class Crane implements IMessageReceiver
     public Parkinglot parkinglotAGV;
     public Parkinglot parkinglotTransport;
     
-    private final int _rails;
-    private final int _range;
-    private Container _carriedContainer;
+    protected final int _rails;
+    protected final int _range;
+    protected Container _carriedContainer;
     private int _currentRow;
     private Date _maxRowDate;
     private Date _minRowDate;
