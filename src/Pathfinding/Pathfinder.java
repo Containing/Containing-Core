@@ -54,6 +54,10 @@ public class Pathfinder {
         }
     }
     
+    public static void generateArea(){
+        
+    }
+    
     /**
      * 
      */
