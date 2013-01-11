@@ -27,6 +27,8 @@ public class Message {
     // The container that needs to be fetched or deliverd
     Container container;
     
+    Node destNode;
+    
     /**
      * Constructs a new message
      * @param sourceSender The object that requests an object
@@ -34,7 +36,11 @@ public class Message {
      * @param action The action for the requested object
      * @param container The container that's on transport
      */
-    public Message(Object sourceSender, Object requestedType,ACTION action,Container container) throws Exception
+    public Message(
+            Object sourceSender, 
+            Object requestedType,
+            ACTION action,
+            Container container) throws Exception
     {        
         if(sourceSender == null){
             throw new Exception("Source Sender can't be null");
@@ -64,6 +70,16 @@ public class Message {
         this.requestedObject = requestedType;
         this.action = action;
         this.container = container;
+    }
+    
+    public Message(
+            Object sourceSender, 
+            Object requestedType,
+            ACTION action,
+            Container container, 
+            Node destNode) throws Exception{           
+        this(sourceSender,requestedType,action, container);
+        this.destNode = destNode; 
     }
     
     /**
@@ -116,12 +132,18 @@ public class Message {
              throw new Exception("No destinationNode initialized");
         }       
         
-        if(destinationObject.getClass() == TransportVehicle.class){            
+        if(destinationObject instanceof TransportVehicle){            
             if(destinationObject == null){
                 throw new Exception("destination node is null");
             }
             return ((TransportVehicle)destinationObject).getDestination();    
         }        
+        else if (destinationObject instanceof Crane){
+            if(destinationObject == null){
+                
+            }
+            return ((Crane)destinationObject).parkinglotAGV.node;
+        }
         throw new Exception("Message send from unknown source");
     }
     

@@ -121,6 +121,13 @@ public class AGV extends Vehicle implements IMessageReceiver {
         return assignments.isEmpty();
     }
     
+    public Message GetMessage(){
+        if(assignments.isEmpty()){
+            return null;
+        }
+        return assignments.get(0);
+    }
+    
     /**
      * Add's an assignment for the agv
      * @param mess 
@@ -129,6 +136,19 @@ public class AGV extends Vehicle implements IMessageReceiver {
     public void SendMessage(Message mess)
     {
         assignments.add(mess);
+    }
+    /**
+     * When true clears all assignments.
+     * Adds a new message
+     * @param mess
+     * @param destroyAssignments 
+     */
+    public void SendMessage(Message mess, boolean destroyAssignments)throws Exception{
+        if(destroyAssignments){
+            assignments = new ArrayList();
+        }
+        assignments.add(mess);
+        destination = mess.DestinationNode();
     }
 }
 
