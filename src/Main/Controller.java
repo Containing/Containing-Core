@@ -14,7 +14,6 @@ import java.util.Date;
 import java.util.List;
 import updateTimer.updateTimer;
 import Crane.*;
-import Vehicles.Vehicle.VehicleType;
 import java.sql.ResultSet;
 
 
@@ -30,8 +29,11 @@ public class Controller {
     List<TransportVehicle> presentVehicles;
     // List with all AGVs
     List<Vehicle> agvList;
-    // List with all Cranes
-    List<Crane> craneList;
+    
+    Crane[] seaCranes;
+    Crane[] bargeCranes;
+    Crane[] truckCranes;
+    Crane[] trainCranes;
     
     List<StorageCrane> storageCranes;
     // List with all the messages for the controller
@@ -91,8 +93,7 @@ public class Controller {
         // Initializes new ArrayLists
         messageQueue = new ArrayList();
         presentVehicles = new ArrayList();        
-        agvList = new ArrayList();
-        craneList = new ArrayList();      
+        agvList = new ArrayList();  
         
         if(!Database.restoreDump()){
             // When it doesn't exists
@@ -123,6 +124,11 @@ public class Controller {
             agvList.add(new AGV(new Node(1,0)));
         }
         
+        seaCranes = new Crane[10];
+        bargeCranes = new Crane[8];
+        truckCranes = new Crane[20];
+        trainCranes = new Crane[4];
+        
         /**
          * TODO: Initialize the positions where the cranes need to stand
          * Initialize the map with all his nodes and parkinglots
@@ -130,20 +136,20 @@ public class Controller {
         
         //Er zijn in totaal  10 zeeschipkranen, 8 binnenvaartkranen, 4 treinkranen en 20 truckkranen 
         for(int i = 0; i < 10; i++){    
-            // Add 10 seaShipCranes
-            //craneList.add(Crane);
+            // Initialize 10 seaShipCranes
+            //seaCrane[i] = new Crane());
         }
         for(int i = 0 ; i < 8; i++){     
-            // Add 8 BargeCranes
-            //craneList.add(Crane);
+            // Initialize 8 BargeCranes
+            //seaCrane[i] = new Crane());
         }        
         for(int i  =0 ; i < 4; i++){         
-            // Add 4 trainCranes
-            //craneList.add(Crane);
+            // Initialize 4 trainCranes
+            //seaCrane[i] = new Crane());
         }        
         for (int i = 0; i < 20; i++){          
-            // Add 20 truckCranes
-            //craneList.add(Crane);
+            // Initialize 20 truckCranes
+            //seaCrane[i] = new Crane());
         }
     }
     
@@ -211,9 +217,19 @@ public class Controller {
             agv.update(secondsToIncrement);
         }
         // Updates the logic of each crane
-        for(Crane crane : craneList){
+        for(Crane crane : seaCranes){
             crane.update(secondsToIncrement);
         }
+        for(Crane crane : bargeCranes){
+            crane.update(secondsToIncrement);
+        }
+        for(Crane crane : truckCranes){
+            crane.update(secondsToIncrement);
+        }
+        for(Crane crane : trainCranes){
+            crane.update(secondsToIncrement);
+        }
+        
         // Updates the logic of each docked vehicle
         for(Vehicle vehicle : presentVehicles){
             vehicle.update(secondsToIncrement);
@@ -262,9 +278,34 @@ public class Controller {
                         // When it's a fetch message send a delivery message
                         if(message.Fetch()){
                             boolean found = false;
-                            if(message.DestinationObject().getClass().equals(Crane.class)){
-                                for(Crane crane : craneList){
-                                    //if(crane.Available() && crane.)
+                            if(message.DestinationObject() instanceof Crane){
+                                switch(message.GetContainer().getDepartureTransportType())
+                                {
+                                    case trein:
+                                        for(int i = 0 ; i < truckCranes.length; i++){
+                                            if(truckCranes[i].parkinglotTransport.node == message.DestinationNode()){
+                                                // Makes a new message for the crane
+                                                truckCranes[i].SendMessage(message);                            
+                                                // Request an AGV to fetch the first container
+                                                if(message.GetAction() == Message.ACTION.Unload){
+                                                        messageQueue.add(new Message(
+                                                            truckCranes[i],
+                                                            AGV.class,
+                                                            Message.ACTION.Fetch,
+                                                            null));
+                                        }                  
+                                //Message was handeld so remove it
+                                messageQueue.remove(message);
+                                break;
+                                }  
+                            }
+                                        break;
+                                    case zeeschip:
+                                        break;
+                                    case binnenschip:
+                                        break;
+                                    case vrachtauto:
+                                        break;
                                 }
                             }
                             else if (message.DestinationObject().getClass().equals(StorageCrane.class)){
@@ -300,23 +341,87 @@ public class Controller {
             }
             // When the message requests a crane
             else if(message.RequestedObject() == Crane.class){
-                // Check every crane in the list
-                for(Crane crane : craneList){
-                    // When the crane is assigned to this parkinglot
-                    if(crane.parkinglotTransport.node == message.DestinationNode()){
-                        // Makes a new message for the crane
-                        crane.SendMessage(message);                            
-                        // Request an AGV to fetch the first container
-                        if(message.GetAction() == Message.ACTION.Unload){
-                            messageQueue.add(new Message(
-                                crane,
-                                AGV.class,
-                                Message.ACTION.Fetch,
-                                null));
-                        }                            
-                        //Message was handeld so remove it
-                        messageQueue.remove(message);
-                    }                    
+                if(message.DestinationObject() instanceof Vehicle){
+                    Vehicle.VehicleType type =((Vehicle)message.DestinationObject()).GetVehicleType();
+                    switch(type)
+                    {
+                        case truck:
+                            for(int i = 0 ; i < truckCranes.length; i++){
+                                if(truckCranes[i].parkinglotTransport.node == message.DestinationNode()){
+                                    // Makes a new message for the crane
+                                    truckCranes[i].SendMessage(message);                            
+                                    // Request an AGV to fetch the first container
+                                    if(message.GetAction() == Message.ACTION.Unload){
+                                        messageQueue.add(new Message(
+                                        truckCranes[i],
+                                        AGV.class,
+                                        Message.ACTION.Fetch,
+                                        null));
+                                    }                            
+                                //Message was handeld so remove it
+                                messageQueue.remove(message);
+                                break;
+                                }  
+                            }
+                            break;
+                        case train:
+                            for(int i = 0 ; i < trainCranes.length; i++){
+                                if(trainCranes[i].parkinglotTransport.node == message.DestinationNode()){
+                                    // Makes a new message for the crane
+                                    trainCranes[i].SendMessage(message);                            
+                                    // Request an AGV to fetch the first container
+                                    if(message.GetAction() == Message.ACTION.Unload){
+                                        messageQueue.add(new Message(
+                                        trainCranes[i],
+                                        AGV.class,
+                                        Message.ACTION.Fetch,
+                                        null));
+                                    }                            
+                                //Message was handeld so remove it
+                                messageQueue.remove(message);
+                                break;
+                                }  
+                            }
+                            break;
+                        case seaBoat:
+                            for(int i = 0 ; i < seaCranes.length; i++){
+                                if(seaCranes[i].parkinglotTransport.node == message.DestinationNode()){
+                                    // Makes a new message for the crane
+                                    seaCranes[i].SendMessage(message);                            
+                                    // Request an AGV to fetch the first container
+                                    if(message.GetAction() == Message.ACTION.Unload){
+                                        messageQueue.add(new Message(
+                                        seaCranes[i],
+                                        AGV.class,
+                                        Message.ACTION.Fetch,
+                                        null));
+                                    }                            
+                                //Message was handeld so remove it
+                                messageQueue.remove(message);
+                                break;
+                                }
+                            }
+                            break;
+                        case inlandBoat:
+                            for(int i = 0 ; i < bargeCranes.length; i++){
+                                if(bargeCranes[i].parkinglotTransport.node == message.DestinationNode()){
+                                    // Makes a new message for the crane
+                                    bargeCranes[i].SendMessage(message);                            
+                                    // Request an AGV to fetch the first container
+                                    if(message.GetAction() == Message.ACTION.Unload){
+                                        messageQueue.add(new Message(
+                                        bargeCranes[i],
+                                        AGV.class,
+                                        Message.ACTION.Fetch,
+                                        null));
+                                    }                            
+                                //Message was handeld so remove it
+                                messageQueue.remove(message);
+                                break;
+                                }
+                            }
+                            break;
+                    }
                 }
             }
         }
