@@ -1,7 +1,7 @@
 package Parkinglot;
 
 import Pathfinding.Node;
-import java.util.Vector;
+import java.util.ArrayList;
 
 /**
  * @author Karel Gerbrands
@@ -12,14 +12,21 @@ import java.util.Vector;
  */
 public class Parkinglot <T>
 {
-    private Vector<T> _parkingSpace;
+    private ArrayList<T> _parkingSpace;
     private int _size;
     private int _parked;
     public Node node;
     
-    public Parkinglot (int size, Node n)
+    public Parkinglot (int size, Node n) throws Exception
     {
-        _parkingSpace = new Vector<T>();        
+        if (size < 1)
+            { throw new Exception("The size can't be smaller than one."); }
+        
+        if (n == null)
+            { throw new Exception("The node can't be null."); }
+        
+        
+        _parkingSpace = new ArrayList<T>();        
         _size = size;
         node = n;
     }
@@ -29,7 +36,7 @@ public class Parkinglot <T>
      * @return a reference to all the vehicles inside the parkinglot.
      * @throws Exception when there are no vehicles parked in the parkinglot.
      */
-    public Vector<T> getVehicles () throws Exception
+    public ArrayList<T> getVehicles () throws Exception
     {
         if (_parked > 0)
         {
@@ -78,7 +85,7 @@ public class Parkinglot <T>
             if (parkedVehicle == vehicle)
             {
                 _parked--;
-                _parkingSpace.removeElement(parkedVehicle);
+                _parkingSpace.remove(parkedVehicle);
                 return parkedVehicle;
             }
         }

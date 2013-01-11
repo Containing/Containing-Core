@@ -42,12 +42,12 @@ public class Container_Stack
      * @return Returns the top container of the stack. If a null is returned,
      * the stack is empty.
      */
-    public Container peak () throws Exception
+    public Container peek () throws Exception
     {
         if (_currentHeight == 0)
         {
             //System.out.println("Exception in Container_Stack : '" + this.toString() + "' Can't peak from an empty stack.");
-            throw new Exception("Can't peak from an empty stack.");
+            throw new Exception("Can't peek from an empty stack.");
         }
         
         else
