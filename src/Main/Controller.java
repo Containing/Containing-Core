@@ -14,6 +14,7 @@ import java.util.Date;
 import java.util.List;
 import updateTimer.updateTimer;
 import Crane.*;
+import Parkinglot.Parkinglot;
 import java.sql.ResultSet;
 
 
@@ -137,19 +138,19 @@ public class Controller {
         //Er zijn in totaal  10 zeeschipkranen, 8 binnenvaartkranen, 4 treinkranen en 20 truckkranen 
         for(int i = 0; i < 10; i++){    
             // Initialize 10 seaShipCranes
-            seaCranes[i] = new Crane(0,0,null,null);
+            seaCranes[i] = new Crane(0,0,new Parkinglot(1,new Node(0,0)),new Parkinglot(1,new Node(0,0)));
         }
         for(int i = 0 ; i < 8; i++){     
             // Initialize 8 BargeCranes
-            bargeCranes[i] = new Crane(0,0,null,null);
+            bargeCranes[i] = new Crane(0,0,new Parkinglot(1,new Node(0,0)),new Parkinglot(1,new Node(0,0)));
         }        
         for(int i  =0 ; i < 4; i++){         
             // Initialize 4 trainCranes
-            trainCranes[i] = new Crane(0,0,null,null);
+            trainCranes[i] = new Crane(0,0,new Parkinglot(1,new Node(0,0)),new Parkinglot(1,new Node(0,0)));
         }        
         for (int i = 0; i < 20; i++){          
             // Initialize 20 truckCranes
-            truckCranes[i] = new Crane(0,0,null,null);
+            truckCranes[i] = new Crane(0,0,new Parkinglot(1,new Node(0,0)),new Parkinglot(1,new Node(0,0)));
         }
     }
     

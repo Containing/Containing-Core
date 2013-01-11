@@ -59,8 +59,8 @@ public class AGV extends Vehicle implements IMessageReceiver {
             if(assignments.get(0).Fetch()){
                 // When the AGV has a container on him
                 if(storage.Count() > 0){
-                    Container.TransportType transportType = storage.peakContainer(0, 0).getDepartureTransportType();
-                    switch(transportType){
+                    //Container.TransportType transportType = storage.peakContainer(0, 0).getDepartureTransportType();
+                    switch(storage.peekContainer(0,0).getDepartureTransportType()){
                         case trein:
                             //destination = trein parking node
                             break;
