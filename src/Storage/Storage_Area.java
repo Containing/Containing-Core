@@ -102,9 +102,9 @@ public class Storage_Area
         return _rowFullMap[row];
     }
 
-    public Container peakContainer(int x, int z) throws Exception
+    public Container peekContainer(int x, int z) throws Exception
     {
-        return _stackField[x][z].peak();
+        return _stackField[x][z].peek();
     }
     
     public Container popContainer(int x, int z) throws Exception

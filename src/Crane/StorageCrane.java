@@ -28,7 +28,7 @@ public class StorageCrane extends Crane
     private Storage_Area _storageField;
     private HashMap _storageMap;
     
-    public StorageCrane (int rails, int range, Parkinglot<AGV> parkingA, Parkinglot<AGV> parkingB, Storage_Area storage, Vector3f pos)
+    public StorageCrane (int rails, int range, Parkinglot<AGV> parkingA, Parkinglot<AGV> parkingB, Storage_Area storage, Vector3f pos) throws Exception
     {
         super(rails, range, parkingA, parkingB);
         
@@ -88,11 +88,11 @@ public class StorageCrane extends Crane
                             }
                             
                             else if (_carriedContainer.getDepartureDateStart().after(
-                            _storageField.peakContainer(row, column).getDepartureDateStart())
+                            _storageField.peekContainer(row, column).getDepartureDateStart())
                             == true || _carriedContainer.getDepartureDateStart().equals(
-                            _storageField.peakContainer(row, column).getDepartureDateStart()) == true)
+                            _storageField.peekContainer(row, column).getDepartureDateStart()) == true)
                             {
-                                _storageMap.remove(_storageField.peakContainer(row, column).getId());
+                                _storageMap.remove(_storageField.peekContainer(row, column).getId());
                                 _storageMap.put(_carriedContainer.getId(), new int[] {row, column, 1});
                                 this.loadContainer(_storageField, row, column);
                             }

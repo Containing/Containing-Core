@@ -14,7 +14,7 @@ import java.util.Date;
 import java.util.List;
 import updateTimer.updateTimer;
 import Crane.*;
-import Vehicles.Vehicle.VehicleType;
+import Parkinglot.Parkinglot;
 import java.sql.ResultSet;
 
 
@@ -30,8 +30,11 @@ public class Controller {
     List<TransportVehicle> presentVehicles;
     // List with all AGVs
     List<Vehicle> agvList;
-    // List with all Cranes
-    List<Crane> craneList;
+    
+    Crane[] seaCranes;
+    Crane[] bargeCranes;
+    Crane[] truckCranes;
+    Crane[] trainCranes;
     
     List<StorageCrane> storageCranes;
     // List with all the messages for the controller
@@ -91,8 +94,7 @@ public class Controller {
         // Initializes new ArrayLists
         messageQueue = new ArrayList();
         presentVehicles = new ArrayList();        
-        agvList = new ArrayList();
-        craneList = new ArrayList();      
+        agvList = new ArrayList();  
         
         if(!Database.restoreDump()){
             // When it doesn't exists
@@ -123,6 +125,11 @@ public class Controller {
             agvList.add(new AGV(new Node(1,0)));
         }
         
+        seaCranes = new Crane[10];
+        bargeCranes = new Crane[8];
+        truckCranes = new Crane[20];
+        trainCranes = new Crane[4];
+        
         /**
          * TODO: Initialize the positions where the cranes need to stand
          * Initialize the map with all his nodes and parkinglots
@@ -130,20 +137,20 @@ public class Controller {
         
         //Er zijn in totaal  10 zeeschipkranen, 8 binnenvaartkranen, 4 treinkranen en 20 truckkranen 
         for(int i = 0; i < 10; i++){    
-            // Add 10 seaShipCranes
-            //craneList.add(Crane);
+            // Initialize 10 seaShipCranes
+            seaCranes[i] = new Crane(0,0,new Parkinglot(1,new Node(0,0)),new Parkinglot(1,new Node(0,0)));
         }
         for(int i = 0 ; i < 8; i++){     
-            // Add 8 BargeCranes
-            //craneList.add(Crane);
+            // Initialize 8 BargeCranes
+            bargeCranes[i] = new Crane(0,0,new Parkinglot(1,new Node(0,0)),new Parkinglot(1,new Node(0,0)));
         }        
         for(int i  =0 ; i < 4; i++){         
-            // Add 4 trainCranes
-            //craneList.add(Crane);
+            // Initialize 4 trainCranes
+            trainCranes[i] = new Crane(0,0,new Parkinglot(1,new Node(0,0)),new Parkinglot(1,new Node(0,0)));
         }        
         for (int i = 0; i < 20; i++){          
-            // Add 20 truckCranes
-            //craneList.add(Crane);
+            // Initialize 20 truckCranes
+            truckCranes[i] = new Crane(0,0,new Parkinglot(1,new Node(0,0)),new Parkinglot(1,new Node(0,0)));
         }
     }
     
@@ -211,9 +218,19 @@ public class Controller {
             agv.update(secondsToIncrement);
         }
         // Updates the logic of each crane
-        for(Crane crane : craneList){
+        for(Crane crane : seaCranes){
             crane.update(secondsToIncrement);
         }
+        for(Crane crane : bargeCranes){
+            crane.update(secondsToIncrement);
+        }
+        for(Crane crane : truckCranes){
+            crane.update(secondsToIncrement);
+        }
+        for(Crane crane : trainCranes){
+            crane.update(secondsToIncrement);
+        }
+        
         // Updates the logic of each docked vehicle
         for(Vehicle vehicle : presentVehicles){
             vehicle.update(secondsToIncrement);
@@ -242,85 +259,6 @@ public class Controller {
         UpdateMessages();
     }
     
-    /**
-     * Updates all the messageQueue 
-     * @throws Exception 
-     */
-    private void UpdateMessages() throws Exception{
-        // Checks every message
-        for(Message message : messageQueue){
-            // When the message requests an AGV 
-            if(message.RequestedObject() == AGV.class){  
-                // Checks every agv if it's available
-                for(Vehicle agv : agvList){
-                    // When the agv is available
-                    if(((AGV)agv).Available()){
-                        //Sets the destination of the AGV
-                        agv.setDestination(message.DestinationNode());
-                        //Copies the message to the message queue
-                        ((AGV)agv).SendMessage(message);
-                        // When it's a fetch message send a delivery message
-                        if(message.Fetch()){
-                            boolean found = false;
-                            if(message.DestinationObject().getClass().equals(Crane.class)){
-                                for(Crane crane : craneList){
-                                    //if(crane.Available() && crane.)
-                                }
-                            }
-                            else if (message.DestinationObject().getClass().equals(StorageCrane.class)){
-                                for(StorageCrane crane : storageCranes){
-                                    if(crane.Available()){
-                                        crane.SendMessage(new Message(
-                                                crane,
-                                                agv,
-                                                Message.ACTION.Unload,
-                                                message.GetContainer()));
-                                        ((AGV)agv).SendMessage(new Message(
-                                                crane,
-                                                agv,
-                                                Message.ACTION.Unload,
-                                                message.GetContainer()));
-                                        found = true;
-                                        break;
-                                    }
-                                }
-                                if(!found){
-                                    messageQueue.add(new Message(
-                                            agv,
-                                            StorageCrane.class,
-                                            Message.ACTION.Unload,
-                                            message.GetContainer()));
-                                }
-                            }
-                        }
-                        //Message was handeld so remove it
-                        messageQueue.remove(message);
-                    }
-                }
-            }
-            // When the message requests a crane
-            else if(message.RequestedObject() == Crane.class){
-                // Check every crane in the list
-                for(Crane crane : craneList){
-                    // When the crane is assigned to this parkinglot
-                    if(crane.parkinglotTransport.node == message.DestinationNode()){
-                        // Makes a new message for the crane
-                        crane.SendMessage(message);                            
-                        // Request an AGV to fetch the first container
-                        if(message.GetAction() == Message.ACTION.Unload){
-                            messageQueue.add(new Message(
-                                crane,
-                                AGV.class,
-                                Message.ACTION.Fetch,
-                                null));
-                        }                            
-                        //Message was handeld so remove it
-                        messageQueue.remove(message);
-                    }                    
-                }
-            }
-        }
-    }
     
     /**
      * Updates all the vehicles that still need to arrive
@@ -475,5 +413,228 @@ public class Controller {
      */
     public int GetSecondsIncrement(){
         return secondsToIncrement;
+    }
+    
+    /**
+     * Updates all the messageQueue 
+     * @throws Exception 
+     */
+    private void UpdateMessages() throws Exception{
+        // Checks every message
+        for(Message message : messageQueue){
+            // When the message requests an AGV 
+            if(message.RequestedObject() == AGV.class){  
+                // Checks every agv if it's available
+                for(Vehicle agv : agvList){
+                    // When the agv is available
+                    if(((AGV)agv).Available()){
+                        //Sets the destination of the AGV
+                        agv.setDestination(message.DestinationNode());
+                        //Copies the message to the message queue
+                        ((AGV)agv).SendMessage(message);
+                        // When it's a fetch message send a delivery message
+                        if(message.Fetch() && message.GetContainer() != null){
+                            boolean found = false;
+                            // When the destination object is a crane
+                            if(message.DestinationObject() instanceof Crane){
+                                switch(message.GetContainer().getDepartureTransportType())
+                                {
+                                    case vrachtauto:
+                                        truckCranes = CranesToCheck(truckCranes,(AGV)agv,message);
+                                        break;
+                                    case zeeschip:
+                                        seaCranes = CranesToCheck(seaCranes,(AGV)agv,message);
+                                        break;
+                                    case binnenschip:
+                                        bargeCranes = CranesToCheck(bargeCranes,(AGV)agv,message);
+                                        break;
+                                    case trein:
+                                        trainCranes = CranesToCheck(trainCranes,(AGV)agv,message);
+                                        break;
+                                }
+                            }
+                            // When the destination object is a storageCrane
+                            else if (message.DestinationObject() instanceof StorageCrane){
+                                // Check the Storage cranes
+                                storageCranes = StorageCranesToCheck(storageCranes,(AGV)message.DestinationObject(), message);
+                            }
+                        }
+                    }
+                }
+            }
+            // When the message requests a crane
+            else if(message.RequestedObject() instanceof Crane){
+                // When a vehicle requested the crane
+                if(message.DestinationObject() instanceof Vehicle){
+                    // Switch between the vechile types
+                    switch(((Vehicle)message.DestinationObject()).GetVehicleType()){
+                        case truck:
+                            truckCranes = TransportRequestsCrane(truckCranes, message);
+                            break;
+                        case train:
+                            trainCranes = TransportRequestsCrane(trainCranes,message);
+                            break;
+                        case seaBoat:
+                            seaCranes = TransportRequestsCrane(seaCranes,message);
+                            break;
+                        case inlandBoat:
+                            bargeCranes = TransportRequestsCrane(bargeCranes, message);
+                            break;
+                        case AGV:
+                            switch(message.GetContainer().getDepartureTransportType())
+                            {
+                                case vrachtauto:
+                                    truckCranes = CranesToCheck(truckCranes,(AGV)message.DestinationObject(),message);
+                                    break;
+                                case zeeschip:
+                                    seaCranes = CranesToCheck(seaCranes,(AGV)message.DestinationObject(),message);
+                                    break;
+                                case binnenschip:
+                                    bargeCranes = CranesToCheck(bargeCranes,(AGV)message.DestinationObject(),message);
+                                    break;
+                                case trein:
+                                    trainCranes = CranesToCheck(trainCranes,(AGV)message.DestinationObject(),message);
+                                    break;
+                            }
+                            break;
+                    }
+                }
+                // When an AGV wants to store it's container
+                else if(message.RequestedObject() instanceof StorageCrane){
+                    // Check the Storage cranes
+                    storageCranes = StorageCranesToCheck(storageCranes,(AGV)message.DestinationObject(), message);  
+                }
+            }
+        }
+    }
+    
+    /**
+     * Checks a crane is available for an agv to unload it's container
+     * @param toCheck The crane array to check
+     * @param agv The agv that requests a crane
+     * @param message The fetch message of the agv
+     * @return The crane array that's checked
+     * @throws Exception 
+     */
+    private Crane[] CranesToCheck(Crane[] toCheck,AGV agv, Message message) throws Exception{
+        // Boolean if there's a crane that can handel the message
+        boolean found = false;
+        // Check every crane
+        for(int i = 0; i< toCheck.length; i++){
+            // When the crane is available and 
+            // there's a transport vehicle on the cranes parkinglot
+            if(toCheck[i].Available() && toCheck[i].parkinglotTransport.isFull()){
+                // Send an unload message to the crane
+                toCheck[i].SendMessage(new Message(
+                    agv,
+                    toCheck[i],
+                    Message.ACTION.Unload,
+                    message.GetContainer()));
+                // When the agv has assignments
+                if(!agv.Available()){
+                    // When it's a delivery message
+                    if(agv.GetMessage().Deliver()){
+                       // Send a delivery message to the agv
+                        agv.SendMessage(new Message(
+                            toCheck[i],
+                            agv,
+                            Message.ACTION.Deliver,
+                            message.GetContainer()),
+                            true);                         
+                    }
+                }
+                else{
+                // Send a delivery message to the agv
+                agv.SendMessage(new Message(
+                    toCheck[i],
+                    agv,
+                    Message.ACTION.Deliver,
+                    message.GetContainer()));
+                }
+                found  = true;
+                break;                
+            }
+        }
+        // When there's no crane available to deliver the container
+        // Add a message to the queue
+        if(!found){
+            messageQueue.add(new Message(
+                    agv,
+                    toCheck[0],
+                    Message.ACTION.Unload,
+                    message.GetContainer()));
+        }
+        // Message was handeld so remove it        
+        messageQueue.remove(message);
+        
+        return toCheck;
+    }
+    
+    
+    private Crane[] TransportRequestsCrane(Crane[] toCheck, Message message) throws Exception{
+        for(int i = 0 ; i < toCheck.length; i++){
+            if(toCheck[i].parkinglotTransport.node == message.DestinationNode()){
+                // Sends the message copy to the crane
+                toCheck[i].SendMessage(message);
+                // Request an AGV to fetch the first container
+                if(message.UnLoad()){
+                    messageQueue.add(new Message(
+                        toCheck[i],
+                        AGV.class,
+                        Message.ACTION.Fetch,
+                        null));
+                }  
+                //Message was handeld so remove it
+                messageQueue.remove(message);
+                break;
+            }
+        }
+        return toCheck;
+    }
+    
+    private List<StorageCrane> StorageCranesToCheck(List<StorageCrane> toCheck,AGV agv, Message message) throws Exception{
+        boolean found = false;
+        for(StorageCrane crane : toCheck){
+            if(crane.Available() && !crane.parkinglotAGV.isFull()){
+                // Send a new message
+                crane.SendMessage(new Message(
+                        crane,
+                        agv,
+                        Message.ACTION.Unload,
+                        message.GetContainer()));
+                // When the agv has assignments
+                if(!agv.Available()){
+                    // When it's a delivery message
+                    if(agv.GetMessage().Deliver()){
+                        agv.SendMessage(new Message(
+                            crane,
+                            agv,
+                            Message.ACTION.Deliver,
+                            message.GetContainer()), 
+                            true);
+                    }
+                }
+                else{
+                    agv.SendMessage(new Message(
+                        crane,
+                        agv,
+                        Message.ACTION.Deliver,
+                        message.GetContainer()));
+                }
+                found = true;
+                break;
+            }
+        }
+        if(!found){
+            messageQueue.add(new Message(
+                agv,
+                toCheck.get(0),
+                Message.ACTION.Unload,
+                message.GetContainer()));
+        }
+        // Message was handeld so remove it        
+        messageQueue.remove(message);
+        
+        return toCheck;
     }
 }

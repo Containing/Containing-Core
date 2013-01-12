@@ -32,6 +32,10 @@ public class StatsPublisher {
                 msg.areas.put(areas[k], rnd.nextInt(50));
             }
             
+            msg.vehicles.put("AGV", rnd.nextInt(20));
+            msg.vehicles.put("SHIP", rnd.nextInt(20));
+            msg.vehicles.put("TRUCK",rnd.nextInt(20));
+            
             // Serialize message
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             ObjectOutputStream oos = new ObjectOutputStream(baos);

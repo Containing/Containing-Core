@@ -59,8 +59,8 @@ public class AGV extends Vehicle implements IMessageReceiver {
             if(assignments.get(0).Fetch()){
                 // When the AGV has a container on him
                 if(storage.Count() > 0){
-                    Container.TransportType transportType = storage.peakContainer(0, 0).getDepartureTransportType();
-                    switch(transportType){
+                    //Container.TransportType transportType = storage.peakContainer(0, 0).getDepartureTransportType();
+                    switch(storage.peekContainer(0,0).getDepartureTransportType()){
                         case trein:
                             //destination = trein parking node
                             break;
@@ -121,6 +121,13 @@ public class AGV extends Vehicle implements IMessageReceiver {
         return assignments.isEmpty();
     }
     
+    public Message GetMessage(){
+        if(assignments.isEmpty()){
+            return null;
+        }
+        return assignments.get(0);
+    }
+    
     /**
      * Add's an assignment for the agv
      * @param mess 
@@ -129,6 +136,19 @@ public class AGV extends Vehicle implements IMessageReceiver {
     public void SendMessage(Message mess)
     {
         assignments.add(mess);
+    }
+    /**
+     * When true clears all assignments.
+     * Adds a new message
+     * @param mess
+     * @param destroyAssignments 
+     */
+    public void SendMessage(Message mess, boolean destroyAssignments)throws Exception{
+        if(destroyAssignments){
+            assignments = new ArrayList();
+        }
+        assignments.add(mess);
+        destination = mess.DestinationNode();
     }
 }
 
