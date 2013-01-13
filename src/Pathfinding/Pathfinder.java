@@ -249,27 +249,85 @@ public class Pathfinder {
         }
         // </editor-fold>
 
-        // <editor-fold defaultstate="collapsed" desc="Seaship route  nodes(101-125), parkinglot(101)">
+        // <editor-fold defaultstate="collapsed" desc="Seaship route  nodes(101-125), parkinglot(46)">
         float distanceToDockSeaship = 50; // todo edit this value
         float distandeBetweenNodesSeaship = 100;
-        float curve = 1.5f;
+        float curveSeaship = 1.5f;
         
         // nodes
         Nodes[101] = new Node(-distanceToDockSeaship, totalWidth/2); // dock
         parkinglots[46] = new Parkinglot(1,Nodes[101]);
-        int nodesCount = 10;
-        for (int i = 1; i <= nodesCount; i++) {
-            Nodes[101+i] = new Node(-distanceToDockSeaship-(int)Math.pow(i, curve+1), (totalWidth/2)+i*distandeBetweenNodesSeaship);
-            Nodes[111+i] = new Node(-distanceToDockSeaship-(int)Math.pow(i, curve+1), (totalWidth/2)-i*distandeBetweenNodesSeaship);
+        for (int i = 1; i <= 10; i++) {
+            Nodes[101+i] = new Node(-distanceToDockSeaship-(int)Math.pow(i, curveSeaship+1), (totalWidth/2)+i*distandeBetweenNodesSeaship);
+            Nodes[111+i] = new Node(-distanceToDockSeaship-(int)Math.pow(i, curveSeaship+1), (totalWidth/2)-i*distandeBetweenNodesSeaship);
         }
         
         //path
         pathList.add(new Path(Nodes[102], Nodes[101]));
         pathList.add(new Path(Nodes[101], Nodes[112]));
-        for (int i = 0; i < nodesCount-1; i++) {
+        for (int i = 0; i < 10-1; i++) {
             pathList.add(new Path(Nodes[111-i], Nodes[110-i]));
             pathList.add(new Path(Nodes[112+i], Nodes[113+i]));
         }
+        // </editor-fold>
+        
+        // <editor-fold defaultstate="collapsed" desc="Inlandship route  nodes(130-175), parkinglot(47,48)">
+        float distanceToDockInlandship = 50; // todo edit this value
+        float distandeBetweenNodesInlandship = 100;
+        float curveInlandship = 1.5f;
+        
+        // nodes
+        Nodes[130] = new Node(distanceToStorage+storageLenght/4, -distanceToDockInlandship); // dock 1
+        parkinglots[47] = new Parkinglot(1,Nodes[130]);
+        Nodes[131] = new Node(distanceToStorage+storageLenght/4*3, -distanceToDockInlandship); // dock 2
+        parkinglots[48] = new Parkinglot(1,Nodes[131]);
+        
+        for (int i = 1; i <= 10; i++) {
+            Nodes[132+i] = new Node(((distanceToStorage+storageLenght/4)+i*distandeBetweenNodesInlandship), -distanceToDockSeaship-(int)Math.pow(i, curveInlandship+1));
+            Nodes[142+i] = new Node(((distanceToStorage+storageLenght/4*3)+i*distandeBetweenNodesInlandship), -distanceToDockSeaship-(int)Math.pow(i, curveInlandship+1));
+            Nodes[152+i] = new Node(((distanceToStorage+storageLenght/4)-i*distandeBetweenNodesInlandship), -distanceToDockSeaship-(int)Math.pow(i, curveInlandship+1));
+            Nodes[162+i] = new Node(((distanceToStorage+storageLenght/4*3)-i*distandeBetweenNodesInlandship), -distanceToDockSeaship-(int)Math.pow(i, curveInlandship+1));
+        }
+        
+        //path
+        pathList.add(new Path(Nodes[153], Nodes[130]));
+        pathList.add(new Path(Nodes[130], Nodes[133]));
+        pathList.add(new Path(Nodes[163], Nodes[131]));
+        pathList.add(new Path(Nodes[131], Nodes[143]));
+        for (int i = 0; i < 10-1; i++) {
+            pathList.add(new Path(Nodes[162-i], Nodes[161-i]));
+            pathList.add(new Path(Nodes[133+i], Nodes[134+i]));
+            pathList.add(new Path(Nodes[172-i], Nodes[171-i]));
+            pathList.add(new Path(Nodes[143+i], Nodes[144+i]));
+        }
+        
+        // </editor-fold>
+        
+        // <editor-fold defaultstate="collapsed" desc="truck route   nodes(176-), parkinglot(49-68)">
+        
+        float distanceToDockTruck = 50; // todo edit this value
+        float distandeBetweenNodesTruck = 200;
+        //float curveInlandship = 1.5f;
+        
+        // nodes
+        for (int i = 0; i < 20; i++) {
+            Nodes[176+i] = new Node(totalLenght+distanceToDockTruck, distanceToStorage+storageWidth/20/2+storageWidth/20*i);
+            parkinglots[49+i] = new Parkinglot(1,Nodes[176+i]);
+        }
+        Nodes[196] = new Node(totalLenght+distanceToDockTruck, distanceToMainRoad);
+        Nodes[197] = new Node(totalLenght+distanceToDockTruck, totalWidth-distanceToMainRoad);
+        Nodes[198] = new Node(totalLenght+distanceToDockTruck+distandeBetweenNodesTruck, distanceToMainRoad);
+        Nodes[199] = new Node(totalLenght+distanceToDockTruck+distandeBetweenNodesTruck, totalWidth-distanceToMainRoad);
+        
+        for (int i = 0; i < 20; i++) {
+            pathList.add(new Path(Nodes[187], Nodes[176+i]));
+            pathList.add(new Path(Nodes[176+i], Nodes[186]));
+        }
+        pathList.add(new Path(Nodes[199], Nodes[197]));
+        pathList.add(new Path(Nodes[197], Nodes[195]));
+        pathList.add(new Path(Nodes[176], Nodes[196]));
+        pathList.add(new Path(Nodes[196], Nodes[198]));
+        
         // </editor-fold>
         
         // <editor-fold defaultstate="collapsed" desc="Cranes">
