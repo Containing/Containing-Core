@@ -15,6 +15,16 @@ public class AGV extends Vehicle implements IMessageReceiver {
     private final float SpeedWithoutContainer = 144;    
     private List<Message> assignments;
     
+    public boolean NeedDeliverAssignment()
+    {
+        if(needDeliverAssignment){
+            needDeliverAssignment = false;
+            return true;
+        }
+        return false;
+    }
+    private boolean needDeliverAssignment = false;
+    
     public AGV(Node startPosition) throws Exception{
         if (startPosition == null){
             throw new Exception("\nThe input variable can't be null:"+
@@ -31,7 +41,7 @@ public class AGV extends Vehicle implements IMessageReceiver {
     @Override
     public void update(int gameTime) throws Exception {
         if (position == destination.getPosition()){
-            if(!assignments.isEmpty()){
+            if(!Available()){
                 if(assignments.get(0).DestinationObject().getClass() == Crane.class){
                     Crane crane = (Crane)(assignments.get(0).DestinationObject());
                     crane.parkinglotAGV.park(this);
@@ -85,7 +95,7 @@ public class AGV extends Vehicle implements IMessageReceiver {
             else if(assignments.get(0).Deliver())
             {
                 // When the AGV doesn't has a contianer on him
-                if(storage.Count() == 0)
+                if(!storage.isFilled())
                 {
                     // Remove assingment because the contianer is deliverd
                     assignments.remove(0); 
@@ -102,6 +112,10 @@ public class AGV extends Vehicle implements IMessageReceiver {
             // When there are no assignments left
             if(Available())
             {
+                // When the AGV has no assignments but still has a container 
+                if(storage.isFilled()){
+                    needDeliverAssignment = true;
+                }
                 /**
                  * 
                  * TODO Send the AGV to the nearest parking lot

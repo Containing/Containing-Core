@@ -29,14 +29,27 @@ public class Controller {
     // List with all the present transport vehicles
     List<TransportVehicle> presentVehicles;
     // List with all AGVs
-    List<Vehicle> agvList;
+    List<Vehicle> agvList;    
     
+    // List with all the Vehicles that will arrive
+    List<TransportVehicle> seaShipsToArrive;
+    List<TransportVehicle> bargesToArrive;
+    List<TransportVehicle> trainsToArrive;
+    List<TransportVehicle> trucksToArrive;
+    
+    // Array with all the cranes
     Crane[] seaCranes;
     Crane[] bargeCranes;
     Crane[] truckCranes;
     Crane[] trainCranes;
-    
+    // List with all the storageCranes
     List<StorageCrane> storageCranes;
+    
+    // List with all the containers that will be send on the next deliveryTime;
+    List<Id_Position> depatureContainers;
+    // List with all the containers that are ready to be send away
+    List<Container> waitingContainers;
+    
     // List with all the messages for the controller
     List<Message> messageQueue;
     
@@ -48,13 +61,8 @@ public class Controller {
     // The date when the next container needs to be send
     Date deliveryTime;
     // The date when the next shipment arrives
-    Date shipmentTime;
+    Date shipmentTime;   
     
-    // List with all the Vehicles that will arrive
-    List<TransportVehicle> seaShipsToArrive;
-    List<TransportVehicle> bargesToArrive;
-    List<TransportVehicle> trainsToArrive;
-    List<TransportVehicle> trucksToArrive;
     
     /**
      * The amount of seconds the simulation time will increment after each update
@@ -113,12 +121,16 @@ public class Controller {
         simulationTime = new Date();
         
         // Gets the first shipment
-        GetNextArrivalDate();        
+        GetNextArrivalDate();   
         
         // Sets the simulationTime equal to the first shipment
         simulationTime.setTime(shipmentTime.getTime());
         // Sets the simulationTime 1 hour before the first shipment  
         simulationTime.setHours(simulationTime.getHours() -1);
+        
+        // Gets the first delivery of containers
+        // Also sets the deliveryTime
+        depatureContainers = GetDepartureContainers(simulationTime);
         
         // Adds 100 AGVs
         for(int i = 0; i < 100; i++){
@@ -129,11 +141,6 @@ public class Controller {
         bargeCranes = new Crane[8];
         truckCranes = new Crane[20];
         trainCranes = new Crane[4];
-        
-        /**
-         * TODO: Initialize the positions where the cranes need to stand
-         * Initialize the map with all his nodes and parkinglots
-         */
         
         //Er zijn in totaal  10 zeeschipkranen, 8 binnenvaartkranen, 4 treinkranen en 20 truckkranen 
         for(int i = 0; i < 10; i++){    
@@ -154,37 +161,25 @@ public class Controller {
         }
     }
     
-    private List<Id_Position> GetDepartureContainers(Vehicle.VehicleType vehicleType, Date now) throws Exception{
+    /**
+     * Gets all the containers that will be delivered the next time
+     * @param now The simulation time
+     * @return List with all the containers that need to be send
+     * @throws Exception 
+     */
+    private List<Id_Position> GetDepartureContainers( Date now) throws Exception{
         List<Id_Position> id_positionList = new ArrayList<>();
-        String type = "";
-        switch(vehicleType){
-            case AGV:
-            throw  new Exception("Agv's don't have departure containers");
-            case inlandBoat:
-            type = "binnenschip";
-            break;
-            case seaBoat:
-            type = "zeeschip";
-            break;
-            case train:
-            type = "trein";
-            break;
-            case truck:
-            type = "vrachtauto";
-            break;
-        }
+        
         String query = "Select Max(departureDateStart) as max " +
                         "from container " +
-                        "Where departureDateStart < '" + Container.df.format(now) + "' " +
-                        "Where departureTransportType = '" + type + "' ";
+                        "Where departureDateStart < '" + Container.df.format(now);
         ResultSet getNextDate = Database.executeQuery(query);
-        Date NextDate = Container.df.parse(getNextDate.getString("max"));
+        deliveryTime = Container.df.parse(getNextDate.getString("max"));
         
         query = "Select locationId, storageLocation " +
                 "from container " +
-                "Where departureDateStart = '" + Container.df.format(NextDate) + "' " +
-                "Where departureTransportType = '" + type + "' " +
-                "Order by departureDateStart";
+                "Where departureDateStart = '" + Container.df.format(deliveryTime) + "' " +
+                "Order by departureDateEnd";
         ResultSet getLocationId_storageLocation = Database.executeQuery(query);
         while(getLocationId_storageLocation.next()){
             String Id = getLocationId_storageLocation.getString("locationId");
@@ -194,6 +189,11 @@ public class Controller {
         return id_positionList;
     }
     
+    /**
+     * Converts a string to a Vector3f 
+     * @param input
+     * @return 
+     */
     private Vector3f StorageLocationToVector3f(String input){
         char[] inputC = input.toCharArray();
         String a = Character.toString(inputC[0]);
@@ -216,6 +216,13 @@ public class Controller {
         // Updates the logic of each AGV
         for(Vehicle agv : agvList){
             agv.update(secondsToIncrement);
+            if(((AGV)agv).NeedDeliverAssignment()){
+                messageQueue.add(new Message(
+                    agv,
+                    Crane.class,
+                    Message.ACTION.Unload,
+                    agv.storage.peekContainer(0,0)));
+            }
         }
         // Updates the logic of each crane
         for(Crane crane : seaCranes){
@@ -245,15 +252,10 @@ public class Controller {
         }        
         // When the simulation time is equal or greater than the deliveryTime
         if(simulationTime.getTime() >= deliveryTime.getTime()){
-            // Gets all the top containers that need to be transported
-            FetchContainers();
+            // Sends all the containers that need to be deliverd
+            SendContainers();
             // Gets the next date when the next shipment needs to be transported
-            GetNextDeliverDate();
-            
-            /**
-             * TODO : 
-             * When a container is fetch check if the container below if it needs to be fetched
-             */
+            depatureContainers = GetDepartureContainers(simulationTime);
         }
         // Updates all the messageQueue
         UpdateMessages();
@@ -311,12 +313,14 @@ public class Controller {
     }
     
     /**
-     * Checks all the containers that are on top of each stack
-     * When it needs to be transported it will sends a message
+     * Sends all the containers that need to depature
      * @throws Exception 
      */
-    private void FetchContainers() throws Exception{
+    private void SendContainers() throws Exception{
         
+        for(Id_Position idPos : depatureContainers){
+            //waitingContainers.add(storageArea.peekContainer(idPos.position.x, idPos.position.z));
+        }
         // Walks around the whole storage area and checks every contianer
 //        for(int column = 0; column< storageArea.getWidth(); column++){
 //            for(int row =0;row< storageArea.getLength(); row++){
@@ -329,29 +333,6 @@ public class Controller {
 //                                AGV.class,
 //                                Message.ACTION.Fetch,
 //                                storageArea.PeekContainer(column, row)));                        
-//                    }
-//                }
-//            }
-//        }
-    }
-        
-    /**
-     * Get's the next delivery time 
-     */
-    private void GetNextDeliverDate() throws Exception{
-        // Krijg ik nog van tonnie
-        
-        
-//        Date nextDate = new Date();
-//        // Walks around the whole storage area and checks every contianer
-//        for(int column = 0; column< storageArea.getWidth(); column++){
-//            for(int row =0;row< storageArea.getLength(); row++){
-//                if(!storageArea.rowEmpty(column)){
-//                    if(nextDate.equals(new Date())){
-//                        nextDate = storageArea.PeekContainer(column, row).getDepartureDateStart();
-//                    }
-//                    else if(nextDate.getTime() > storageArea.PeekContainer(column, row).getDepartureDateStart().getTime()){
-//                        nextDate = storageArea.PeekContainer(column, row).getDepartureDateStart();
 //                    }
 //                }
 //            }
@@ -506,6 +487,13 @@ public class Controller {
                 }
             }
         }
+        // Check if there are any agvs left that have nothing todo 
+        // They may deliver the containers that are ready for departure
+        for(Vehicle agv : agvList){
+            if(((AGV)agv).Available()){
+                
+            }
+        }
     }
     
     /**
@@ -568,8 +556,7 @@ public class Controller {
         messageQueue.remove(message);
         
         return toCheck;
-    }
-    
+    }    
     
     private Crane[] TransportRequestsCrane(Crane[] toCheck, Message message) throws Exception{
         for(int i = 0 ; i < toCheck.length; i++){
