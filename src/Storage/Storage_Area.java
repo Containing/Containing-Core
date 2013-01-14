@@ -28,9 +28,7 @@ public class Storage_Area
         _stackField = new Container_Stack[length][width];
         
         if (length < 1 || width < 1)
-        {
-            throw new Exception("Width or length can't be smaller than 1.");
-        }
+        { throw new Exception("Width or length can't be smaller than 1."); }
         
         for (int l = 0; l < length; l++)
         {
@@ -41,9 +39,7 @@ public class Storage_Area
                     _stackField[l][w] = new Container_Stack(height);
                 }
                 catch (Exception e)
-                {
-                    throw new Exception("Height must be higher than 0.");
-                }
+                { throw new Exception("Height must be higher than 0."); }
             }
         }
         
@@ -64,7 +60,7 @@ public class Storage_Area
 
     private void checkRow(int row) throws Exception
     {
-        if (row > _Length || row < 0)
+        if (row > _Length-1 || row < 0)
             { throw new Exception("Row doesn't exist."); }
         
         for (Container_Stack c : _stackField[row])
@@ -94,34 +90,58 @@ public class Storage_Area
     
     public boolean rowEmpty(int row) throws Exception
     {
+        if (row > _Length-1 || row < 0)
+            { throw new Exception("Row doesn't exist."); }
+
         return _rowEmptyMap[row];
     }
     
     public boolean rowFull(int row) throws Exception
     {
+        if (row > _Length-1 || row < 0)
+            { throw new Exception("Row doesn't exist."); }
+
         return _rowFullMap[row];
     }
 
-    public Container peekContainer(int x, int z) throws Exception
+    public Container peekContainer(int row, int column) throws Exception
     {
-        return _stackField[x][z].peek();
+        if (row > _Length-1 || row < 0)
+            { throw new Exception("Row doesn't exist."); }
+        
+        if (column > _Width-1 || column < 0)
+            { throw new Exception("Row doesn't exist."); }
+        
+        return _stackField[row][column].peek();
     }
     
-    public Container popContainer(int x, int z) throws Exception
+    public Container popContainer(int row, int column) throws Exception
     {
-        _containerCount--;
-        Container r = _stackField[x][z].pop();
+        if (row > _Length-1 || row < 0)
+            { throw new Exception("Row doesn't exist."); }
         
-        checkRow(x);
+        if (column > _Width-1 || column < 0)
+            { throw new Exception("Row doesn't exist."); }
+        
+        _containerCount--;
+        Container r = _stackField[row][column].pop();
+        
+        checkRow(row);
         
         return r;
     }
     
-    public void pushContainer(Container container, int x, int z) throws Exception
+    public void pushContainer(Container container, int row, int column) throws Exception
     {
+        if (row > _Length-1 || row < 0)
+            { throw new Exception("Row doesn't exist."); }
+        
+        if (column > _Width-1 || column < 0)
+            { throw new Exception("Row doesn't exist."); }
+        
         _containerCount++;
-        _stackField[x][z].push(container);
-        checkRow(x);
+        _stackField[row][column].push(container);
+        checkRow(row);
     }
     
     public int getLength() 
@@ -144,9 +164,15 @@ public class Storage_Area
         return _containerCount;
     }
     
-    public int Count(int x, int z)
+    public int Count(int row, int column) throws Exception
     {
-        return _stackField[x][z].getHeight();
+        if (row > _Length-1 || row < 0)
+            { throw new Exception("Row doesn't exist."); }
+        
+        if (column > _Width-1 || column < 0)
+            { throw new Exception("Row doesn't exist."); }
+                
+        return _stackField[row][column].getHeight();
     }
     
     public boolean isFilled ()

@@ -34,7 +34,7 @@ public class StorageCrane extends Crane
         
         position = pos;
         _storageField = storage;
-        _storageMap = new HashMap(_storageField.getLength() * _storageField.getWidth() * _storageField.getHeight());
+        _storageMap = new HashMap(_storageField.getLength() * _storageField.getWidth());
     }
     
     public void getContainer (String containerID) throws Exception
@@ -47,16 +47,24 @@ public class StorageCrane extends Crane
         
         if (_storageField.Count() == 0)
             { throw new Exception("Can't get an container from an empty storage."); }
-        
+
         int[] coordinates =(int[])_storageMap.get(containerID);
-        
+
+        if (coordinates == null)
+            { throw new Exception("Specified ID doesn't exist within this storage."); }
+
         if (_storageField.Count(coordinates[0], coordinates[1]) != coordinates[2])
-        { throw new Exception("Specified container isn't on top."); }
+            { throw new Exception("Specified container isn't on top."); }
                 
         else
         {
             _storageMap.remove(containerID);
             this.unloadContainer(_storageField, coordinates[0], coordinates[1]);
+            
+            _storageMap.put(_storageField.peekContainer(coordinates[0], coordinates[1]).getId(),
+                            new int[] { coordinates[0], coordinates[1], 
+                            _storageField.Count(coordinates[0], coordinates[1]) }
+                            );
         }
     }
 
@@ -73,6 +81,7 @@ public class StorageCrane extends Crane
 
         else
         {
+            outerloop:
             for (int row = 0; row < _storageField.getLength(); row++)
             {
                 if(_storageField.rowFull(row) == false)
@@ -85,6 +94,7 @@ public class StorageCrane extends Crane
                             {
                                 _storageMap.put(_carriedContainer.getId(), new int[] {row, column, 1});
                                 this.loadContainer(_storageField, row, column);
+                                break outerloop;
                             }
                             
                             else if (_carriedContainer.getDepartureDateStart().after(
@@ -93,21 +103,22 @@ public class StorageCrane extends Crane
                             _storageField.peekContainer(row, column).getDepartureDateStart()) == true)
                             {
                                 _storageMap.remove(_storageField.peekContainer(row, column).getId());
-                                _storageMap.put(_carriedContainer.getId(), new int[] {row, column, 1});
+                                _storageMap.put(_carriedContainer.getId(), new int[] {row, column, _storageField.Count(row, column)+1});
                                 this.loadContainer(_storageField, row, column);
+                                break outerloop;
                             }
                         }
                     }
                 }
             }
             
-            if (_carriedContainer == null)
+            if (_carriedContainer != null)
                 { throw new Exception("Couldn't store container."); }
         }
     }
     
     @Override
-    public void update(int updateTime)
+    public void update(float updateTime)
     {
         
     }

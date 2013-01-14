@@ -31,7 +31,7 @@ public class Crane implements IMessageReceiver
     public Crane (int rails, int range, Parkinglot parkingAGV, Parkinglot parkingTransport) throws Exception
     {
         if (parkingAGV == null || parkingTransport == null)
-        { throw new Exception("A parkinglot can't be null."); }
+            { throw new Exception("A parkinglot can't be null."); }
         
         if (rails < 0 || range < 0)
             { throw new Exception("The rails or range can't be smaller than zero."); }
@@ -190,7 +190,7 @@ public class Crane implements IMessageReceiver
         return storage;
     }
     
-    public void update(int updateTime)
+    public void update(float updateTime)
     {
         
     }
