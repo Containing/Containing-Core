@@ -44,7 +44,7 @@ public class TransportVehicle extends Vehicle {
     
     }
     @Override
-    public void update(int gameTime) throws Exception {
+    public void update(float gameTime) throws Exception {
         if (position == destination.getPosition()){
             // send message
             // wait for message depart

@@ -28,6 +28,7 @@ public class Controller {
     
     // The updateTimer class, Updates the update method
     updateTimer timer;
+    float multiplier;
     
     // List with all the present transport vehicles
     List<TransportVehicle> presentVehicles;
@@ -66,10 +67,6 @@ public class Controller {
     // The date when the next shipment arrives
     Date shipmentTime;   
     
-    
-    // The amount of seconds the simulation time will increment after each update
-    int secondsToIncrement;
-    
     // </editor-fold>
     
     // <editor-fold defaultstate="collapsed" desc="Properties">
@@ -78,17 +75,17 @@ public class Controller {
      * Sets the simulation seconds increment time
      * @param value Value from 0 till 100
      */
-    public void SetSecondsIncrement(int value){
+    public void SetMultiplier(float value){
         // When the value is below 0
         if(value < 0){
-            return;
+            multiplier = 0;
         }        
         // When the value is above 100
         if(value > 100 ){
-            secondsToIncrement = 100;
+            multiplier = 100;
         }
         else{
-            secondsToIncrement = value;
+            multiplier = value;
         }
     }
     
@@ -96,8 +93,8 @@ public class Controller {
      * Gets the simulation seconds increment time
      * @return seconds increment
      */
-    public int GetSecondsIncrement(){
-        return secondsToIncrement;
+    public float GetMultiplier(){
+        return multiplier;
     }
         
     // </editor-fold>
@@ -135,8 +132,8 @@ public class Controller {
      **/
     private void Initialize() throws Exception
     {   
-        // Default seconds increment value
-        secondsToIncrement = 6;
+        // Default multiplier value
+        multiplier = 1;
         
         // Initializes new ArrayLists
         messageQueue = new ArrayList();
@@ -213,19 +210,17 @@ public class Controller {
      * Updates simulation logic
      * @param gameTime 
      */
-    public void Update(float gameTime ) throws Exception{
-        float multiplier = 30;
+    public void Update(float gameTime ) throws Exception{        
         float timeToAdd = multiplier * gameTime;
         simulationTime.setTime(simulationTime.getTime()+ (long)(timeToAdd * 1000));
         
-        //simulationTime.setTime(this)
+        System.out.println(simulationTime);
         System.out.println(gameTime);
         System.out.println(timeToAdd);
-        System.out.println(simulationTime);
         
         // Updates the logic of each AGV
         for(Vehicle agv : agvList){
-            agv.update(secondsToIncrement);
+            agv.update(timeToAdd);
             if(((AGV)agv).NeedDeliverAssignment()){
                 messageQueue.add(new Message(
                     agv,
@@ -236,21 +231,21 @@ public class Controller {
         }
         // Updates the logic of each crane
         for(Crane crane : seaCranes){
-            crane.update(secondsToIncrement);
+            crane.update(timeToAdd);
         }
         for(Crane crane : bargeCranes){
-            crane.update(secondsToIncrement);
+            crane.update(timeToAdd);
         }
         for(Crane crane : truckCranes){
-            crane.update(secondsToIncrement);
+            crane.update(timeToAdd);
         }
         for(Crane crane : trainCranes){
-            crane.update(secondsToIncrement);
+            crane.update(timeToAdd);
         }
         
         // Updates the logic of each docked vehicle
         for(Vehicle vehicle : presentVehicles){
-            vehicle.update(secondsToIncrement);
+            vehicle.update(timeToAdd);
         }     
         
         // When the next shipment arrives
