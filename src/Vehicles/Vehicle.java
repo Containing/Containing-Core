@@ -25,7 +25,7 @@ public abstract class Vehicle {
     public void setDestination(Node destination) throws Exception{
         this.destination = destination;
         this.route = Pathfinding.Pathfinder.findShortest(Pathfinder.findClosestNode(position), destination, storage.Count() == 0);
-        this.routeIndex = route.length-1;
+        this.routeIndex = 1;
     }
     
     /**

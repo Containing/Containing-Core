@@ -17,19 +17,6 @@ public class TransportVehicle extends Vehicle {
     protected String arrivalCompany;
     protected float speed = 5f;
     
-    public static void main(String[] args) throws Exception {
-        Pathfinding.Pathfinder.generateArea();
-        TransportVehicle tv = new TransportVehicle(new Date(50), new Date(50), " ", VehicleType.truck, new Vector3f(1,1,1), Pathfinding.Pathfinder.Nodes[0]);
-        tv.setDestination(Pathfinding.Pathfinder.Nodes[12]);
-        System.out.println(tv.getPosition());
-        System.out.println(tv.getDestination().getPosition());
-        for (int i = 0; i < 1000; i++) {
-            tv.update(1);
-        }
-        System.out.println(tv.getPosition());
-        System.out.println(tv.getDestination().getPosition());
-    }
-    
     public TransportVehicle(Date arrivalDate, Date departureDate, String arrivalCompany, VehicleType vehicleType, Vector3f containerArraySize, Node startPosition) throws Exception
     {
         if (arrivalDate == null || departureDate == null || arrivalCompany == null || containerArraySize == null || startPosition == null || vehicleType == null){
@@ -63,10 +50,10 @@ public class TransportVehicle extends Vehicle {
             // wait for message depart
         }
         else if(position == route[routeIndex].getPosition()){
-            routeIndex--;
+            routeIndex++;
         }
         else{
-            Vector3f NextNode = route[0].getPosition();
+            Vector3f NextNode = route[routeIndex].getPosition();
             Vector3f diff = new Vector3f(   NextNode.x - this.getPosition().x,
                                             NextNode.y - this.getPosition().y,
                                             NextNode.z - this.getPosition().z);
@@ -77,16 +64,13 @@ public class TransportVehicle extends Vehicle {
             
             Vector3f temp = new Vector3f(position);
             temp.AddVector3f(diff);
-            if (Vector3f.distance(getPosition(), diff) > Vector3f.distance(getPosition(), NextNode)){
-                System.out.println("is te ver");
+
+            if (Vector3f.distance(getPosition(), temp) < Vector3f.distance(getPosition(), NextNode)){
+                this.position.AddVector3f(diff);
             }
             else{
-                System.out.println("is niet te ver");
+                this.position = NextNode;
             }
-            
-            this.position.AddVector3f(diff);
-            // follow route 
-            // update position
         } 
     }
     
