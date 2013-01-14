@@ -53,4 +53,11 @@ public class Vector3f {
         
         return (float)Math.sqrt( Math.pow(distX, 2) + Math.pow(distY, 2) + Math.pow(distZ, 2)  );  
     }
+    
+    public Vector3f AddVector3f(Vector3f add){
+        this.x += add.x;
+        this.y += add.y;
+        this.z += add.z;
+        return new Vector3f(x, y, z);
+    }
 }

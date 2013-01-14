@@ -58,7 +58,7 @@ public class Pathfinder {
         }
     }
     public static final float pathWidth = 3;
-    public static final float gapBetweenRoads = 3;
+    public static final float gapBetweenRoads = 4;
     public static final float storageLenght = 1550;
     public static final float storageWidth = 600;  
     
