@@ -121,7 +121,7 @@ public class Container_StackTest {
         
         try
         {
-            Container cont = stack.peak();
+            Container cont = stack.peek();
             
             if (cont.getId().matches("Cont") == false)
             {
@@ -158,24 +158,21 @@ public class Container_StackTest {
     }
     
     @Test
-    public void testHeight()
+    public void testHeight() throws Exception
     {
-        try
-        {
-            stack = new Container_Stack(6);
-        }
-        catch (Exception E) { }
-        
-        try
-        {
-            for (int i = 0; i < 7; i++)
-            {
-                stack.push(container);           
-            }
+        stack = new Container_Stack(6);
             
-            fail("No exception is thrown when it needs to be thrown.");
+        for (int i = 0; i < 6; i++)
+        {
+            stack.push(container);           
         }
-        catch(Exception E) {  } 
+            
+        assertEquals(6, stack.getHeight());
+        
+        try { stack.push(container);
+            fail("Doesn't detect the stack growing out of bounds.");
+        }
+        catch(Exception e) {  }
     }
     
     @Test
