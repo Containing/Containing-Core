@@ -59,12 +59,14 @@ public class StorageCrane extends Crane
         else
         {
             _storageMap.remove(containerID);
-            this.unloadContainer(_storageField, coordinates[0], coordinates[1]);
-            
-            _storageMap.put(_storageField.peekContainer(coordinates[0], coordinates[1]).getId(),
-                            new int[] { coordinates[0], coordinates[1], 
-                            _storageField.Count(coordinates[0], coordinates[1]) }
-                            );
+
+            if (_storageField.Count(coordinates[0], coordinates[1]) > 0)
+            {                
+                _storageMap.put(_storageField.peekContainer(coordinates[0], coordinates[1]).getId(),
+                                new int[] { coordinates[0], coordinates[1], 
+                                _storageField.Count(coordinates[0], coordinates[1]) }
+                                );
+            }
         }
     }
 
