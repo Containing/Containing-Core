@@ -15,6 +15,12 @@ public class Vector3f {
         this.z = z;
     }
     
+    public Vector3f(Vector3f copy){
+        this.x = copy.x;
+        this.y = copy.y;
+        this.z = copy.z;
+    }
+    
     public float x;
     public float y;
     public float z;
@@ -52,6 +58,12 @@ public class Vector3f {
         if(distZ<0)distZ*=-1;
         
         return (float)Math.sqrt( Math.pow(distX, 2) + Math.pow(distY, 2) + Math.pow(distZ, 2)  );  
+    }
+    
+    public void CopyVector3f(Vector3f copy){
+        this.x = copy.x;
+        this.y = copy.y;
+        this.z = copy.z;
     }
     
     public Vector3f AddVector3f(Vector3f add){

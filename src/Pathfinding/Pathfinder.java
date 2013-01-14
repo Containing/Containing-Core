@@ -409,14 +409,15 @@ public class Pathfinder {
     public static Node findClosestNode(Vector3f position){
         NodeScore[] nscore = new NodeScore[Nodes.length];
         for(int i = 0 ; i < Nodes.length ; i++){
-            nscore[i] = new NodeScore(Nodes[i], Vector3f.distance(Nodes[i].getPosition(), position) , null);
+            if(Nodes[i]!=null)
+                nscore[i] = new NodeScore(Nodes[i], Vector3f.distance(Nodes[i].getPosition(), position) , null);
         }
 
         float lowestScore = Float.MAX_VALUE;
         int index = 0;
         
         for(int i = 0 ; i < nscore.length ; i++){
-            if(nscore[i].score<lowestScore){
+            if(nscore[i]!= null && nscore[i].score<lowestScore){
                 lowestScore = nscore[i].score;
                 index = i;
             }
