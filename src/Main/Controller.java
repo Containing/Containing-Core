@@ -133,7 +133,7 @@ public class Controller {
     private void Initialize() throws Exception
     {   
         // Default multiplier value
-        multiplier = 1;
+        multiplier = 30;
         
         // Initializes new ArrayLists
         messageQueue = new ArrayList();
@@ -142,18 +142,19 @@ public class Controller {
         storageArea = new ArrayList();
         storageCranes = new ArrayList();
         
+        // Loads or restores the database
         if(!Database.restoreDump()){
             // When it doesn't exists
             XML.XMLBinder.GenerateContainerDatabase("src/XML/xml7.xml");
             Database.dumpDatabase();
         }        
+        
         // Loads all the vehicles that come to the harbor
         seaShipsToArrive = GenerateArrivalVehicles.GetSeaBoats();
         bargesToArrive = GenerateArrivalVehicles.GetInlandBoats();
         trainsToArrive = GenerateArrivalVehicles.GetTrains();
         trucksToArrive = GenerateArrivalVehicles.GetTrucks();
-        
-        
+        // Initializes space for the cranes        
         seaCranes = new Crane[10];
         bargeCranes = new Crane[8];
         truckCranes = new Crane[20];
@@ -180,8 +181,7 @@ public class Controller {
         // Adds 100 AGVs
         for(int i = 0; i < 100; i++){
             agvList.add(new AGV(new Node(1,0)));
-        }
-        
+        }       
         
         // Initializes the dates
         deliveryTime = new Date(); 
@@ -211,16 +211,17 @@ public class Controller {
      * @param gameTime 
      */
     public void Update(float gameTime ) throws Exception{        
-        float timeToAdd = multiplier * gameTime;
-        simulationTime.setTime(simulationTime.getTime()+ (long)(timeToAdd * 1000));
+        // Time that passed by this update
+        float timeToUpdate = multiplier * gameTime;
+        simulationTime.setTime(simulationTime.getTime()+ (long)(timeToUpdate * 1000));
         
         System.out.println(simulationTime);
         System.out.println(gameTime);
-        System.out.println(timeToAdd);
+        System.out.println(timeToUpdate);
         
         // Updates the logic of each AGV
         for(Vehicle agv : agvList){
-            agv.update(timeToAdd);
+            agv.update(timeToUpdate);
             if(((AGV)agv).NeedDeliverAssignment()){
                 messageQueue.add(new Message(
                     agv,
@@ -231,21 +232,23 @@ public class Controller {
         }
         // Updates the logic of each crane
         for(Crane crane : seaCranes){
-            crane.update(timeToAdd);
+            crane.update(timeToUpdate);
         }
         for(Crane crane : bargeCranes){
-            crane.update(timeToAdd);
+            crane.update(timeToUpdate);
         }
         for(Crane crane : truckCranes){
-            crane.update(timeToAdd);
+            crane.update(timeToUpdate);
         }
         for(Crane crane : trainCranes){
-            crane.update(timeToAdd);
+            crane.update(timeToUpdate);
         }
-        
+        for(StorageCrane crane : storageCranes){
+            crane.update(timeToUpdate);
+        }        
         // Updates the logic of each docked vehicle
         for(Vehicle vehicle : presentVehicles){
-            vehicle.update(timeToAdd);
+            vehicle.update(timeToUpdate);
         }     
         
         // When the next shipment arrives
@@ -262,13 +265,14 @@ public class Controller {
             // Gets the next shipment time
             GetNextArrivalDate();
         }        
-        // When the simulation time is equal or greater than the deliveryTime
+        // When the next delivery needs to be deliverd
         if(simulationTime.getTime() >= deliveryTime.getTime()){
             // Adds all the containers that need to be deliverd
             for(Id_Position idPos : depatureContainers){
                 waitingContainers.add(idPos);
             }
             // Gets the next date when the next shipment needs to be transported
+            // Gets the next shipment that needs to be deliverd
             depatureContainers = GetDepartureContainers(simulationTime);
         }
         // Updates all the messageQueue
@@ -283,7 +287,7 @@ public class Controller {
         // Checks every message
         for(Message message : messageQueue){
             // When the message requests an AGV 
-            if(message.RequestedObject() == AGV.class){  
+            if(message.RequestedObject() instanceof AGV){  
                 // Checks every agv if it's available
                 for(Vehicle agv : agvList){
                     // When the agv is available
@@ -294,7 +298,6 @@ public class Controller {
                         ((AGV)agv).SendMessage(message);
                         // When it's a fetch message send a delivery message
                         if(message.Fetch() && message.GetContainer() != null){
-                            boolean found = false;
                             // When the destination object is a crane
                             if(message.DestinationObject() instanceof Crane){
                                 switch(message.GetContainer().getDepartureTransportType())
@@ -386,14 +389,14 @@ public class Controller {
                         // The container to deliver
                         Container con = storageArea.get(index).peekContainer((int)pos.x, (int)pos.z); 
                         
-                        // The current message
+                        // The load action for the storageCrane
                         Message message = new Message(
                                 agv,
                                 storageCranes.get(index),
                                 Message.ACTION.Load,
                                 con);                        
                         storageCranes.get(index).SendMessage(message);
-                        
+                        // The fetch action for the agv 
                         message = new Message(
                                 storageCranes.get(index),
                                 agv,
@@ -551,7 +554,7 @@ public class Controller {
     // <editor-fold defaultstate="collapsed" desc="Message Methods">
         
     /**
-     * Checks a crane is available for an agv to unload it's container
+     * Checks if a crane's available for an agv to unload it's container
      * @param toCheck The crane array to check
      * @param agv The agv that requests a crane
      * @param message The fetch message of the agv
@@ -612,7 +615,14 @@ public class Controller {
         return toCheck;
     }    
     
-    private Crane[] TransportRequestsCrane(Crane[] toCheck, Message message) throws Exception{
+    /**
+     * Checks every crane if the AGV stands on the destination node
+     * @param toCheck The cranes to check
+     * @param message The message to check
+     * @return The checked crane array
+     * @throws Exception 
+     */
+    private Crane[] AGVRequestsCrane(Crane[] toCheck, Message message) throws Exception{
         for(int i = 0 ; i < toCheck.length; i++){
             if(toCheck[i].parkinglotTransport.node == message.DestinationNode()){
                 // Sends the message copy to the crane
@@ -633,8 +643,18 @@ public class Controller {
         return toCheck;
     }
     
+    /**
+     * Checks if a storagecrane's available for an agv to unload it's container
+     * @param toCheck The crane list to check
+     * @param agv The agv that requests a storagecrane
+     * @param message The fetch message of the agv
+     * @return The crane list that's checked
+     * @throws Exception 
+     */
     private List<StorageCrane> StorageCranesToCheck(List<StorageCrane> toCheck,AGV agv, Message message) throws Exception{
+        // When a crane was found
         boolean found = false;
+        // Check every storage Crane
         for(StorageCrane crane : toCheck){
             if(crane.Available() && !crane.parkinglotAGV.isFull()){
                 // Send a new message
