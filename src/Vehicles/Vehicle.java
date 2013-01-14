@@ -16,6 +16,7 @@ public abstract class Vehicle {
     protected Vector3f position;
     protected float rotation;
     protected Node[] route;
+    protected int routeIndex;
     protected VehicleType vehicleType;
     /**
      * Set the destination.
@@ -23,7 +24,8 @@ public abstract class Vehicle {
      */
     public void setDestination(Node destination) {
         try {
-            route = Pathfinding.Pathfinder.findShortest(Pathfinder.findClosestNode(position), destination, storage.Count() == 0);
+            this.route = Pathfinding.Pathfinder.findShortest(Pathfinder.findClosestNode(position), destination, storage.Count() == 0);
+            this.routeIndex = route.length-1;
             this.destination = route[route.length-1];
         } 
         catch (Exception ex) {
@@ -50,7 +52,7 @@ public abstract class Vehicle {
      * Update the vehicle
      * @param gameTime The gameTime.
      */
-    public abstract void update(int gameTime) throws Exception;
+    public abstract void update(float gameTime) throws Exception;
     
     public Storage_Area GetStorage() {
         return storage;

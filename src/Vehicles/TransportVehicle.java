@@ -15,7 +15,7 @@ public class TransportVehicle extends Vehicle {
     protected Date arrivalDate;
     protected Date departureDate;
     protected String arrivalCompany;
-    protected float speed/*= X*/;
+    protected float speed = 5f;
     
     public TransportVehicle(Date arrivalDate, Date departureDate, String arrivalCompany, VehicleType vehicleType, Vector3f containerArraySize, Node startPosition) throws Exception
     {
@@ -44,12 +44,24 @@ public class TransportVehicle extends Vehicle {
     
     }
     @Override
-    public void update(int gameTime) throws Exception {
+    public void update(float gameTime) throws Exception {
         if (position == destination.getPosition()){
             // send message
             // wait for message depart
         }
+        else if(position == route[routeIndex].getPosition()){
+            routeIndex--;
+        }
         else{
+            Vector3f destination = route[routeIndex].getPosition();
+            Vector3f diff = new Vector3f(   destination.x - this.getPosition().x,
+                                            destination.y - this.getPosition().y,
+                                            destination.z - this.getPosition().z);
+            diff.normalize();
+            diff.x*=gameTime*speed;
+            diff.y*=gameTime*speed;
+            diff.z*=gameTime*speed;
+            this.position.AddVector3f(diff);
             // follow route 
             // update position
         } 

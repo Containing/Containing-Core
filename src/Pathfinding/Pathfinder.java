@@ -58,7 +58,7 @@ public class Pathfinder {
         }
     }
     public static final float pathWidth = 3;
-    public static final float gapBetweenRoads = 3;
+    public static final float gapBetweenRoads = 4;
     public static final float storageLenght = 1550;
     public static final float storageWidth = 600;  
     
@@ -66,7 +66,7 @@ public class Pathfinder {
     public static Parkinglot[] parkinglots;
     
     public static void generateArea() throws Exception{
-        Nodes = new Node[200];
+        Nodes = new Node[300];
         parkinglots = new Parkinglot[200];
         List<Path> pathList = new ArrayList<>();
         
@@ -303,11 +303,10 @@ public class Pathfinder {
         
         // </editor-fold>
         
-        // <editor-fold defaultstate="collapsed" desc="truck route   nodes(176-), parkinglot(49-68)">
+        // <editor-fold defaultstate="collapsed" desc="truck route   nodes(176-205), parkinglot(49-68)">
         
         float distanceToDockTruck = 50; // todo edit this value
         float distandeBetweenNodesTruck = 200;
-        //float curveInlandship = 1.5f;
         
         // nodes
         for (int i = 0; i < 20; i++) {
@@ -330,10 +329,33 @@ public class Pathfinder {
         
         // </editor-fold>
         
-        // <editor-fold defaultstate="collapsed" desc="Cranes">
-        for (int i = 0; i < 10; i++) {
-            Cranes[i] = new Crane(1/*dummie*/, 1/*dummie*/, parkinglots[1+i], parkinglots[0]);
+        // <editor-fold defaultstate="collapsed" desc="train route   nodes(206-), parkinglot(69,70)">
+        float distanceToDockTrain = 50; // todo edit this value
+        float curveTrain = 1.8f;
+        
+        // nodes
+        Nodes[206] = new Node(distanceToStorage+storageLenght/4, totalWidth+distanceToDockTrain); // dock 1
+        parkinglots[68] = new Parkinglot(1,Nodes[206]);
+        Nodes[207] = new Node(distanceToStorage+storageLenght/4*3, totalWidth+distanceToDockTrain); // dock 2
+        parkinglots[69] = new Parkinglot(1,Nodes[207]);
+        
+        for (int i = 1; i <= 10; i++) {
+            Nodes[207+i] = new Node(((distanceToStorage+storageLenght/2)+i*distanceToDockTrain), totalWidth+distanceToDockTrain+(int)Math.pow(i, curveTrain+1));
+            Nodes[217+i] = new Node(((distanceToStorage+storageLenght)+i*distanceToDockTrain), totalWidth+distanceToDockTrain+(int)Math.pow(i, curveTrain+1));
         }
+        Nodes[230] = new Node(distanceToStorage, totalWidth+distanceToDockTrain); // dock 2
+        Nodes[231] = new Node(distanceToStorage+storageLenght/2, totalWidth+distanceToDockTrain); // dock 2
+        
+        //path
+        pathList.add(new Path(Nodes[230], Nodes[206]));
+        pathList.add(new Path(Nodes[206], Nodes[208]));
+        pathList.add(new Path(Nodes[231], Nodes[207]));
+        pathList.add(new Path(Nodes[207], Nodes[218]));
+        for (int i = 0; i < 9; i++) {
+            pathList.add(new Path(Nodes[208+i], Nodes[209+i]));
+            pathList.add(new Path(Nodes[218+i], Nodes[219+i]));
+        }
+        // </editor-fold>
         
         // </editor-fold>
         Paths = new Path[pathList.size()];

@@ -39,7 +39,7 @@ public class AGV extends Vehicle implements IMessageReceiver {
     }
 
     @Override
-    public void update(int gameTime) throws Exception {
+    public void update(float gameTime) throws Exception {
         if (position == destination.getPosition()){
             if(!Available()){
                 if(assignments.get(0).DestinationObject().getClass() == Crane.class){
