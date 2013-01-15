@@ -15,6 +15,7 @@ import java.util.List;
 import updateTimer.updateTimer;
 import Crane.*;
 import Parkinglot.Parkinglot;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
 
@@ -454,19 +455,23 @@ public class Controller {
     private List<Id_Position> GetDepartureContainers( Date now) throws Exception{
         List<Id_Position> id_positionList = new ArrayList<>();
         
-        String query = "Select Min(departureDateStart) as max " +
-                        "from container " +
-                        "Where departureDateStart > '" + Container.df.format(now)+ "' ";
-        ResultSet getNextDate = Database.executeQuery(query);
+        String query = "SELECT MIN(departureDateStart) AS max " +
+                        "FROM container " +
+                        "WHERE departureDateStart > ?";
+        PreparedStatement stm = Database.createPreparedStatement(query);
+        stm.setString(1, Container.df.format(now));
+        ResultSet getNextDate = Database.executeQuery(stm);
         deliveryTime = Container.df.parse(getNextDate.getString("max"));
         
         System.out.println("next delivery time : "+deliveryTime);
         
-        query = "Select locationId, storageLocation " +
-                "from container " +
-                "Where departureDateStart = '" + Container.df.format(deliveryTime) + "' " +
-                "Order by departureDateEnd";
-        ResultSet getLocationId_storageLocation = Database.executeQuery(query);
+        query = "SELECT locationId, storageLocation " +
+                "FROM container " +
+                "WHERE departureDateStart = ? " +
+                "ORDER BY departureDateEnd";
+        stm = Database.createPreparedStatement(query);
+        stm.setString(1, Container.df.format(deliveryTime));
+        ResultSet getLocationId_storageLocation = Database.executeQuery(stm);
         while(getLocationId_storageLocation.next()){
             String Id = getLocationId_storageLocation.getString("locationId");
             String position = getLocationId_storageLocation.getString("storageLocation");
