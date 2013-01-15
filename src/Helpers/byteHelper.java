@@ -387,6 +387,14 @@ public class byteHelper {
     return strs;
     }
     
+    public static byte[] getFromArray(byte[] source, int startIndex, int length){
+        byte[] dest = new byte[length];
+
+        for(int i = 0 ; i < length ; i++){
+            dest[i] = source[startIndex + i];            
+        }       
+        return dest;
+    }
     
     public static void addToArray(byte[] source, byte[] dest, int startIndex){
         for(int i = 0 ; i < source.length ; i++){

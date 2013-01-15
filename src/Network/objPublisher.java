@@ -26,7 +26,7 @@ public class objPublisher {
         Helpers.Vector3f pos = vehicle.getPosition();
         //Helpers.Vector3f des = vehicle.getDestination().getPosition();
         Helpers.Vector3f des = new Helpers.Vector3f(0,0,0);
-        int vehicleID = 0;
+        int vehicleID = vehicle.Id;
 
         b[0] = 1;       //Operation ID
         Helpers.byteHelper.addToArray(Helpers.byteHelper.toByta(vehicleID), b, 1);
