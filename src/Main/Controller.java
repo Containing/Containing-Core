@@ -139,7 +139,7 @@ public class Controller {
     private void Initialize() throws Exception
     {   
         // Default multiplier value
-        multiplier = 100;
+        multiplier = 10000;
         
         // Initializes new ArrayLists
         messageQueue = new ArrayList();
@@ -302,7 +302,7 @@ public class Controller {
         // Checks every message
         for(Message message : messageQueue){
             // When the message requests an AGV 
-            if(message.RequestedObject() instanceof AGV){  
+            if(message.RequestedObject().equals(AGV.class)){  
                 // Checks every agv if it's available
                 for(Vehicle agv : agvList){
                     // When the agv is available
@@ -314,7 +314,7 @@ public class Controller {
                         // When it's a fetch message send a delivery message
                         if(message.Fetch() && message.GetContainer() != null){
                             // When the destination object is a crane
-                            if(message.DestinationObject() instanceof Crane){
+                            if(message.DestinationObject().equals(Crane.class)){
                                 switch(message.GetContainer().getDepartureTransportType())
                                 {
                                     case vrachtauto:
@@ -332,7 +332,7 @@ public class Controller {
                                 }
                             }
                             // When the destination object is a storageCrane
-                            else if (message.DestinationObject() instanceof StorageCrane){
+                            else if (message.DestinationObject().equals(StorageCrane.class)){
                                 // Check the Storage cranes
                                 storageCranes = StorageCranesToCheck(storageCranes,(AGV)message.DestinationObject(), message);
                             }
@@ -341,7 +341,7 @@ public class Controller {
                 }
             }
             // When the message requests a crane
-            else if(message.RequestedObject() instanceof Crane){
+            else if(message.RequestedObject().equals(Crane.class)){
                 // When a vehicle requested the crane
                 if(message.DestinationObject() instanceof Vehicle){
                     // Switch between the vechile types
@@ -378,7 +378,7 @@ public class Controller {
                     }
                 }
                 // When an AGV wants to store it's container
-                else if(message.RequestedObject() instanceof StorageCrane){
+                else if(message.RequestedObject().equals(StorageCrane.class)){
                     // Check the Storage cranes
                     storageCranes = StorageCranesToCheck(storageCranes,(AGV)message.DestinationObject(), message);  
                 }
