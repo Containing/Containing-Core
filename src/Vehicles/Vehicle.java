@@ -18,6 +18,7 @@ public abstract class Vehicle {
     protected Node[] route;
     protected int routeIndex;
     protected VehicleType vehicleType;
+    public int Id;
     /**
      * Set the destination.
      * @param destination The destination Node.
@@ -43,7 +44,7 @@ public abstract class Vehicle {
     public Vector3f getPosition() {
         return position;
     }
-    
+   
     /**
      * Update the vehicle
      * @param gameTime The gameTime.
