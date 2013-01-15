@@ -158,7 +158,7 @@ public class Storage_AreaTest
      * Test of Count method, of class Storage_Area.
      */
     @Test
-    public void testCount_int_int() 
+    public void testCount_int_int() throws Exception
     {
         if (storage.Count(0,0) != 1)
         {
