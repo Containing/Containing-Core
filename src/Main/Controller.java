@@ -15,6 +15,7 @@ import java.util.List;
 import updateTimer.updateTimer;
 import Crane.*;
 import Parkinglot.Parkinglot;
+import java.io.File;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
@@ -150,11 +151,15 @@ public class Controller {
         storageCranes = new ArrayList();
         
         // Loads or restores the database
-        if(!Database.restoreDump()){
+        File f = new File("db/dump.db");
+        if(!f.exists()){
             // When it doesn't exists
             XML.XMLBinder.GenerateContainerDatabase("src/XML/xml7.xml");
             Database.dumpDatabase();
-        }        
+        }
+        else {
+            Database.restoreDump();
+        }
         
         // Loads all the vehicles that come to the harbor
         seaShipsToArrive = GenerateArrivalVehicles.GetSeaBoats();
