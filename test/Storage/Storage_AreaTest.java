@@ -74,7 +74,7 @@ public class Storage_AreaTest
     @Test
     public void testPeakContainer() throws Exception 
     {
-        if (storage.peakContainer(0,0).getId().matches("Cont") == false)
+        if (storage.peekContainer(0,0).getId().matches("Cont") == false)
         {
             fail("Doesn't return the right container.");
         }

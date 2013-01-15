@@ -121,7 +121,7 @@ public class Container_StackTest {
         
         try
         {
-            Container cont = stack.peak();
+            Container cont = stack.peek();
             
             if (cont.getId().matches("Cont") == false)
             {
