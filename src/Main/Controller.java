@@ -67,6 +67,9 @@ public class Controller {
     // The date when the next shipment arrives
     Date shipmentTime;   
     
+    // Networkhandler
+    Network.objPublisher objpublisher;
+    
     // </editor-fold>
     
     // <editor-fold defaultstate="collapsed" desc="Properties">
@@ -117,7 +120,10 @@ public class Controller {
                 timer = new updateTimer(method, this);
                 break;
             }
-        }        
+        }
+        
+        objpublisher = new Network.objPublisher();
+        
         // Start's and run's the timer for updating the application
         timer.start();
         timer.run();
@@ -199,7 +205,7 @@ public class Controller {
         // Sets the simulationTime equal to the first shipment
         simulationTime.setTime(shipmentTime.getTime());
         // Sets the simulationTime 1 hour before the first shipment  
-        simulationTime.setHours(simulationTime.getHours() -1);
+        //simulationTime.setHours(simulationTime.getHours() -1);
         
         // Gets the first delivery of containers
         // Also sets the deliveryTime
@@ -282,7 +288,10 @@ public class Controller {
             depatureContainers = GetDepartureContainers(simulationTime);
         }
         // Updates all the messageQueue
-        UpdateMessages();
+        //UpdateMessages();
+
+        if(presentVehicles.size()>0)
+            objpublisher.syncVehicle(presentVehicles.get(0));
     }
     
     /**
