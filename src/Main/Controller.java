@@ -133,7 +133,7 @@ public class Controller {
     private void Initialize() throws Exception
     {   
         // Default multiplier value
-        multiplier = 30;
+        multiplier = 100;
         
         // Initializes new ArrayLists
         messageQueue = new ArrayList();
@@ -177,6 +177,11 @@ public class Controller {
             // Initialize 20 truckCranes
             truckCranes[i] = new Crane(0,0,new Parkinglot(1,new Node(0,0)),new Parkinglot(1,new Node(0,0)));
         }        
+        // Initializes 100 storageAreas and there storage cranes
+        for(int i = 0 ; i < 100; i++){
+            //storageArea.add(new Storage_Area(98,6,6,new Vector3f(0,0,0)));
+            //storageCranes.add(new StorageCrane(0,0,new ParkingLot(),new ParkingLot(),storageArea.get(i), new Vector3f(0,0,0)));
+        }
         
         // Adds 100 AGVs
         for(int i = 0; i < 100; i++){
@@ -222,6 +227,7 @@ public class Controller {
         // Updates the logic of each AGV
         for(Vehicle agv : agvList){
             agv.update(timeToUpdate);
+            // When an agv has a container but no assignments
             if(((AGV)agv).NeedDeliverAssignment()){
                 messageQueue.add(new Message(
                     agv,
@@ -439,11 +445,13 @@ public class Controller {
     private List<Id_Position> GetDepartureContainers( Date now) throws Exception{
         List<Id_Position> id_positionList = new ArrayList<>();
         
-        String query = "Select Max(departureDateStart) as max " +
+        String query = "Select Min(departureDateStart) as max " +
                         "from container " +
                         "Where departureDateStart > '" + Container.df.format(now)+ "' ";
         ResultSet getNextDate = Database.executeQuery(query);
         deliveryTime = Container.df.parse(getNextDate.getString("max"));
+        
+        System.out.println("next delivery time : "+deliveryTime);
         
         query = "Select locationId, storageLocation " +
                 "from container " +
@@ -495,8 +503,11 @@ public class Controller {
         }
         // Checks if seaShips arrive
         if(toCheck.size() > 0){
-            // When the simulation time is equal or greater than the arrivalDate
+            // While there are transport vehicles arriving
             while(simulationTime.getTime() >= toCheck.get(0).GetArrivalDate().getTime()){
+                
+                System.out.println(toCheck.get(0).getClass().toString() + " arrived" );
+                
                 // Add the vehicle that arrived
                 presentVehicles.add(toCheck.get(0));
                 // Request cranes
@@ -547,6 +558,8 @@ public class Controller {
                 shipmentTime = trucksToArrive.get(0).GetArrivalDate();
             }
         }
+        
+        System.out.println("next arrivalDate : " + shipmentTime);
     }
     
     // </editor-fold>
@@ -622,7 +635,7 @@ public class Controller {
      * @return The checked crane array
      * @throws Exception 
      */
-    private Crane[] AGVRequestsCrane(Crane[] toCheck, Message message) throws Exception{
+    private Crane[] TransportRequestsCrane(Crane[] toCheck, Message message) throws Exception{
         for(int i = 0 ; i < toCheck.length; i++){
             if(toCheck[i].parkinglotTransport.node == message.DestinationNode()){
                 // Sends the message copy to the crane
@@ -656,7 +669,10 @@ public class Controller {
         boolean found = false;
         // Check every storage Crane
         for(StorageCrane crane : toCheck){
-            if(crane.Available() && !crane.parkinglotAGV.isFull()){
+            // When the storage crane has no assignments 
+            // And there's a parkinglot free
+            if(crane.Available() &&
+              (!crane.parkinglotAGV.isFull() || !crane.parkinglotTransport.isFull())){
                 // Send a new message
                 crane.SendMessage(new Message(
                         crane,
@@ -675,6 +691,7 @@ public class Controller {
                             true);
                     }
                 }
+                // When the agv has no assignments
                 else{
                     agv.SendMessage(new Message(
                         crane,
@@ -686,6 +703,7 @@ public class Controller {
                 break;
             }
         }
+        // When there was no storage crane available
         if(!found){
             messageQueue.add(new Message(
                 agv,
@@ -694,8 +712,7 @@ public class Controller {
                 message.GetContainer()));
         }
         // Message was handeld so remove it        
-        messageQueue.remove(message);
-        
+        messageQueue.remove(message);        
         return toCheck;
     }
     // </editor-fold>
