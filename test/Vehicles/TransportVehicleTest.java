@@ -47,11 +47,15 @@ public class TransportVehicleTest {
     @Test
     public void testUpdate() throws Exception {
         System.out.println("update");
-        float gameTime = 0.0F;
-        TransportVehicle instance = new TransportVehicle(new Date(), new Date(), "comp1", Vehicle.VehicleType.truck, new Vector3f(1,1,1), new Node(1, 1, 1));
-        instance.update(gameTime);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        float gameTime = 1f;
+        Pathfinding.Pathfinder.generateArea();
+        TransportVehicle instance = new TransportVehicle(new Date(), new Date(), "comp1", Vehicle.VehicleType.truck, new Vector3f(1,1,1), Pathfinding.Pathfinder.Nodes[111]);
+        try{
+            instance.update(gameTime);
+        }
+        catch(Exception ex){
+            fail("Updating fails");
+        };
     }
 
     /**
@@ -61,18 +65,35 @@ public class TransportVehicleTest {
     public void testMatchesContainer() throws ParseException, Exception {
         System.out.println("MatchesContainer");
         
-        Date a = Container.df.parse("13 09 28 10:00");
-        Date b = Container.df.parse("13 09 28 10:30");
+        Date a = Container.df.parse("01-01-01 10:00");
+        Date b = Container.df.parse("01-01-01 10:30");
+        Date c = Container.df.parse("01-01-01 11:00");
+        Date d = Container.df.parse("01-01-01 11:30");
         
-        Container container = new Container("XD");
-        try{ container.setArrival(a, b, Container.TransportType.trein, "T", new Helpers.Vector3f()); }
+        String company = "Some1";
+        Container container1 = new Container("XD");
+        Container container2 = new Container("XD");
+        Container container3 = new Container("XD");
+        Container container4 = new Container("XD");
+        
+        try{ 
+            container1.setArrival(a, b, Container.TransportType.trein, company, new Helpers.Vector3f()); 
+            container2.setArrival(b, c, Container.TransportType.trein, company, new Helpers.Vector3f());             
+            container3.setArrival(c, d, Container.TransportType.trein, company, new Helpers.Vector3f()); 
+            container4.setArrival(a, d, Container.TransportType.trein, company, new Helpers.Vector3f());          
+        }
         catch(Exception ex) {}
         
-        TransportVehicle instance = new TransportVehicle(a, b, null, Vehicle.VehicleType.truck, null, null);
-        boolean expResult = false;
-        boolean result = instance.MatchesContainer(container);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        TransportVehicle instance = new TransportVehicle(b, c, company, Vehicle.VehicleType.train, new Vector3f(10, 1, 1), new Node());
+        
+        boolean result1 = instance.MatchesContainer(container1);
+        boolean result2 = instance.MatchesContainer(container2);
+        boolean result3 = instance.MatchesContainer(container3);
+        boolean result4 = instance.MatchesContainer(container4);
+        
+        assertEquals(false, result1);
+        assertEquals(true, result2);
+        assertEquals(false, result3);
+        assertEquals(false, result4);
     }
 }
