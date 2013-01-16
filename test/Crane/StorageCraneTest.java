@@ -38,7 +38,7 @@ public class StorageCraneTest
             Parkinglot park = new Parkinglot(1, node);
             storage = new Storage_Area(1,1,1, new Vector3f(1,1,1));
             storageField = new Storage_Area(2,2,2, new Vector3f(1,1,1));
-            crane = new StorageCrane(1,1,park,park, storageField, new Vector3f(1,1,1));
+            //crane = new StorageCrane(1,1,park,park, storageField, new Vector3f(1,1,1));
             container = new Container("Cont");
             container.setDeparture(one, two, Container.TransportType.trein, "uy");
             
