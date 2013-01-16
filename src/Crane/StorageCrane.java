@@ -28,9 +28,12 @@ public class StorageCrane extends Crane
     private Storage_Area _storageField;
     private HashMap _storageMap;
     
-    public StorageCrane (int rails, int range, Parkinglot<AGV> parkingA, Parkinglot<AGV> parkingB, Storage_Area storage, Vector3f pos) throws Exception
+    public StorageCrane (int railsLocation, Crane.CraneType type, Parkinglot<AGV> parkingA, Parkinglot<AGV> parkingB, Storage_Area storage, Vector3f pos) throws Exception
     {
-        super(rails, range, parkingA, parkingB);
+        super(railsLocation, type, parkingA, parkingB);
+
+        if (storage == null)
+            { throw new Exception("The Storage_Area can't be null."); }     
         
         position = pos;
         _storageField = storage;
@@ -59,12 +62,14 @@ public class StorageCrane extends Crane
         else
         {
             _storageMap.remove(containerID);
-            this.unloadContainer(_storageField, coordinates[0], coordinates[1]);
-            
-            _storageMap.put(_storageField.peekContainer(coordinates[0], coordinates[1]).getId(),
-                            new int[] { coordinates[0], coordinates[1], 
-                            _storageField.Count(coordinates[0], coordinates[1]) }
-                            );
+
+            if (_storageField.Count(coordinates[0], coordinates[1]) > 0)
+            {                
+                _storageMap.put(_storageField.peekContainer(coordinates[0], coordinates[1]).getId(),
+                                new int[] { coordinates[0], coordinates[1], 
+                                _storageField.Count(coordinates[0], coordinates[1]) }
+                                );
+            }
         }
     }
 
