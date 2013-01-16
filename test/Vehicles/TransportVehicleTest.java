@@ -57,7 +57,7 @@ public class TransportVehicleTest {
      * Test of MatchesContainer method, of class TransportVehicle.
      */
     @Test
-    public void testMatchesContainer() throws ParseException {
+    public void testMatchesContainer() throws ParseException, Exception {
         System.out.println("MatchesContainer");
         
         Date a = Container.df.parse("13 09 28 10:00");

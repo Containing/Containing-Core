@@ -5,6 +5,7 @@ import Main.Container;
 import Main.Database;
 import Pathfinding.Node;
 import Storage.Storage_Area;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Date;
@@ -43,13 +44,15 @@ public class GenerateDepartureVehicles {
         ArrayList<TransportVehicle> BoatList = new ArrayList<>();
         Vector3f storage = getWidthHeight(kindSchip);
         
-        String query = "Select departureDateStart, departureDateEnd, count(*) as containers " +
-                "from container " +
-                "Where departureTransportType = '" + kindSchip + "' " +
-                "Group by departureDateStart, departureDateEnd, departureTransportType " +
-                "Order By departureDateStart, departureCompany ";
+        String query = "SELECT departureDateStart, departureDateEnd, COUNT(*) as containers " +
+                "FROM container " +
+                "WHERE departureTransportType = ? " +
+                "GROUP BY departureDateStart, departureDateEnd, departureTransportType " +
+                "ORDER BY departureDateStart, departureCompany ";
+        PreparedStatement stm = Database.createPreparedStatement(query);
+        stm.setString(1, kindSchip);
         
-        ResultSet getBoats = Database.executeQuery(query);
+        ResultSet getBoats = Database.executeQuery(stm);
         while(getBoats.next()){
             // set variables
             Date departureDateStart = Container.df.parse(getBoats.getString("departureDateStart"));
@@ -66,11 +69,11 @@ public class GenerateDepartureVehicles {
     public static List<TransportVehicle> GetTrains() throws Exception{
         ArrayList<TransportVehicle> TrainList = new ArrayList<>();
         
-        String query = "Select departureDateStart, departureDateEnd, count(*) as containers " +
-                "from container " +
-                "Where departureTransportType = 'trein' " +
-                "Group by departureDateStart, departureDateEnd, departureTransportType " +
-                "Order By departureDateStart, departureCompany ";
+        String query = "SELECT departureDateStart, departureDateEnd, count(*) as containers " +
+                "FROM container " +
+                "WHERE departureTransportType = 'trein' " +
+                "GROUP BY departureDateStart, departureDateEnd, departureTransportType " +
+                "ORDER BY departureDateStart, departureCompany ";
         
         ResultSet getTrains = Database.executeQuery(query);
         while(getTrains.next()){
@@ -89,10 +92,10 @@ public class GenerateDepartureVehicles {
     public static List<TransportVehicle> GetTrucks() throws Exception {
         ArrayList<TransportVehicle> TruckList = new ArrayList<>();
         
-        String query = "Select departureDateStart, departureDateEnd " +
-                "from container " +
-                "Where departureTransportType = 'vrachtauto' " +
-                "Order By departureDateStart, departureCompany ";
+        String query = "SELECT departureDateStart, departureDateEnd " +
+                "FROM container " +
+                "WHERE departureTransportType = 'vrachtauto' " +
+                "ORDER BY departureDateStart, departureCompany ";
         
         ResultSet getTrucks = Database.executeQuery(query);
         while(getTrucks.next()){
@@ -108,11 +111,13 @@ public class GenerateDepartureVehicles {
     }
     
         private static Vector3f getWidthHeight(String kindSchip) throws Exception{
-            String query = "Select MAX(arrivalPositionY) as Y, MAX(arrivalPositionZ) as Z " +
-                        "from container " +
-                        "Where departureTransportType = '" + kindSchip + "' ";
+            String query = "SELECT MAX(arrivalPositionY) as Y, MAX(arrivalPositionZ) as Z " +
+                        "FROM container " +
+                        "WHERE departureTransportType = ?";
+            PreparedStatement stm = Database.createPreparedStatement(query);
+            stm.setString(1, kindSchip);
 
-            ResultSet getBoats = Database.executeQuery(query);
+            ResultSet getBoats = Database.executeQuery(stm);
 
             return new Vector3f(1, getBoats.getInt("Y")+1, getBoats.getInt("Z")+1);
     }

@@ -74,7 +74,7 @@ public class Storage_AreaTest
     @Test
     public void testPeakContainer() throws Exception 
     {
-        if (storage.peakContainer(0,0).getId().matches("Cont") == false)
+        if (storage.peekContainer(0,0).getId().matches("Cont") == false)
         {
             fail("Doesn't return the right container.");
         }
@@ -158,7 +158,7 @@ public class Storage_AreaTest
      * Test of Count method, of class Storage_Area.
      */
     @Test
-    public void testCount_int_int() 
+    public void testCount_int_int() throws Exception
     {
         if (storage.Count(0,0) != 1)
         {
