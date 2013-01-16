@@ -15,6 +15,7 @@ import java.util.List;
 import updateTimer.updateTimer;
 import Crane.*;
 import Parkinglot.Parkinglot;
+import Pathfinding.Pathfinder;
 import java.io.File;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -140,8 +141,10 @@ public class Controller {
      **/
     private void Initialize() throws Exception
     {   
+        // Generates the node area
+        Pathfinder.generateArea();
         // Default multiplier value
-        multiplier = 10000;
+        multiplier = 100;
         
         // Initializes new ArrayLists
         messageQueue = new ArrayList();
@@ -175,19 +178,35 @@ public class Controller {
         //Er zijn in totaal  10 zeeschipkranen, 8 binnenvaartkranen, 4 treinkranen en 20 truckkranen 
         for(int i = 0; i < 10; i++){    
             // Initialize 10 seaShipCranes
-            seaCranes[i] = new Crane(0,0,new Parkinglot(1,new Node(0,0)),new Parkinglot(1,new Node(0,0)));
+            seaCranes[i] = new Crane(
+                    0,
+                    0,
+                    Pathfinder.parkinglots[i+1],
+                    Pathfinder.parkinglots[46]);
         }
         for(int i = 0 ; i < 8; i++){     
             // Initialize 8 BargeCranes
-            bargeCranes[i] = new Crane(0,0,new Parkinglot(1,new Node(0,0)),new Parkinglot(1,new Node(0,0)));
+            bargeCranes[i] = new Crane(
+                    0,
+                    0,
+                    Pathfinder.parkinglots[i+ 12],
+                    Pathfinder.parkinglots[47+ (i/4)]);
         }        
         for(int i  =0 ; i < 4; i++){         
             // Initialize 4 trainCranes
-            trainCranes[i] = new Crane(0,0,new Parkinglot(1,new Node(0,0)),new Parkinglot(1,new Node(0,0)));
+            trainCranes[i] = new Crane(
+                    0,
+                    0,
+                    Pathfinder.parkinglots[i+41],
+                    Pathfinder.parkinglots[69 + (i/2)]);
         }        
         for (int i = 0; i < 20; i++){          
             // Initialize 20 truckCranes
-            truckCranes[i] = new Crane(0,0,new Parkinglot(1,new Node(0,0)),new Parkinglot(1,new Node(0,0)));
+            truckCranes[i] = new Crane(
+                    0,
+                    0,
+                    Pathfinder.parkinglots[i+21],
+                    Pathfinder.parkinglots[i+49]);
         }        
         // Initializes 100 storageAreas and there storage cranes
         for(int i = 0 ; i < 100; i++){
