@@ -335,9 +335,9 @@ public class Pathfinder {
         
         // nodes
         Nodes[206] = new Node(distanceToStorage+storageLenght/4, totalWidth+distanceToDockTrain); // dock 1
-        parkinglots[68] = new Parkinglot(1,Nodes[206]);
+        parkinglots[69] = new Parkinglot(1,Nodes[206]);
         Nodes[207] = new Node(distanceToStorage+storageLenght/4*3, totalWidth+distanceToDockTrain); // dock 2
-        parkinglots[69] = new Parkinglot(1,Nodes[207]);
+        parkinglots[70] = new Parkinglot(1,Nodes[207]);
         
         for (int i = 1; i <= 10; i++) {
             Nodes[207+i] = new Node(((distanceToStorage+storageLenght/2)+i*distanceToDockTrain), totalWidth+distanceToDockTrain+(int)Math.pow(i, curveTrain+1));
