@@ -18,18 +18,15 @@ public abstract class Vehicle {
     protected Node[] route;
     protected int routeIndex;
     protected VehicleType vehicleType;
+    public int Id;
     /**
      * Set the destination.
      * @param destination The destination Node.
      */
-    public void setDestination(Node destination) {
-        try {
-            this.route = Pathfinding.Pathfinder.findShortest(Pathfinder.findClosestNode(position), destination, storage.Count() == 0);
-            this.routeIndex = route.length-1;
-            this.destination = route[route.length-1];
-        } 
-        catch (Exception ex) {
-        }
+    public void setDestination(Node destination) throws Exception{
+        this.destination = destination;
+        this.route = Pathfinding.Pathfinder.findShortest(Pathfinder.findClosestNode(position), destination, storage.Count() == 0);
+        this.routeIndex = 1;
     }
     
     /**
@@ -37,7 +34,7 @@ public abstract class Vehicle {
      * @return The destination node, returns position Node if their is no path.
      */
     public Node getDestination() {
-        return (route.length == 0) ? Pathfinder.findClosestNode(position) : route[0];
+        return destination;
     }
     
     /**
@@ -47,7 +44,7 @@ public abstract class Vehicle {
     public Vector3f getPosition() {
         return position;
     }
-    
+   
     /**
      * Update the vehicle
      * @param gameTime The gameTime.

@@ -50,20 +50,27 @@ public class TransportVehicle extends Vehicle {
             // wait for message depart
         }
         else if(position == route[routeIndex].getPosition()){
-            routeIndex--;
+            routeIndex++;
         }
         else{
-            Vector3f destination = route[routeIndex].getPosition();
-            Vector3f diff = new Vector3f(   destination.x - this.getPosition().x,
-                                            destination.y - this.getPosition().y,
-                                            destination.z - this.getPosition().z);
+            Vector3f NextNode = route[routeIndex].getPosition();
+            Vector3f diff = new Vector3f(   NextNode.x - this.getPosition().x,
+                                            NextNode.y - this.getPosition().y,
+                                            NextNode.z - this.getPosition().z);
             diff.normalize();
             diff.x*=gameTime*speed;
             diff.y*=gameTime*speed;
             diff.z*=gameTime*speed;
-            this.position.AddVector3f(diff);
-            // follow route 
-            // update position
+            
+            Vector3f temp = new Vector3f(position);
+            temp.AddVector3f(diff);
+
+            if (Vector3f.distance(getPosition(), temp) < Vector3f.distance(getPosition(), NextNode)){
+                this.position.AddVector3f(diff);
+            }
+            else{
+                this.position = NextNode;
+            }
         } 
     }
     

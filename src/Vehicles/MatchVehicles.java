@@ -38,70 +38,33 @@ public class MatchVehicles {
         }
         System.out.println("Trucks:      "+Trucks.size());
     }
-   
-//    private static <T> List<T> Compare(List<T> BoatList, List<T> arrivalBoatList, List<T> departureBoatList){        
-//        while(arrivalBoatList.size() > 0 || departureBoatList.size() > 0){    
-//            if (arrivalBoatList.isEmpty()){
-//                BoatList.add(departureBoatList.get(0));
-//                departureBoatList.remove(0);
-//            }
-//            else if (departureBoatList.isEmpty()){
-//                BoatList.add(arrivalBoatList.get(0));
-//                arrivalBoatList.remove(0);
-//            }
-//            else{
-//                
-//                Date ss = ((TransportVehicle)arrivalBoatList.get(0)).GetArrivalDate();
-//                Date se = ((TransportVehicle)arrivalBoatList.get(0)).GetDepartureDate();
-//                Date es = ((TransportVehicle)departureBoatList.get(0)).GetArrivalDate();
-//                Date ee = ((TransportVehicle)departureBoatList.get(0)).GetDepartureDate();
-//                
-//                if (DateEquel(ss, es)){
-//                    BoatList.add(arrivalBoatList.get(0));
-//                    arrivalBoatList.remove(0);
-//                    departureBoatList.remove(0);
-//                }
-//                else
-//                {
-//                    if(DateBefore(ss, es)){
-//                        BoatList.add(arrivalBoatList.get(0));
-//                        arrivalBoatList.remove(0);
-//                    }
-//                    else{
-//                        BoatList.add(departureBoatList.get(0));
-//                        departureBoatList.remove(0);
-//                    }
-//                }
-//            }
-//        }
-//        
-//        for (T boat : BoatList) {
-//            System.out.println(((TransportVehicle)boat).GetArrivalDate() + " <-> " + 
-//                    ((TransportVehicle)boat).GetDepartureDate()+ " Count:" + 
-//                    boat.equals(Boat.class) ?((Boat)boat).storage.Count() : ());
-//        }
-//        
-//        return BoatList;
-//    }
-    
+    public static int idCounter = 0;
     private static List<TransportVehicle> MatchVehicles(List<TransportVehicle> arrivalList, List<TransportVehicle> departureList){
         ArrayList<TransportVehicle> transportVehicleList = new ArrayList<>();
         if (arrivalList.isEmpty() && departureList.isEmpty()){
             return transportVehicleList;
         }
         if (arrivalList.isEmpty()){
+            for (TransportVehicle transportVehicle : departureList) {
+                transportVehicle.Id = ++idCounter;
+            }
             return departureList;
         }
         if (departureList.isEmpty()){
+            for (TransportVehicle transportVehicle : arrivalList) {
+                transportVehicle.Id = ++idCounter;
+            }
             return arrivalList;
         }
         
         while(arrivalList.size() > 0 || departureList.size() > 0){    
             if (arrivalList.isEmpty()){
+                departureList.get(0).Id = ++idCounter;
                 transportVehicleList.add(departureList.get(0));
                 departureList.remove(0);
             }
             else if (departureList.isEmpty()){
+                arrivalList.get(0).Id = ++idCounter;
                 transportVehicleList.add(arrivalList.get(0));
                 arrivalList.remove(0);
             }
@@ -111,6 +74,7 @@ public class MatchVehicles {
                 Date es = departureList.get(0).GetArrivalDate();
                 
                 if (DateEqual(ss, es)){
+                    arrivalList.get(0).Id = ++idCounter;
                     transportVehicleList.add(arrivalList.get(0));
                     arrivalList.remove(0);
                     departureList.remove(0);
@@ -118,10 +82,12 @@ public class MatchVehicles {
                 else
                 {
                     if(DateBefore(ss, es)){
+                        arrivalList.get(0).Id = ++idCounter;
                         transportVehicleList.add(arrivalList.get(0));
                         arrivalList.remove(0);
                     }
                     else{
+                        departureList.get(0).Id = ++idCounter;
                         transportVehicleList.add(departureList.get(0));
                         departureList.remove(0);
                     }
