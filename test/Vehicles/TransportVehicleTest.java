@@ -6,6 +6,7 @@ package Vehicles;
 
 import Helpers.Vector3f;
 import Main.Container;
+import Pathfinding.Node;
 import java.text.ParseException;
 import java.util.Date;
 import org.junit.After;
@@ -47,7 +48,7 @@ public class TransportVehicleTest {
     public void testUpdate() throws Exception {
         System.out.println("update");
         float gameTime = 0.0F;
-        TransportVehicle instance = null;
+        TransportVehicle instance = new TransportVehicle(new Date(), new Date(), "comp1", Vehicle.VehicleType.truck, new Vector3f(1,1,1), new Node(1, 1, 1));
         instance.update(gameTime);
         // TODO review the generated test code and remove the default call to fail.
         fail("The test case is a prototype.");
