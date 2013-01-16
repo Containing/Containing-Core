@@ -169,6 +169,12 @@ public class Controller {
         bargesToArrive = GenerateArrivalVehicles.GetInlandBoats();
         trainsToArrive = GenerateArrivalVehicles.GetTrains();
         trucksToArrive = GenerateArrivalVehicles.GetTrucks();
+        
+        for(TransportVehicle vehicle : bargesToArrive){
+            System.out.println(vehicle.GetArrivalDate() + " barge" );
+        }
+        
+        
         // Initializes space for the cranes        
         seaCranes = new Crane[10];
         bargeCranes = new Crane[8];
@@ -313,10 +319,11 @@ public class Controller {
             depatureContainers = GetDepartureContainers(simulationTime);
         }
         // Updates all the messageQueue
-        //UpdateMessages();
+        UpdateMessages();
 
-        if(presentVehicles.size()>0)
+        if(presentVehicles.size()>0){
             objpublisher.syncVehicle(presentVehicles.get(0));
+        }
     }
     
     /**
@@ -543,21 +550,23 @@ public class Controller {
         if(toCheck.size() > 0){
             // While there are transport vehicles arriving
             while(simulationTime.getTime() >= toCheck.get(0).GetArrivalDate().getTime()){
+                // The vehicle that arrived
+                TransportVehicle vehicle = toCheck.get(0);
+                // Removes the vehicle that arrived
+                toCheck.remove(0);
                 
-                System.out.println(toCheck.get(0).getClass().toString() + " arrived" );
+                System.out.println(vehicle.GetVehicleType().toString() + " arrived" + vehicle.GetArrivalDate() );
                 
                 // Add the vehicle that arrived
-                presentVehicles.add(toCheck.get(0));
+                presentVehicles.add(vehicle);
                 // Request cranes
                 for(int i = 0 ; i < requests; i++){
                     messageQueue.add(new Message(
-                        toCheck.get(0),
+                        vehicle,
                         Crane.class,
                         Message.ACTION.Unload,
                         null));
                 }
-                // Removes the vehicle that arrived
-                toCheck.remove(0);
                 // When there are no vehicles left
                 if(toCheck.isEmpty()){
                     break;
@@ -617,52 +626,44 @@ public class Controller {
         boolean found = false;
         // Check every crane
         for(int i = 0; i< toCheck.length; i++){
-            // When the crane is available and 
-            // there's a transport vehicle on the cranes parkinglot
+            // When the agv can deliver the container to this crane
             if(toCheck[i].Available() && toCheck[i].parkinglotTransport.isFull()){
-                // Send an unload message to the crane
+                // Send a message to unload the agv to the crane
                 toCheck[i].SendMessage(new Message(
                     agv,
                     toCheck[i],
                     Message.ACTION.Unload,
                     message.GetContainer()));
-                // When the agv has assignments
+                // When the agv his assignments need to be destroyed
+                boolean destroy = false;
+                // When it needs to destroy it's messages
                 if(!agv.Available()){
-                    // When it's a delivery message
                     if(agv.GetMessage().Deliver()){
-                       // Send a delivery message to the agv
-                        agv.SendMessage(new Message(
-                            toCheck[i],
-                            agv,
-                            Message.ACTION.Deliver,
-                            message.GetContainer()),
-                            true);                         
+                        destroy = true;                       
                     }
                 }
-                else{
                 // Send a delivery message to the agv
                 agv.SendMessage(new Message(
                     toCheck[i],
                     agv,
                     Message.ACTION.Deliver,
-                    message.GetContainer()));
-                }
+                    message.GetContainer()),
+                    destroy);
+                // There was a crane found to deliver the container
                 found  = true;
                 break;                
             }
         }
-        // When there's no crane available to deliver the container
-        // Add a message to the queue
+        // When there's no crane available to deliver the container to
         if(!found){
             messageQueue.add(new Message(
-                    agv,
-                    toCheck[0],
-                    Message.ACTION.Unload,
-                    message.GetContainer()));
+                agv,
+                toCheck[0],
+                Message.ACTION.Unload,
+                message.GetContainer()));
         }
         // Message was handeld so remove it        
-        messageQueue.remove(message);
-        
+        messageQueue.remove(message);        
         return toCheck;
     }    
     
@@ -675,10 +676,11 @@ public class Controller {
      */
     private Crane[] TransportRequestsCrane(Crane[] toCheck, Message message) throws Exception{
         for(int i = 0 ; i < toCheck.length; i++){
+            // When the vehcile is on the position of the crane for un/loading
             if(toCheck[i].parkinglotTransport.node == message.DestinationNode()){
                 // Sends the message copy to the crane
                 toCheck[i].SendMessage(message);
-                // Request an AGV to fetch the first container
+                // Request an AGV to fetch the first container for the crane
                 if(message.UnLoad()){
                     messageQueue.add(new Message(
                         toCheck[i],
@@ -705,38 +707,30 @@ public class Controller {
     private List<StorageCrane> StorageCranesToCheck(List<StorageCrane> toCheck,AGV agv, Message message) throws Exception{
         // When a crane was found
         boolean found = false;
-        // Check every storage Crane
+        // Check every storage Crane if the can unload an agv 
         for(StorageCrane crane : toCheck){
-            // When the storage crane has no assignments 
-            // And there's a parkinglot free
-            if(crane.Available() &&
-              (!crane.parkinglotAGV.isFull() || !crane.parkinglotTransport.isFull())){
-                // Send a new message
+            if(crane.Available()){
+                // Send a message to the storagcrane to unload the agv
                 crane.SendMessage(new Message(
                         crane,
                         agv,
                         Message.ACTION.Unload,
                         message.GetContainer()));
-                // When the agv has assignments
+                // When the assignments need to be destroyed
+                boolean destroy = false;
+                // When the agv needs to destroy it's assignments
                 if(!agv.Available()){
-                    // When it's a delivery message
                     if(agv.GetMessage().Deliver()){
-                        agv.SendMessage(new Message(
-                            crane,
-                            agv,
-                            Message.ACTION.Deliver,
-                            message.GetContainer()), 
-                            true);
+                        destroy = true;
                     }
                 }
-                // When the agv has no assignments
-                else{
-                    agv.SendMessage(new Message(
-                        crane,
-                        agv,
-                        Message.ACTION.Deliver,
-                        message.GetContainer()));
-                }
+                // Send a deliver assignement to the agv
+                agv.SendMessage(new Message(
+                    crane,
+                    agv,
+                    Message.ACTION.Deliver,
+                    message.GetContainer()),
+                    destroy);
                 found = true;
                 break;
             }
