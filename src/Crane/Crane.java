@@ -20,28 +20,50 @@ public class Crane implements IMessageReceiver
 {
     public Parkinglot parkinglotAGV;
     public Parkinglot parkinglotTransport;
-    
-    protected final int _rails;
-    protected final int _range;
+    public enum CraneType { storage, seaship, barge, train, truck };
+
+    protected final int _railsLocation;
+    protected final float _secureContainer = 30f;
+    protected final float _raise;
+    protected final float _lower;
+    protected final float _moveContainer;
+    protected final float _moveLoaded;
+    protected final float _moveEmpty;
     protected Container _carriedContainer;
     protected int _currentRow;
+    protected float _taskTimeLeft;
     
     private ArrayList<Message> _Assignments;
-    
-    public Crane (int rails, int range, Parkinglot parkingAGV, Parkinglot parkingTransport) throws Exception
+        
+    public Crane (int railsLocation, CraneType type, Parkinglot parkingAGV, Parkinglot parkingTransport) throws Exception
     {
         if (parkingAGV == null || parkingTransport == null)
             { throw new Exception("A parkinglot can't be null."); }
         
-        if (rails < 0 || range < 0)
-            { throw new Exception("The rails or range can't be smaller than zero."); }
+        if (railsLocation < 1)
+            { throw new Exception("The range can't be smaller than zero."); }
         
         parkinglotAGV = parkingAGV;
         parkinglotTransport = parkingTransport;
-        
-        _rails = rails;
-        _range = range;
+
         _Assignments = new ArrayList<Message>();
+        _railsLocation = railsLocation;
+        
+        switch (type)
+        {
+            case barge: _raise = 30f; _lower = 30f; _moveContainer = 1f; _moveLoaded = 2f; _moveEmpty = 1f;
+                        break;
+            case seaship: _raise = 0; _lower = 0; _moveContainer = 300f; _moveLoaded = 0; _moveEmpty = 1.5f;
+                        break;
+            case storage: _raise = 30f; _lower = 30f; _moveContainer = 0.5f; _moveLoaded = 3f; _moveEmpty = 2f;
+                        break;
+            case train: _raise = 60; _lower = 30; _moveContainer = 0.5f; _moveLoaded = 3f; _moveEmpty = 2f;
+                        break;
+            case truck: _raise = 60; _lower = 60; _moveContainer = 0; _moveLoaded = 1f; _moveEmpty = 1f;
+                        break;
+            default:    _raise = 0; _lower = 0; _moveContainer = 0; _moveLoaded = 0; _moveEmpty = 0;
+                        break;
+        }
     }
 
     public int getBestRowIndex(Storage_Area storage, int columnIndex) throws Exception 
@@ -192,7 +214,21 @@ public class Crane implements IMessageReceiver
     
     public void update(float updateTime)
     {
-        
+        if (parkinglotAGV.isEmpty() == false || parkinglotTransport.isEmpty() == false 
+            && Available() == false && updateTime > 0)
+        {
+            Message message = _Assignments.get(0);
+            
+            if (message.Load() != true && message.UnLoad() != true)
+            {
+                _Assignments.remove(0);
+                this.update(updateTime);
+            }
+            else
+            {
+                
+            }
+        }
     }
     
     /**
@@ -215,7 +251,7 @@ public class Crane implements IMessageReceiver
         _Assignments.add(mess);
     }
     
-    public void setRow (int row)
+    public void moveRow (int row)
     {
         _currentRow = row;
     }

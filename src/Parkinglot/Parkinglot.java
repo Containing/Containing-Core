@@ -45,7 +45,6 @@ public class Parkinglot <T>
         
         else
         {
-            System.out.println("Exception in Parkinglot : '" + this.toString() + "' Can't request vehicles from an empty parkinglot.");
             throw new Exception("Can't request the vehicles from an empty parkinglot.");
         }
     }
@@ -60,7 +59,6 @@ public class Parkinglot <T>
     {
         if (_parked == _size)
         {
-            System.out.println("Exception in Parkinglot : '" + this.toString() + "' Can't park the vehicle : '" + vehicle.toString() + "', parkinglot is full.");
             throw new Exception("Can't park the vehicle in a full parkinglot.");
         }
         
@@ -89,8 +87,6 @@ public class Parkinglot <T>
                 return parkedVehicle;
             }
         }
-        
-        System.out.println("Exception in Parkinglot : '" + this.toString() + "' Can't unpark the vehicle : '" + vehicle.toString() + "'");
         throw new Exception("Can't unpark the vehicle from the parkinglot.");
     }
     
@@ -101,6 +97,23 @@ public class Parkinglot <T>
     public boolean isFull ()
     {
         if (_parked == _size)
+        {
+            return true;
+        }
+        
+        else
+        {
+            return false;
+        }
+    }
+    
+        /**
+     * 
+     * @return Returns whether the parkinglot is empty or not.
+     */
+    public boolean isEmpty ()
+    {
+        if (_parked == 0)
         {
             return true;
         }

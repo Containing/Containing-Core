@@ -70,7 +70,7 @@ public class Storage_AreaTest
     /**
      * Test of peekContainer method, of class Storage_Area.
      */
-    @Test(expected = Exception.class)
+    @Test (expected = Exception.class)
     public void testPeakContainer() throws Exception 
     {
         if (storage.peekContainer(0,0).getId().equals("Cont") == false)
@@ -82,124 +82,114 @@ public class Storage_AreaTest
     /**
      * Test of popContainer method, of class Storage_Area.
      */
-    @Test
-    public void testPopContainer() throws Exception {
-        System.out.println("popContainer");
-        int x = 0;
-        int z = 0;
-        Storage_Area instance = null;
-        Container expResult = null;
-        Container result = instance.popContainer(x, z);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+    @Test (expected = Exception.class)
+    public void testPopContainer() throws Exception 
+    {
+        Container temp = storage.popContainer(0, 0);
+        
+        if (temp == null)
+            { fail("The method returns a null object."); }
+        
+        temp = storage.popContainer(0,0);
     }
 
     /**
      * Test of pushContainer method, of class Storage_Area.
      */
-    @Test
-    public void testPushContainer() throws Exception {
-        System.out.println("pushContainer");
-        Container container = null;
-        int x = 0;
-        int z = 0;
-        Storage_Area instance = null;
-        instance.pushContainer(container, x, z);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+    @Test (expected = Exception.class)
+    public void testPushContainer() throws Exception 
+    {
+        if (storage.Count(0,0) != 1)
+            { fail("The stack doesn't contain the correct number of containers."); }
+        
+        storage.pushContainer(container, 0, 0);
+        
+        if (storage.Count(0,0) != 2)
+            { fail("The stack doesn't contain the correct number of containers."); }
+        
+        storage.pushContainer(container, 0, 0);
     }
 
     /**
      * Test of getLength method, of class Storage_Area.
      */
     @Test
-    public void testGetLength() {
-        System.out.println("getLength");
-        Storage_Area instance = null;
-        int expResult = 0;
-        int result = instance.getLength();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+    public void testGetLength() 
+    {
+        if (storage.getLength() != 2)
+            { fail("The method doesn't return the correct length."); }
     }
 
     /**
      * Test of getWidth method, of class Storage_Area.
      */
     @Test
-    public void testGetWidth() {
-        System.out.println("getWidth");
-        Storage_Area instance = null;
-        int expResult = 0;
-        int result = instance.getWidth();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+    public void testGetWidth() 
+    {
+        if (storage.getWidth() != 3)
+            { fail("The method doesn't return the correct length."); }
     }
 
     /**
      * Test of getHeight method, of class Storage_Area.
      */
     @Test
-    public void testGetHeight() {
-        System.out.println("getHeight");
-        Storage_Area instance = null;
-        int expResult = 0;
-        int result = instance.getHeight();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of Count method, of class Storage_Area.
-     */
-    @Test
-    public void testCount_0args() {
-        System.out.println("Count");
-        Storage_Area instance = null;
-        int expResult = 0;
-        int result = instance.Count();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of Count method, of class Storage_Area.
-     */
-    @Test
-    public void testCount_int_int() 
+    public void testGetHeight() 
     {
+        if (storage.getHeight() != 2)
+            { fail("The method doesn't return the correct length."); }
+    }
 
+    /**
+     * Test of Count method, of class Storage_Area.
+     */
+    @Test
+    public void testCount_0args() 
+    {
+        if (storage.Count() != 1)
+            { fail("The method doesn't return the correct amount of containers."); }
+    }
+
+    /**
+     * Test of Count method, of class Storage_Area.
+     */
+    @Test
+    public void testCount_int_int() throws Exception
+    {
+        if (storage.Count(0,0) != 1)
+            { fail("The method doesn't return the correct amount of containers."); }
+        
+        if (storage.Count(1,0) != 0)
+            { fail("The method doesn't return the correct amount of containers."); }
     }
 
     /**
      * Test of isFilled method, of class Storage_Area.
      */
     @Test
-    public void testIsFilled() {
-        System.out.println("isFilled");
-        Storage_Area instance = null;
-        boolean expResult = false;
-        boolean result = instance.isFilled();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
-     * Test of toString method, of class Storage_Area.
-     */
-    @Test
-    public void testToString() {
-        System.out.println("toString");
-        Storage_Area instance = null;
-        String expResult = "";
-        String result = instance.toString();
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+    public void testIsFilled() throws Exception
+    {
+        if (storage.isFilled() == true)
+            { fail("Returns true when the storage isn't full yet."); }
+        
+        storage.pushContainer(container, 0, 0);
+        
+        storage.pushContainer(container, 0, 1);
+        storage.pushContainer(container, 0, 1);
+        
+        storage.pushContainer(container, 0, 2);
+        storage.pushContainer(container, 0, 2);
+        
+        storage.pushContainer(container, 1, 0);
+        storage.pushContainer(container, 1, 0);
+        
+        storage.pushContainer(container, 1, 1);
+        storage.pushContainer(container, 1, 1);
+        
+        storage.pushContainer(container, 1, 2);
+        storage.pushContainer(container, 1, 2);
+        
+        if (storage.isFilled() == false)
+            { fail("Returns false when the storage is full."); }
     }
 }
