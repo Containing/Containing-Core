@@ -185,39 +185,39 @@ public class Controller {
         for(int i = 0; i < 10; i++){    
             // Initialize 10 seaShipCranes
             seaCranes[i] = new Crane(
-                    0,
-                    0,
+                    1,
+                    Crane.CraneType.seaship,
                     Pathfinder.parkinglots[i+1],
                     Pathfinder.parkinglots[46]);
         }
         for(int i = 0 ; i < 8; i++){     
             // Initialize 8 BargeCranes
             bargeCranes[i] = new Crane(
-                    0,
-                    0,
+                    1,
+                    Crane.CraneType.barge,
                     Pathfinder.parkinglots[i+ 12],
                     Pathfinder.parkinglots[47+ (i/4)]);
         }        
         for(int i  =0 ; i < 4; i++){         
             // Initialize 4 trainCranes
             trainCranes[i] = new Crane(
-                    0,
-                    0,
+                    1,
+                    Crane.CraneType.train,
                     Pathfinder.parkinglots[i+41],
                     Pathfinder.parkinglots[69 + (i/2)]);
         }        
         for (int i = 0; i < 20; i++){          
             // Initialize 20 truckCranes
             truckCranes[i] = new Crane(
-                    0,
-                    0,
+                    1,
+                    Crane.CraneType.truck,
                     Pathfinder.parkinglots[i+21],
                     Pathfinder.parkinglots[i+49]);
         }        
         // Initializes 100 storageAreas and there storage cranes
         for(int i = 0 ; i < 100; i++){
             //storageArea.add(new Storage_Area(98,6,6,new Vector3f(0,0,0)));
-            //storageCranes.add(new StorageCrane(0,0,new ParkingLot(),new ParkingLot(),storageArea.get(i), new Vector3f(0,0,0)));
+            //storageCranes.add(0, Crane.CraneType.new StorageCrane(0,0,new ParkingLot(),new ParkingLot(),storageArea.get(i), new Vector3f(0,0,0)));
         }
         
         // Adds 100 AGVs
@@ -236,7 +236,7 @@ public class Controller {
         // Sets the simulationTime equal to the first shipment
         simulationTime.setTime(shipmentTime.getTime());
         // Sets the simulationTime 1 hour before the first shipment  
-        //simulationTime.setHours(simulationTime.getHours() -1);
+        simulationTime.setHours(simulationTime.getHours() -1);
         
         // Gets the first delivery of containers
         // Also sets the deliveryTime
@@ -331,45 +331,55 @@ public class Controller {
      * @throws Exception 
      */
     private void UpdateMessages() throws Exception{
+        // Index that holds the current agv that's selected
+        int indexAGV = 0;
+        // When there are no agvs available
+        boolean nonAble = false;
+        
         // Checks every message
         for(Message message : messageQueue){
             // When the message requests an AGV 
-            if(message.RequestedObject().equals(AGV.class)){  
-                // Checks every agv if it's available
-                for(Vehicle agv : agvList){
-                    // When the agv is available
-                    if(((AGV)agv).Available()){
-                        //Sets the destination of the AGV
-                        agv.setDestination(message.DestinationNode());
-                        //Copies the message to the message queue
-                        ((AGV)agv).SendMessage(message);
-                        // When it's a fetch message send a delivery message
-                        if(message.Fetch() && message.GetContainer() != null){
-                            // When the destination object is a crane
-                            if(message.DestinationObject().equals(Crane.class)){
-                                switch(message.GetContainer().getDepartureTransportType())
-                                {
-                                    case vrachtauto:
-                                        truckCranes = CranesToCheck(truckCranes,(AGV)agv,message);
-                                        break;
-                                    case zeeschip:
-                                        seaCranes = CranesToCheck(seaCranes,(AGV)agv,message);
-                                        break;
-                                    case binnenschip:
-                                        bargeCranes = CranesToCheck(bargeCranes,(AGV)agv,message);
-                                        break;
-                                    case trein:
-                                        trainCranes = CranesToCheck(trainCranes,(AGV)agv,message);
-                                        break;
-                                }
-                            }
-                            // When the destination object is a storageCrane
-                            else if (message.DestinationObject().equals(StorageCrane.class)){
-                                // Check the Storage cranes
-                                storageCranes = StorageCranesToCheck(storageCranes,(AGV)message.DestinationObject(), message);
-                            }
+            if(message.RequestedObject().equals(AGV.class)){
+                if(!nonAble){
+                    // Skip every agv that's not available
+                    while(!((AGV)agvList.get(indexAGV)).Available()){
+                        if(++indexAGV >= agvList.size()){
+                            nonAble = true;
+                            break;
                         }
                     }
+                    // The agv that's available
+                    Vehicle agv = agvList.get(indexAGV);
+                    //Sets the destination of the AGV
+                    agv.setDestination(message.DestinationNode());
+                    //Copies the message to the message queue
+                    ((AGV)agv).SendMessage(message);
+                    // When it's a fetch message send a delivery message
+                    if(message.Fetch() && message.GetContainer() != null){
+                        // When the destination object is a crane
+                        if(message.DestinationObject().equals(Crane.class)){
+                            switch(message.GetContainer().getDepartureTransportType())
+                            {
+                                case vrachtauto:
+                                    truckCranes = CranesToCheck(truckCranes,(AGV)agv,message);
+                                    break;
+                                case zeeschip:
+                                    seaCranes = CranesToCheck(seaCranes,(AGV)agv,message);
+                                    break;
+                                case binnenschip:
+                                    bargeCranes = CranesToCheck(bargeCranes,(AGV)agv,message);
+                                    break;
+                                case trein:
+                                    trainCranes = CranesToCheck(trainCranes,(AGV)agv,message);
+                                    break;
+                            }
+                        }
+                        // When the destination object is a storageCrane
+                        else if (message.DestinationObject().equals(StorageCrane.class)){
+                        // Check the Storage cranes
+                        storageCranes = StorageCranesToCheck(storageCranes,(AGV)message.DestinationObject(), message);
+                        }
+                    }                
                 }
             }
             // When the message requests a crane

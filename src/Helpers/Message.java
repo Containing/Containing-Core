@@ -44,8 +44,7 @@ public class Message {
     {        
         if(sourceSender == null){
             throw new Exception("Source Sender can't be null");
-        }
-        
+        }        
         if(!(sourceSender instanceof Vehicle ||
              sourceSender instanceof Crane)){            
             throw new Exception("Source Sender must be a crane or transportVehicle"); 
@@ -53,10 +52,10 @@ public class Message {
         if(sourceSender == requestedType){
             throw new Exception("Can't request the same type of object");
         }        
+        
         if(requestedType == null){
             throw new Exception("Requested type can't be null");
-        }
-        
+        }        
         if(!(requestedType.equals(AGV.class) ||
              requestedType.equals(Crane.class) ||
              requestedType.equals(StorageCrane.class))){
@@ -76,6 +75,14 @@ public class Message {
         this.container = container;
     }
     
+    /**
+     * Constructs a new message
+     * @param sourceSender The object that requests an object
+     * @param requestedType The object that's requested
+     * @param action The action for the requested object
+     * @param container The container that's on transport
+     * @param destNode A temp destination node to drive to
+     */
     public Message(
             Object sourceSender, 
             Object requestedType,
@@ -83,16 +90,19 @@ public class Message {
             Container container, 
             Node destNode) throws Exception{           
         this(sourceSender,requestedType,action, container);
-        this.destNode = destNode; 
+        
+        if(destNode != null){
+            this.destNode = destNode;
+        }
     }
     
     /**
      * The current action of the message
      * @return The current action
      */
-    public ACTION GetAction(){
-        return action;
-    }
+//    public ACTION GetAction(){
+//        return action;
+//    }
     
     /**
      * When the current action is to deliver a container
@@ -132,21 +142,23 @@ public class Message {
      */
     public Node DestinationNode() throws Exception
     {
-        if(destinationObject == null){
-             throw new Exception("No destinationNode initialized");
-        }       
-        
         if(destinationObject instanceof TransportVehicle){            
-            if(destinationObject == null){
+            if(((TransportVehicle)destinationObject).getDestination() == null){
                 throw new Exception("destination node is null");
             }
             return ((TransportVehicle)destinationObject).getDestination();    
         }        
-        else if (destinationObject instanceof Crane){
-            if(destinationObject == null){
-                
+        else if (destinationObject.equals(Crane.class)){
+            if(((Crane)destinationObject).parkinglotAGV.node == null){
+                throw new Exception("destination node is null");
             }
             return ((Crane)destinationObject).parkinglotAGV.node;
+        }
+        else if (destinationObject.equals(StorageCrane.class)){
+            if(((StorageCrane)destinationObject).parkinglotAGV.node == null){
+                throw new Exception("destination node is null");
+            }
+            return ((StorageCrane)destinationObject).parkinglotAGV.node;
         }
         throw new Exception("Message send from unknown source");
     }
