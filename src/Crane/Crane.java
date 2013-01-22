@@ -5,6 +5,8 @@ import Helpers.Message;
 import Main.Container;
 import Parkinglot.Parkinglot;
 import Storage.Storage_Area;
+import Vehicles.AGV;
+import Vehicles.TransportVehicle;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -31,6 +33,8 @@ public class Crane implements IMessageReceiver
     protected final float _moveEmpty;
     protected Container _carriedContainer;
     protected int _currentRow;
+    protected enum Action { unloading, loading, moving, raising, lowering, securing, nothing }
+    protected ArrayList<Action> _currentActions;
     protected float _taskTimeLeft;
     
     private ArrayList<Message> _Assignments;
@@ -46,6 +50,7 @@ public class Crane implements IMessageReceiver
         parkinglotAGV = parkingAGV;
         parkinglotTransport = parkingTransport;
 
+        _currentActions = new ArrayList<Action>();
         _Assignments = new ArrayList<Message>();
         _railsLocation = railsLocation;
         
@@ -212,21 +217,65 @@ public class Crane implements IMessageReceiver
         return storage;
     }
     
+    public void moveRow (int row)
+    {
+        _currentRow = row;
+    }
+    
     public void update(float updateTime)
     {
         if (parkinglotAGV.isEmpty() == false || parkinglotTransport.isEmpty() == false 
             && Available() == false && updateTime > 0)
         {
             Message message = _Assignments.get(0);
+            boolean agv = false;
+            boolean transport = false;
             
-            if (message.Load() != true && message.UnLoad() != true)
+            if (message.UnLoad() != true)
             {
                 _Assignments.remove(0);
                 this.update(updateTime);
             }
             else
             {
+                try
+                {
+                    if (message.DestinationObject().equals(parkinglotAGV.getVehicles().get(0)))
+                    {
+                        agv = true;
+                    } 
+                }
+                catch (Exception e) { System.out.println("The parkinglot for the AGV is empty."); }
                 
+                try
+                {
+                    if (message.DestinationObject().equals(parkinglotTransport.getVehicles().get(0)))
+                    {
+                        transport = true;
+                    } 
+                }
+                catch (Exception e) { System.out.println("The parkinglot for the transport is empty."); }
+
+                try
+                {
+                    Storage_Area storage;
+                    
+                    if (agv = true)
+                    {
+                        AGV a = (AGV)parkinglotAGV.getVehicles().get(0);
+                        storage = a.storage;
+                    }
+                    
+                    else if (transport = true)
+                    {
+                        TransportVehicle t = (TransportVehicle)parkinglotTransport.getVehicles().get(0);
+                        storage = t.storage;
+                    }
+                    
+                    
+                        
+                }
+                catch (Exception e) { }
             }
         }
     }
@@ -249,10 +298,5 @@ public class Crane implements IMessageReceiver
     public void SendMessage(Message mess)
     {
         _Assignments.add(mess);
-    }
-    
-    public void moveRow (int row)
-    {
-        _currentRow = row;
     }
 }

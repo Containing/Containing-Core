@@ -38,15 +38,7 @@ public class Parkinglot <T>
      */
     public ArrayList<T> getVehicles () throws Exception
     {
-        if (_parked > 0)
-        {
-            return _parkingSpace;
-        }
-        
-        else
-        {
-            throw new Exception("Can't request the vehicles from an empty parkinglot.");
-        }
+        return _parkingSpace;
     }
     
     /**

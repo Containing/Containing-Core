@@ -28,14 +28,14 @@ public class StorageCrane extends Crane
     private Storage_Area _storageField;
     private HashMap _storageMap;
     
-    public StorageCrane (int railsLocation, Parkinglot<AGV> parkingA, Parkinglot<AGV> parkingB, Storage_Area storage, Vector3f pos) throws Exception
+    public StorageCrane (int railsLocation, Parkinglot<AGV> parkingA, Parkinglot<AGV> parkingB, Storage_Area storage) throws Exception
     {
         super(railsLocation, Crane.CraneType.storage, parkingA, parkingB);
 
         if (storage == null)
             { throw new Exception("The Storage_Area can't be null."); }     
         
-        position = pos;
+        position = Vector3f.GetCenter(parkingA.node.getPosition(), parkingB.node.getPosition());
         _storageField = storage;
         _storageMap = new HashMap(_storageField.getLength() * _storageField.getWidth());
     }
