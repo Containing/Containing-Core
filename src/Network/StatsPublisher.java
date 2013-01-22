@@ -10,14 +10,39 @@ import org.zeromq.*;
  * @author Christiaan
  */
 public class StatsPublisher {
-    public static void main(String args[]) throws Exception {
-        
+    private ZMQ.Socket publisher;
+    
+    /**
+     * Constructor
+     */
+    public StatsPublisher() {
         //  Prepare our context and socket
         ZMQ.Context context = ZMQ.context(1);
-        ZMQ.Socket publisher = context.socket(ZMQ.PUB);
-
-        System.out.println("Publisher");
+        publisher = context.socket(ZMQ.PUB);
         publisher.bind("tcp://*:6000");
+    }
+    
+    /**
+     * Serializes a StatsMessage and publishes it
+     * @param msg
+     * @throws Exception 
+     */
+    public void SendStatsMessage(StatsMessage msg) throws Exception {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ObjectOutputStream oos = new ObjectOutputStream(baos);
+        oos.writeObject(msg);
+        oos.close();
+        publisher.send(baos.toByteArray(), 0);
+    }
+    
+    /**
+     * Test server that publishes dummy data. Use it to test the Android client.
+     * @param args
+     * @throws Exception 
+     */
+    public static void main(String args[]) throws Exception {
+        
+        StatsPublisher publisher = new StatsPublisher();
         
         Random rnd = new Random();
         for(;;) {
@@ -36,18 +61,8 @@ public class StatsPublisher {
             msg.vehicles.put("SHIP", rnd.nextInt(20));
             msg.vehicles.put("TRUCK",rnd.nextInt(20));
             
-            // Serialize message
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            ObjectOutputStream oos = new ObjectOutputStream(baos);
-            oos.writeObject(msg);
-            oos.close();
-            
             // Send message
-            publisher.send(baos.toByteArray(), 0);
-            
-            //publisher.send(msg.toString());
-            //System.out.println(msg.toString());
-            //System.out.println(new String(baos.toByteArray()));
+            publisher.SendStatsMessage(msg);
             
             try {
                 Thread.sleep(500);

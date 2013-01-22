@@ -72,6 +72,7 @@ public class Controller {
     
     // Networkhandler
     Network.objPublisher objpublisher;
+    Network.StatsPublisher statsPublisher;
     
     // </editor-fold>
     
@@ -126,6 +127,7 @@ public class Controller {
         }
         
         objpublisher = new Network.objPublisher();
+        statsPublisher = new Network.StatsPublisher();
         
         // Start's and run's the timer for updating the application
         timer.start();
