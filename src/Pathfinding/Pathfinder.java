@@ -66,8 +66,8 @@ public class Pathfinder {
     public static Parkinglot[] parkinglots;
     
     public static void generateArea() throws Exception{
-        Nodes = new Node[300];
-        parkinglots = new Parkinglot[200];
+        Nodes = new Node[1100];
+        parkinglots = new Parkinglot[300];
         List<Path> pathList = new ArrayList<>();
         
         // helpers
@@ -329,7 +329,7 @@ public class Pathfinder {
         
         // </editor-fold>
         
-        // <editor-fold defaultstate="collapsed" desc="train route   nodes(206-), parkinglot(69,70)">
+        // <editor-fold defaultstate="collapsed" desc="train route   nodes(206-235), parkinglot(69,70)">
         float distanceToDockTrain = 50; // todo edit this value
         float curveTrain = 1.8f;
         
@@ -357,7 +357,58 @@ public class Pathfinder {
         }
         // </editor-fold>
         
+        // <editor-fold defaultstate="collapsed" desc="Strorage Parkinglots   nodes(236-437), parkinglot(71,271)">
+        
+        //Nodes
+        float storagesize = storageLenght/100;
+        for (int i = 0; i < 100; i++) {
+            float position = distanceToStorage+storagesize/2+storagesize*i;
+            Nodes[236+i] = new Node(position,distanceToMainRoad+0*pathWidth+halfPathWidth);
+            Nodes[336+i] = new Node(position,distanceToMainRoad+1*pathWidth+halfPathWidth);
+            Nodes[436+i] = new Node(position,distanceToMainRoad+2*pathWidth+halfPathWidth);
+            Nodes[536+i] = new Node(position,distanceToMainRoad+3*pathWidth+halfPathWidth);
+            Nodes[636+i] = new Node(position,distanceToStorage+storageWidth+0*pathWidth+halfPathWidth);
+            Nodes[736+i] = new Node(position,distanceToStorage+storageWidth+1*pathWidth+halfPathWidth);
+            Nodes[836+i] = new Node(position,distanceToStorage+storageWidth+2*pathWidth+halfPathWidth);
+            Nodes[936+i] = new Node(position,distanceToStorage+storageWidth+3*pathWidth+halfPathWidth);
+        }
+        
+        // Path
+        for (int i = 0; i < 4; i++) {
+            pathList.add(new Path(Nodes[12+i], Nodes[36+((2+i)*100)]));
+            pathList.add(new Path(Nodes[8+i], Nodes[35+((3+i)*100)]));
+            pathList.add(new Path(Nodes[7-i], Nodes[35+((7+i)*100)]));
+            pathList.add(new Path(Nodes[3-i], Nodes[36+((6+i)*100)]));
+        }
+        
+        for (int i = 0; i < 99; i++) {
+            pathList.add(new Path(Nodes[236+i], Nodes[236+i+1]));
+            pathList.add(new Path(Nodes[336+i], Nodes[336+i+1]));
+            pathList.add(new Path(Nodes[436+i], Nodes[436+i+1]));
+            pathList.add(new Path(Nodes[536+i], Nodes[536+i+1]));
+            pathList.add(new Path(Nodes[636+i], Nodes[636+i+1]));
+            pathList.add(new Path(Nodes[736+i], Nodes[736+i+1]));
+            pathList.add(new Path(Nodes[836+i], Nodes[836+i+1]));
+            pathList.add(new Path(Nodes[936+i], Nodes[936+i+1]));
+        }
+        
+        for (int i = 0; i < 100; i++) {
+            pathList.add(new Path(Nodes[36+i+(100*2)], Nodes[36+i+(100*3)]));
+            pathList.add(new Path(Nodes[36+i+(100*3)], Nodes[36+i+(100*4)]));
+            pathList.add(new Path(Nodes[36+i+(100*4)], Nodes[36+i+(100*5)]));
+            pathList.add(new Path(Nodes[36+i+(100*6)], Nodes[36+i+(100*7)]));
+            pathList.add(new Path(Nodes[36+i+(100*7)], Nodes[36+i+(100*8)]));
+            pathList.add(new Path(Nodes[36+i+(100*8)], Nodes[36+i+(100*9)]));
+        }
+        
+        // Parkinglots
+        for (int i = 0; i < 100; i++) {
+            parkinglots[71+i] = new Parkinglot(6, Nodes[536+i]);
+            parkinglots[171+i] = new Parkinglot(6, Nodes[636+i]);
+        }
+        
         // </editor-fold>
+        
         Paths = new Path[pathList.size()];
         for (int i = 0; i < pathList.size(); i++) {
             Paths[i] = pathList.get(i);

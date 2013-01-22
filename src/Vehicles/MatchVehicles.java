@@ -17,27 +17,59 @@ public class MatchVehicles {
      */
     public static void main(String[] args) throws Exception {
         Database.restoreDump();
-        List<TransportVehicle> SeaBoats = GetSeaBoats();
-        for (TransportVehicle TranspottVehicle : SeaBoats) {
-            System.out.println(TranspottVehicle.GetArrivalDate() + " <-> " + TranspottVehicle.GetDepartureDate() + " Count:" + TranspottVehicle.storage.Count());
-        }
-        System.out.println("SeaBoats:    "+SeaBoats.size());
-        List<TransportVehicle> InlandBoats = GetInlandBoats();
-        for (TransportVehicle TranspottVehicle : InlandBoats) {
-            System.out.println(TranspottVehicle.GetArrivalDate() + " <-> " + TranspottVehicle.GetDepartureDate() + " Count:" + TranspottVehicle.storage.Count());
-        }
-        System.out.println("InlandBoats: "+InlandBoats.size());
-        List<TransportVehicle> Trains = GetTrains();
-        for (TransportVehicle TranspottVehicle : Trains) {
-            System.out.println(TranspottVehicle.GetArrivalDate() + " <-> " + TranspottVehicle.GetDepartureDate() + " Count:" + TranspottVehicle.storage.Count());
-        }
-        System.out.println("Trains:      "+Trains.size());
-        List<TransportVehicle> Trucks = GetTrucks();
-        for (TransportVehicle TranspottVehicle : Trucks) {
-            System.out.println(TranspottVehicle.GetArrivalDate() + " <-> " + TranspottVehicle.GetDepartureDate() + " Count:" + TranspottVehicle.storage.Count());
-        }
-        System.out.println("Trucks:      "+Trucks.size());
+//        List<TransportVehicle> SeaBoats = GetSeaBoats();
+//        for (TransportVehicle TranspottVehicle : SeaBoats) {
+//            System.out.println(TranspottVehicle.GetArrivalDate() + " <-> " + TranspottVehicle.GetDepartureDate() + " Count:" + TranspottVehicle.storage.Count());
+//        }
+//        System.out.println("SeaBoats:    "+SeaBoats.size());
+//        List<TransportVehicle> InlandBoats = GetInlandBoats();
+//        for (TransportVehicle TranspottVehicle : InlandBoats) {
+//            System.out.println(TranspottVehicle.GetArrivalDate() + " <-> " + TranspottVehicle.GetDepartureDate() + " Count:" + TranspottVehicle.storage.Count());
+//        }
+//        System.out.println("InlandBoats: "+InlandBoats.size());
+//        List<TransportVehicle> Trains = GetTrains();
+
+//        for (TransportVehicle TranspottVehicle : Trains) {
+//            System.out.println(TranspottVehicle.GetArrivalDate() + " <-> " + TranspottVehicle.GetDepartureDate() + " Count:" + TranspottVehicle.storage.Count());
+//        }
+//        System.out.println("Trains:      "+Trains.size());
+//        List<TransportVehicle> Trucks = GetTrucks();
+//        for (TransportVehicle TranspottVehicle : Trucks) {
+//            System.out.println(TranspottVehicle.GetArrivalDate() + " <-> " + TranspottVehicle.GetDepartureDate() + " Count:" + TranspottVehicle.storage.Count());
+//        }
+//        System.out.println("Trucks:      "+Trucks.size());
     }
+    
+    private static List<String> counter(List<TransportVehicle> inputList){
+        List<String> returnList = new ArrayList<>();
+        Integer[] counterList = new Integer[inputList.size()];
+        if (inputList.isEmpty()){
+            return returnList;
+        }
+        Date localDate = inputList.get(0).arrivalDate;
+        returnList.add(Main.Container.df.format(localDate));
+        counterList[0] = 1;
+        
+        int counter = 0;
+        for (int i = 1; i < inputList.size(); i++) {
+            if (localDate.equals(inputList.get(i).arrivalDate)) {
+                counterList[counter] += 1;
+            }
+            else
+            {
+                localDate = inputList.get(i).arrivalDate;
+                counter++;
+                returnList.add(Main.Container.df.format(localDate));
+                counterList[counter] = 1;
+            }
+        }
+        
+        for (int i = 0; i < returnList.size(); i++) {
+            returnList.set(i, returnList.get(i) + " " + counterList[i]);
+        }
+        return returnList;
+    }
+    
     public static int idCounter = 0;
     private static List<TransportVehicle> MatchVehicles(List<TransportVehicle> arrivalList, List<TransportVehicle> departureList){
         ArrayList<TransportVehicle> transportVehicleList = new ArrayList<>();
