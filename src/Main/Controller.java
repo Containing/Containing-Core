@@ -331,24 +331,6 @@ public class Controller {
         // Updates all the messageQueue
         UpdateMessages();
         
-        for(Vehicle agv : agvList){
-            for(Id_Position idPos : waitingContainers){
-                int index =  Integer.parseInt(idPos.ID);
-                if(storageCranes.get(index).Available()){
-                    ((AGV)agv).SendMessage(new Message(
-                            storageCranes.get(Integer.parseInt(idPos.ID)),
-                            agv,
-                            Message.ACTION.Fetch,
-                            storageArea.get(index).peekContainer((int)idPos.position.x, (int)idPos.position.z)));
-                    storageCranes.get(index).SendMessage(new Message(
-                            agv,
-                            storageCranes.get(index),
-                            Message.ACTION.Load,
-                            storageArea.get(index).peekContainer((int)idPos.position.x, (int)idPos.position.z)));
-                }
-            }
-        }
-        
         if(presentVehicles.size()>0){
             objpublisher.syncVehicle(presentVehicles.get(0));
         }
@@ -369,13 +351,22 @@ public class Controller {
             // When the message requests an AGV 
             if(message.RequestedObject().equals(AGV.class)){
                 if(!nonAble){
+                    float distance = Float.MAX_VALUE;
                     // Skip every agv that's not available
-                    while(!((AGV)agvList.get(indexAGV)).Available()){
-                        if(++indexAGV >= agvList.size()){
-                            nonAble = true;
-                            break;
+                    for(int i = 0; i < agvList.size(); i++){
+                        if(((AGV)agvList.get(i)).Available()){
+                            float tempDist = Vector3f.distance(message.DestinationNode().getPosition(), agvList.get(i).getPosition());             
+                            if(tempDist < distance){
+                                indexAGV = i;
+                                distance = tempDist;
+                            }
                         }
                     }
+                    if(distance == Float.MAX_VALUE){
+                        nonAble = true;
+                        break;
+                    }
+                    
                     // The agv that's available
                     Vehicle agv = agvList.get(indexAGV);
                     //Sets the destination of the AGV
