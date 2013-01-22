@@ -22,6 +22,10 @@ public class Node {
         position = new Vector3f(x, y, z);
     }
     
+    public Node(Vector3f pos){
+        position = pos;
+    }
+    
     public Node(float x, float z){
         position = new Vector3f(x, 0, z);
     }

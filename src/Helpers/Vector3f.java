@@ -72,4 +72,12 @@ public class Vector3f {
         this.z += add.z;
         return new Vector3f(x, y, z);
     }
+    
+    public static Vector3f GetCenter(Vector3f pointA, Vector3f pointB){
+        float x = (pointA.x - pointB.x) / 2;
+        float y = (pointA.y - pointB.y) / 2;
+        float z = (pointA.z - pointB.z) / 2;
+        
+        return new Vector3f(pointA.x-x, pointA.y-y, pointA.z-z);
+    }
 }
