@@ -52,10 +52,6 @@ public class StatsPublisherTest {
     @Test
     public void testSendStatsMessage() throws Exception {
         System.out.println("SendStatsMessage");
-
-        
-
-
         // Run subscriber inside a thread
         Runnable subscriberRunnable = new Runnable() {
             @Override
@@ -96,6 +92,5 @@ public class StatsPublisherTest {
         StatsPublisher instance = new StatsPublisher();
         instance.SendStatsMessage(msg);
         subscriberThread.join();
-        System.out.println("all done");
     }
 }
