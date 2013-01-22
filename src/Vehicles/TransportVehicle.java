@@ -12,11 +12,59 @@ import java.util.Date;
  */
 public class TransportVehicle extends Vehicle {
     
-    protected Date arrivalDate;
-    protected Date departureDate;
-    protected String arrivalCompany;
-    protected float speed = 5f;
+    /**
+     * The date the vehicle arrives
+     */
+    Date arrivalDate;
+    /**
+     * The date the vehicle departures 
+     */
+    Date departureDate;
+    /**
+     * The company that send this vehicle
+     */
+    String arrivalCompany;
+    /**
+     * The speed of this vehicle
+     */
+    float speed = 5f;
     
+    /**
+     * If the vehicle is going to departure
+     */
+    boolean departure;
+    /**
+     * If the vehicle doesn't need to be updated anymore
+     */
+    boolean destroy;
+    
+    /**
+     * When called the transport vehicle will leave the harbor
+     */
+    public void Departure()
+    {
+        departure = true;
+        // Set next destination
+    }
+    /**
+     * When the vehicle needs to be destroyed
+     * @return If true, destroy the vehcile
+     */
+    public boolean Destroy()
+    {
+        return destroy;
+    }
+    
+    /**
+     * Constructs a new TransportVehicle
+     * @param arrivalDate The date the vehicle arrives
+     * @param departureDate The date the vehicle departures
+     * @param arrivalCompany The company that send this vehcile
+     * @param vehicleType The type of this transport vehcile
+     * @param containerArraySize The size of the storage 
+     * @param startPosition The node the vehicle arrives
+     * @throws Exception 
+     */
     public TransportVehicle(Date arrivalDate, Date departureDate, String arrivalCompany, VehicleType vehicleType, Vector3f containerArraySize, Node startPosition) throws Exception
     {
         if (arrivalDate == null || departureDate == null || arrivalCompany == null || containerArraySize == null || startPosition == null || vehicleType == null){
@@ -27,27 +75,31 @@ public class TransportVehicle extends Vehicle {
                     "\nvehicleType: " + vehicleType +
                     "\ncontainerArraySize: " + containerArraySize +
                     "\nstartPosition: " + startPosition);
-        }
-        else{
-            this.position = startPosition.getPosition();
-            this.destination = startPosition;
-            this.arrivalDate = arrivalDate;
-            this.departureDate = departureDate;
-            this.arrivalCompany = arrivalCompany;
-            this.vehicleType = vehicleType;
-            this.storage = new Storage_Area((int)containerArraySize.x, (int)containerArraySize.z, (int)containerArraySize.y, position);
-        }
+        }        
+        this.position = startPosition.getPosition();
+        this.destination = startPosition;
+        this.arrivalDate = arrivalDate;
+        this.departureDate = departureDate;
+        this.arrivalCompany = arrivalCompany;
+        this.vehicleType = vehicleType;
+        this.storage = new Storage_Area((int)containerArraySize.x, (int)containerArraySize.z, (int)containerArraySize.y, position);        
     }
     
     public void setPostion(Vector3f position){
         this.position = position;        
     
     }
+    /**
+     * Updates the movement
+     * @param gameTime The elapsed gametime between 
+     * @throws Exception 
+     */
     @Override
     public void update(float gameTime) throws Exception {
         if (position == destination.getPosition()){
-            // send message
-            // wait for message depart
+            if(departure){
+                destroy = true;
+            }                
         }
         else if(position == route[routeIndex].getPosition()){
             routeIndex++;

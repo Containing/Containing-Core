@@ -10,17 +10,45 @@ import Storage.Storage_Area;
  * @author Tonnie Boersma
  */
 public abstract class Vehicle {
-    public enum VehicleType {truck, train, seaBoat, inlandBoat, AGV};
-    public Storage_Area storage;
-    protected Node destination;
-    protected Vector3f position;
-    protected float rotation;
-    protected Node[] route;
-    protected int routeIndex;
-    protected VehicleType vehicleType;
-    public int Id;
     /**
-     * Set the destination.
+     * The types a vehicle can be
+     */
+    public enum VehicleType {truck, train, seaBoat, inlandBoat, AGV};
+    /**
+     * The storage of this vehicle
+     */
+    public Storage_Area storage;
+    /**
+     * The destination node for this vehicle
+     */
+    protected Node destination;
+    /**
+     * The position of this vehicle
+     */
+    protected Vector3f position;
+    /**
+     * The rotation of this vehicle
+     */
+    protected float rotation;
+    /**
+     * The route this vehcile needs to follow
+     */
+    protected Node[] route;
+    /**
+     * The index in the node array route
+     */
+    protected int routeIndex;
+    /**
+     * The type of the vehicle
+     */
+    protected VehicleType vehicleType;    
+    /**
+     * The Id of the vehicle in the harbor
+     */
+    public int Id;
+    
+    /**
+     * Sets the destination node for this vehicle.
      * @param destination The destination Node.
      */
     public void setDestination(Node destination) throws Exception{
@@ -30,7 +58,7 @@ public abstract class Vehicle {
     }
     
     /**
-     * Get the Destination.
+     * Gets the destination node of this vehicle.
      * @return The destination node, returns position Node if their is no path.
      */
     public Node getDestination() {
@@ -38,16 +66,16 @@ public abstract class Vehicle {
     }
     
     /**
-     * Get the currentPosition.
-     * @return currentPosition.
+     * Gets the position of this vehicle
+     * @return The currentPosition.
      */
     public Vector3f getPosition() {
         return position;
     }
    
     /**
-     * Update the vehicle
-     * @param gameTime The gameTime.
+     * Updates the movement of the vehicle
+     * @param gameTime The elapsed gameTime.
      */
     public abstract void update(float gameTime) throws Exception;
     
@@ -59,6 +87,10 @@ public abstract class Vehicle {
         storage = sa;
     }
     
+    /**
+     * Gets the current type of this vehcile
+     * @return The vehicle type
+     */
     public VehicleType GetVehicleType(){
         return vehicleType;
     }

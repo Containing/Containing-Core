@@ -65,7 +65,7 @@ public class AGV extends Vehicle implements IMessageReceiver {
         }   
         // When the AGV has assignments
         if(!Available()){
-            // When the AGV need's the fetch a container
+            // When the AGV needs to fetch a container
             if(assignments.get(0).Fetch()){
                 // When the AGV has a container on him
                 if(storage.Count() > 0){

@@ -172,8 +172,11 @@ public class Controller {
         
         for(TransportVehicle vehicle : bargesToArrive){
             System.out.println(vehicle.GetArrivalDate() + " barge" );
+            System.out.println(vehicle.storage.Count());
         }
-        
+        for(TransportVehicle vehicle : bargesToArrive){
+            System.out.println(vehicle.GetDepartureDate() + "barge ");
+        }
         
         // Initializes space for the cranes        
         seaCranes = new Crane[10];
@@ -292,6 +295,13 @@ public class Controller {
         // Updates the logic of each docked vehicle
         for(Vehicle vehicle : presentVehicles){
             vehicle.update(timeToUpdate);
+            
+            if(((TransportVehicle)vehicle).Destroy()){
+                presentVehicles.remove(vehicle);
+            }            
+            if(simulationTime.getTime() >= ((TransportVehicle)vehicle).GetDepartureDate().getTime()){
+                ((TransportVehicle)vehicle).Departure();
+            }
         }     
         
         // When the next shipment arrives
@@ -320,7 +330,25 @@ public class Controller {
         }
         // Updates all the messageQueue
         UpdateMessages();
-
+        
+        for(Vehicle agv : agvList){
+            for(Id_Position idPos : waitingContainers){
+                int index =  Integer.parseInt(idPos.ID);
+                if(storageCranes.get(index).Available()){
+                    ((AGV)agv).SendMessage(new Message(
+                            storageCranes.get(Integer.parseInt(idPos.ID)),
+                            agv,
+                            Message.ACTION.Fetch,
+                            storageArea.get(index).peekContainer((int)idPos.position.x, (int)idPos.position.z)));
+                    storageCranes.get(index).SendMessage(new Message(
+                            agv,
+                            storageCranes.get(index),
+                            Message.ACTION.Load,
+                            storageArea.get(index).peekContainer((int)idPos.position.x, (int)idPos.position.z)));
+                }
+            }
+        }
+        
         if(presentVehicles.size()>0){
             objpublisher.syncVehicle(presentVehicles.get(0));
         }
