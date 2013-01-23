@@ -22,35 +22,7 @@ public class Vector3f {
     }
     
     public Vector3f(String input) throws Exception{
-        if(input == null){throw new Exception("Error:\nInput can't be null");}
-        if(input.length() % 3 != 0){throw new Exception("Error:\nInput has to be an x times 3 value ");}
-        if(Pattern.matches("[0-9]+", input) == false){throw new Exception("Error:\nInput may only container numbers");}
-        
-        char[] inputC = input.toCharArray();
-        int counter = 0;
-        String x = "0";
-        String y = "0";
-        String z = "0";
-        for (int i = 0; i < 3; i++) {
-            switch(i){
-                    case 0:
-                    for (int j = counter; j < counter+input.length()/3; j++)
-                        x += Character.toString(inputC[j]);
-                    break;
-                    case 1:
-                    for (int j = counter; j < counter+input.length()/3; j++)
-                        y += Character.toString(inputC[j]);
-                    break;
-                    case 2:
-                    for (int j = counter; j < counter+input.length()/3; j++)
-                        z += Character.toString(inputC[j]);
-                    break;
-            }
-            counter += (input.length() / 3);
-        }
-        this.x = Integer.parseInt(x);
-        this.y = Integer.parseInt(y);
-        this.z = Integer.parseInt(z);
+        new Vector3f(input, "XYZ");
     }
     
     public Vector3f(String input, String format) throws Exception{
