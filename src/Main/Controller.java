@@ -52,8 +52,6 @@ public class Controller {
    
     // List with all the storageCranes
     List<StorageCrane> storageCranes;
-    // The storage area where all the containers are stored
-    List<Storage_Area> storageArea;
     
     // List with all the containers that will be send on the next deliveryTime;
     List<Id_Position> depatureContainers;
@@ -152,7 +150,6 @@ public class Controller {
         messageQueue = new ArrayList();
         presentVehicles = new ArrayList();        
         agvList = new ArrayList();          
-        storageArea = new ArrayList();
         storageCranes = new ArrayList();
         
         // Loads or restores the database
@@ -221,8 +218,9 @@ public class Controller {
         }        
         // Initializes 100 storageAreas and there storage cranes
         for(int i = 0 ; i < 100; i++){
-            //storageArea.add(new Storage_Area(98,6,6,new Vector3f(0,0,0)));
-            //storageCranes.add(0, Crane.CraneType.new StorageCrane(0,0,new ParkingLot(),new ParkingLot(),storageArea.get(i), new Vector3f(0,0,0)));
+            storageCranes.add(new StorageCrane(
+                Pathfinder.parkinglots[71 +i],
+                Pathfinder.parkinglots[171 + i]));
         }
         
         // Adds 100 AGVs
@@ -461,43 +459,21 @@ public class Controller {
                     // Storage index where the container is stored
                     int index = Integer.parseInt(idPos.ID);
                     // When the storageCrane has nothing todo
-                    if(storageCranes.get(index).Available()){
-                        // The position of the container on the storage area
-                        Vector3f pos = idPos.position;             
-                        // The container to deliver
-                        Container con = storageArea.get(index).peekContainer((int)pos.x, (int)pos.z); 
-                        
+                    if(storageCranes.get(index).Available()){    
                         // The load action for the storageCrane
                         Message message = new Message(
                                 agv,
                                 storageCranes.get(index),
                                 Message.ACTION.Load,
-                                con);                        
+                                (Container)null);                        
                         storageCranes.get(index).SendMessage(message);
                         // The fetch action for the agv 
                         message = new Message(
                                 storageCranes.get(index),
                                 agv,
                                 Message.ACTION.Fetch,
-                                con);                        
+                                idPos.position);                        
                         ((AGV)agv).SendMessage(message);
-                        
-                        // Search for a crane to deliver the container
-                        switch(con.getDepartureTransportType())
-                        {
-                            case vrachtauto:
-                                truckCranes = CranesToCheck(truckCranes,(AGV)agv,message);
-                                break;
-                            case zeeschip:
-                                seaCranes = CranesToCheck(seaCranes,(AGV)agv,message);
-                                break;
-                            case binnenschip:
-                                bargeCranes = CranesToCheck(bargeCranes,(AGV)agv,message);
-                                break;
-                            case trein:
-                                trainCranes = CranesToCheck(trainCranes,(AGV)agv,message);
-                                break;
-                        }
                     }
                 }
             }
@@ -596,7 +572,7 @@ public class Controller {
                         vehicle,
                         Crane.class,
                         Message.ACTION.Unload,
-                        null));
+                        (Container)null));
                 }
                 // When there are no vehicles left
                 if(toCheck.isEmpty()){
@@ -717,7 +693,7 @@ public class Controller {
                         toCheck[i],
                         AGV.class,
                         Message.ACTION.Fetch,
-                        null));
+                        (Container)null));
                 }  
                 //Message was handeld so remove it
                 messageQueue.remove(message);
