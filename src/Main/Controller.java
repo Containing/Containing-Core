@@ -500,6 +500,7 @@ public class Controller {
      */
     protected void SendStatsMessage() throws Exception {
         StatsMessage msg = new StatsMessage();
+        msg.date = (Date)simulationTime.clone();
         // Containers
         msg.containers_outgoing = depatureContainers.size();
         
