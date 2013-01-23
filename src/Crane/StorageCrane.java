@@ -38,7 +38,7 @@ public class StorageCrane extends Crane
         _storageMap = new HashMap(_storageField.getLength() * _storageField.getWidth());
     }
     
-    public void getContainer (String containerID) throws Exception
+    private void getContainer (String containerID) throws Exception
     {
         if (_carriedContainer != null)
             { throw new Exception("Can't get an container when one is being carried."); }
@@ -71,7 +71,7 @@ public class StorageCrane extends Crane
         }
     }
 
-    public void storeContainer () throws Exception
+    private void storeContainer () throws Exception
     {
         if (_carriedContainer == null)
             { throw new Exception("Can't store an container when none is being carried."); }

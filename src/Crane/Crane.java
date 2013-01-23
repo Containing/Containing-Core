@@ -33,11 +33,10 @@ public class Crane implements IMessageReceiver
     protected final float _moveEmpty;
     protected Container _carriedContainer;
     protected int _currentRow;
-    protected enum Action { unloading, loading, moving, raising, lowering, securing, nothing }
-    protected ArrayList<Action> _currentActions;
     protected float _taskTimeLeft;
     
     private ArrayList<Message> _Assignments;
+    private int _totalCranes;
         
     public Crane (int railsLocation, CraneType type, Parkinglot parkingAGV, Parkinglot parkingTransport) throws Exception
     {
@@ -50,28 +49,27 @@ public class Crane implements IMessageReceiver
         parkinglotAGV = parkingAGV;
         parkinglotTransport = parkingTransport;
 
-        _currentActions = new ArrayList<Action>();
         _Assignments = new ArrayList<Message>();
         _railsLocation = railsLocation;
         
         switch (type)
         {
-            case barge: _raise = 30f; _lower = 30f; _moveContainer = 1f; _moveLoaded = 2f; _moveEmpty = 1f;
+            case barge: _raise = 30f; _lower = 30f; _moveContainer = 1f; _moveLoaded = 2f; _moveEmpty = 1f; _totalCranes = 4;
                         break;
-            case seaship: _raise = 0; _lower = 0; _moveContainer = 300f; _moveLoaded = 0; _moveEmpty = 1.5f;
+            case seaship: _raise = 0; _lower = 0; _moveContainer = 300f; _moveLoaded = 0; _moveEmpty = 1.5f; _totalCranes = 10;
                         break;
-            case storage: _raise = 30f; _lower = 30f; _moveContainer = 0.5f; _moveLoaded = 3f; _moveEmpty = 2f;
+            case storage: _raise = 30f; _lower = 30f; _moveContainer = 0.5f; _moveLoaded = 3f; _moveEmpty = 2f; _totalCranes = 1;
                         break;
-            case train: _raise = 60; _lower = 30; _moveContainer = 0.5f; _moveLoaded = 3f; _moveEmpty = 2f;
+            case train: _raise = 60; _lower = 30; _moveContainer = 0.5f; _moveLoaded = 3f; _moveEmpty = 2f; _totalCranes = 2;
                         break;
-            case truck: _raise = 60; _lower = 60; _moveContainer = 0; _moveLoaded = 1f; _moveEmpty = 1f;
+            case truck: _raise = 60; _lower = 60; _moveContainer = 0; _moveLoaded = 1f; _moveEmpty = 1f; _totalCranes = 4;
                         break;
-            default:    _raise = 0; _lower = 0; _moveContainer = 0; _moveLoaded = 0; _moveEmpty = 0;
+            default:    _raise = 0; _lower = 0; _moveContainer = 0; _moveLoaded = 0; _moveEmpty = 0; _totalCranes = 1;
                         break;
         }
     }
 
-    public int getBestRowIndex(Storage_Area storage, int columnIndex) throws Exception 
+    private int getBestRowIndex(Storage_Area storage, int columnIndex) throws Exception 
     {
         if (0 > columnIndex || columnIndex > storage.getWidth())
             { throw new Exception("Row " + columnIndex + " doesn't exist on this storage."); }        
@@ -111,7 +109,7 @@ public class Crane implements IMessageReceiver
      * @throws Exception When no container is being carried, when the storage is full,
      * when the current row is full.
      */
-    public Storage_Area loadContainer (Storage_Area storage) throws Exception
+    private void loadContainer (Storage_Area storage) throws Exception
     {
         if (_carriedContainer == null)
             { throw new Exception("Can't place an container when one isn't being carried."); }
@@ -128,6 +126,10 @@ public class Crane implements IMessageReceiver
             {
                 if (storage.Count(_currentRow, w) < storage.getHeight())
                 {
+                    //Move container over crane rail.
+                    _taskTimeLeft += _moveContainer;
+                    //Lower container.
+                    _taskTimeLeft += _lower * (storage.getHeight() - storage.Count(_currentRow, w));
                     storage.pushContainer(_carriedContainer, _currentRow, w);
                     _carriedContainer = null;
                      break;
@@ -137,11 +139,9 @@ public class Crane implements IMessageReceiver
             if (_carriedContainer != null)
                 { throw new Exception("Couldn't place container."); }
         }
-
-        return storage;
     }
     
-    public Storage_Area loadContainer (Storage_Area storage, int row, int column) throws Exception
+    protected void loadContainer (Storage_Area storage, int row, int column) throws Exception
     {
         if (_carriedContainer == null)
             { throw new Exception("Can't place an container when one isn't being carried."); }
@@ -155,15 +155,19 @@ public class Crane implements IMessageReceiver
         else if (storage.Count(row, column) == storage.getHeight())
             { throw new Exception("Can't stack containers higher than 6."); }
         
-        _currentRow = row;
+        moveRow(row);
+        //Move container over crane rail.
+        _taskTimeLeft += _moveContainer;
+        //Lower container.
+        _taskTimeLeft += _lower * (storage.getHeight() - storage.Count(_currentRow, column));
         storage.pushContainer(_carriedContainer, _currentRow, column);
         _carriedContainer = null;
-        
-        return storage;
     }
     
-    public Storage_Area unloadContainer (Storage_Area storage) throws Exception
+    private Container unloadContainer (Storage_Area storage) throws Exception
     {
+        Container cont = null;
+
         if (_carriedContainer != null)
             { throw new Exception("Can't grab an container when one is already being carried."); }
         
@@ -183,21 +187,36 @@ public class Crane implements IMessageReceiver
                 {
                     if (storage.Count(_currentRow, column) > 0)
                     {
-                        _carriedContainer = storage.popContainer(_currentRow, column);
+                        //Securing the container.
+                        _taskTimeLeft += _secureContainer;
+                        //Raising the container.
+                        _taskTimeLeft += _raise * (6 - storage.Count(_currentRow, column));
+                        //Move container over crane rail.
+                        _taskTimeLeft += _moveContainer;
+                        cont = storage.popContainer(_currentRow, column);
                     }
                 }
             }
             
             else if (storage.Count(_currentRow, columnIndex) > 0)
             {
-                _carriedContainer = storage.popContainer(_currentRow, columnIndex);
+                //Securing the container.
+                _taskTimeLeft += _secureContainer;
+                //Raising the container.
+                _taskTimeLeft += _raise * (storage.getHeight() - storage.Count(_currentRow, columnIndex));
+                //Move container over crane rail.
+                _taskTimeLeft += _moveContainer;
+                cont = storage.popContainer(_currentRow, columnIndex);
             }
         }
         
-        return storage;
+        if (cont == null)
+            { throw new Exception("Didn't manage to grab a container."); }
+        
+        return cont;
     }
     
-    public Storage_Area unloadContainer (Storage_Area storage, int row, int column) throws Exception
+    protected Container unloadContainer (Storage_Area storage, int row, int column) throws Exception
     {
         if (_carriedContainer != null)
             { throw new Exception("Can't grab an container when one is already being carried."); }
@@ -211,14 +230,35 @@ public class Crane implements IMessageReceiver
         else if (storage.Count(row, column) == 0)
             { throw new Exception("Can't grab an container from an empty stack."); }
         
-        _currentRow = row;
-        _carriedContainer = storage.popContainer(_currentRow, column);
+        Container cont = null;
+        moveRow(row);
+        //Securing the container.
+        _taskTimeLeft += _secureContainer;
+        //Raising the container.
+        _taskTimeLeft += _raise * (storage.getHeight() - storage.Count(_currentRow, column));
+        //Move container over crane rail.
+        _taskTimeLeft += _moveContainer;
+        cont = storage.popContainer(_currentRow, column);
         
-        return storage;
+        return cont;
     }
     
-    public void moveRow (int row)
+    protected void moveRow (int row)
     {
+        int move = 0;
+        
+        if (row < _currentRow)
+            { move = _currentRow - row; }
+        
+        else if (row > _currentRow)
+            { move = row - _currentRow; }
+        
+        if (_carriedContainer != null)
+            { _taskTimeLeft += _moveLoaded * move; }
+        
+        else
+            { _taskTimeLeft += _moveEmpty * move; }
+        
         _currentRow = row;
     }
     
@@ -258,7 +298,8 @@ public class Crane implements IMessageReceiver
 
                 try
                 {
-                    Storage_Area storage;
+                    Storage_Area storage = null;
+                    int maxRow;
                     
                     if (agv = true)
                     {
@@ -272,8 +313,16 @@ public class Crane implements IMessageReceiver
                         storage = t.storage;
                     }
                     
+                    if (storage != null)
+                    {
+                        maxRow = _railsLocation * (storage.getLength() / _totalCranes);
                     
+                        if (storage.rowEmpty(_currentRow) == true && _currentRow != maxRow)
+                            { moveRow(_currentRow+1); }
                         
+                        else if (storage.rowEmpty(_currentRow) == false)
+                            { this.unloadContainer(storage); }
+                    }
                 }
                 catch (Exception e) { }
             }
