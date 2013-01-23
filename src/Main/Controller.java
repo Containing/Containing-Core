@@ -21,6 +21,8 @@ import Pathfinding.Pathfinder;
 import java.io.File;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 
 
 /**
@@ -500,7 +502,18 @@ public class Controller {
         StatsMessage msg = new StatsMessage();
         // Containers
         msg.containers_outgoing = depatureContainers.size();
-        msg.containers_incoming = 0;
+        
+        DateFormat df = new SimpleDateFormat("yy-MM-dd HH:mm");
+        String query = "SELECT COUNT(id) " +
+                       "FROM container " +
+                       "WHERE arrivalDateStart <= ? " +
+                       "AND arrivalDateEnd >= ? ";
+        PreparedStatement stm = Database.createPreparedStatement(query);
+        String date = df.format(simulationTime);
+        stm.setString(1, date);
+        stm.setString(2, date);
+        ResultSet getCount = Database.executeQuery(stm);
+        msg.containers_incoming = getCount.getLong(1);
         
         // Storage areas
         int i = 0;
