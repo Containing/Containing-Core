@@ -24,8 +24,11 @@ public class Message {
     Object destinationObject;
     // The object that's requested
     Object requestedObject;
+    
     // The container that needs to be fetched or deliverd
     Container container;
+    // The position of the continaer
+    Vector3f containerPos;
     
     Node destNode;
     
@@ -94,6 +97,16 @@ public class Message {
         if(destNode != null){
             this.destNode = destNode;
         }
+    }
+    
+    public Message(
+            Object sourceSender,
+            Object requestedType,
+            ACTION action,
+            Vector3f position) throws Exception
+    {
+        this(sourceSender, requestedType, action, (Container)null);
+        
     }
     
     /**
@@ -188,5 +201,10 @@ public class Message {
     public Object RequestedObject()
     {
         return requestedObject;
+    }
+    
+    public Vector3f ContainerPosition()
+    {
+        return containerPos;
     }
 }

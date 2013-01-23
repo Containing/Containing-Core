@@ -5,6 +5,7 @@ import Crane.StorageCrane;
 import Helpers.*;
 import Main.Container;
 import Pathfinding.Node;
+import Pathfinding.Pathfinder;
 import Storage.Storage_Area;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +14,7 @@ public class AGV extends Vehicle implements IMessageReceiver {
 
     private final float SpeedWithContainer = 72;
     private final float SpeedWithoutContainer = 144;    
-    private List<Message> assignments;
+    private List<Message> assignments;    
     
     public boolean NeedDeliverAssignment()
     {
@@ -51,7 +52,6 @@ public class AGV extends Vehicle implements IMessageReceiver {
                     crane.parkinglotAGV.park(this);
                 }
             }
-            // send message arrived
         }
         else{
             if (storage.Count() == 0){
@@ -116,11 +116,26 @@ public class AGV extends Vehicle implements IMessageReceiver {
                 if(storage.isFilled()){
                     needDeliverAssignment = true;
                 }
-                /**
-                 * 
-                 * TODO Send the AGV to the nearest parking lot
-                 * 
-                 */
+                // Default parkinglot 0
+                int index = 0;
+                // Default set on first parkinglot
+                float distance = Vector3f.distance(this.position, Pathfinder.parkinglots[0].node.getPosition());  
+                
+                float tempDist = Vector3f.distance(this.position, Pathfinder.parkinglots[11].node.getPosition());             
+                if(distance > tempDist){
+                    distance = tempDist;
+                    index = 11;
+                }                
+                tempDist = Vector3f.distance(this.position, Pathfinder.parkinglots[20].node.getPosition());    
+                if(distance > tempDist){
+                    distance = tempDist;
+                    index = 20;
+                }                
+                tempDist = Vector3f.distance(this.position, Pathfinder.parkinglots[41].node.getPosition());    
+                if(distance > tempDist){
+                    distance = tempDist;
+                    index = 41;
+                }
             }
         }
         
