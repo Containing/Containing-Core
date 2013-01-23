@@ -15,6 +15,7 @@ import java.util.Date;
 import java.util.List;
 import updateTimer.updateTimer;
 import Crane.*;
+import Network.StatsMessage;
 import Parkinglot.Parkinglot;
 import Pathfinding.Pathfinder;
 import java.io.File;
@@ -72,6 +73,7 @@ public class Controller {
     // Networkhandler
     Network.objPublisher objpublisher;
     Network.StatsPublisher statsPublisher;
+    private float statsPublisherMessageLimiter = 0.f;
     
     // </editor-fold>
     
@@ -335,6 +337,13 @@ public class Controller {
         if(presentVehicles.size()>0){
             objpublisher.syncVehicle(presentVehicles.get(0));
         }
+        
+        // Send StatsMessage every 500ms
+        statsPublisherMessageLimiter += gameTime;
+        if(statsPublisherMessageLimiter >= .5) {
+            SendStatsMessage();
+            statsPublisherMessageLimiter = 0.f;
+        }
     }
     
     /**
@@ -482,6 +491,52 @@ public class Controller {
     }
     
     // </editor-fold>
+    
+    /**
+     * Sends a StatsMessage to all listening subscribers
+     * @throws Exception 
+     */
+    protected void SendStatsMessage() throws Exception {
+        StatsMessage msg = new StatsMessage();
+        // Containers
+        msg.containers_outgoing = depatureContainers.size();
+        msg.containers_incoming = 0;
+        
+        // Storage areas
+        int i = 0;
+        for(Storage_Area storage_area : storageArea) {
+            msg.areas.put("Area " + ++i, storage_area.Count());
+        }
+        
+        // Available Vehicles
+        int availableAgvs = 0,
+            availableTrucks = 0,
+            availableTrains = 0;
+
+        for(Vehicle vehicle : presentVehicles) {
+            boolean isAvailable = !vehicle.GetStorage().isFilled();
+            switch(vehicle.GetVehicleType()) {
+                case truck:
+                    if(isAvailable)
+                        availableTrucks++;
+                break;
+                case train:
+                    if(isAvailable)
+                        availableTrains++;
+                break;
+                case AGV:
+                    if(vehicle instanceof AGV && ((AGV)vehicle).Available())
+                       availableAgvs++; 
+                break;
+            }
+        }
+        
+        msg.vehicles.put("AGV", availableAgvs);
+        msg.vehicles.put("TRUCK", availableTrucks);
+        msg.vehicles.put("TRAIN", availableTrains);
+        
+        statsPublisher.SendStatsMessage(msg);
+    }
     
     // <editor-fold defaultstate="collapsed" desc="Container Methods">
     
