@@ -340,9 +340,9 @@ public class Controller {
             objpublisher.syncVehicle(presentVehicles.get(0));
         }
         
-        // Send StatsMessage every 500ms
+        // Send StatsMessage every 1000ms
         statsPublisherMessageLimiter += gameTime;
-        if(statsPublisherMessageLimiter >= .5) {
+        if(statsPublisherMessageLimiter >= 1.f) {
             SendStatsMessage();
             statsPublisherMessageLimiter = 0.f;
         }
