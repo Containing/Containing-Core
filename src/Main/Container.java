@@ -1,5 +1,6 @@
 package Main;
 
+import Helpers.Id_Position;
 import Helpers.Vector3f;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -33,6 +34,8 @@ public class Container
     public Container(String id){
         this.id = id;
     }
+    
+    // <editor-fold defaultstate="collapsed" desc="Set methods">
     
     /**
      * Sets all arrival data
@@ -99,6 +102,8 @@ public class Container
         this.danger = danger;
     }
     
+    // </editor-fold>
+    
     // <editor-fold defaultstate="collapsed" desc="private variabelen">
     // id
     private String id;
@@ -130,7 +135,7 @@ public class Container
     private String danger;
     // </editor-fold>
     
-    // <editor-fold defaultstate="collapsed" desc="Get methoden">
+    // <editor-fold defaultstate="collapsed" desc="Get methods">
 
     /**
      * Get id
@@ -266,6 +271,10 @@ public class Container
      */
     public String getDanger(){
         return this.danger;
+    }
+    
+    public Id_Position getCurrentPosition(){
+        return null;
     }
     // </editor-fold>
     
