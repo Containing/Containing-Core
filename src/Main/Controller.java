@@ -131,10 +131,7 @@ public class Controller {
         
         objpublisher = new Network.objPublisher();
         statsPublisher = new Network.StatsPublisher();
-        
-        // Start's and run's the timer for updating the application
         timer.start();
-        timer.run();
     }
     
     // </editor-fold>
@@ -255,6 +252,13 @@ public class Controller {
     // </editor-fold>
     
     // <editor-fold defaultstate="collapsed" desc="Update">
+    
+    /**
+     * Runs the timer for updating the application
+     */
+    public void Run() {
+        timer.run();
+    }
     
     /**
      * Updates simulation logic

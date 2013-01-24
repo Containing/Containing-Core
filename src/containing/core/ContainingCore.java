@@ -15,5 +15,8 @@ public class ContainingCore {
      */
     public static void main(String[] args) throws Exception {
         Main.Controller c = new Main.Controller();
+        while(true) {
+            c.Run();
+        }
     }
 }

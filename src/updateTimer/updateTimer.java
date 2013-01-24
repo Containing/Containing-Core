@@ -53,7 +53,7 @@ public class updateTimer implements Runnable{
         long curTime, prevTime, timeDiff;
         
         prevTime = System.nanoTime();
-        while(running){
+        if(running) {
             curTime = System.nanoTime();
             try {
                 updateMethod.invoke(updateObject, (curTime-prevTime)/1000000000f);
