@@ -72,7 +72,7 @@ public class Controller {
     Date shipmentTime;   
     
     // Networkhandler
-    Network.objPublisher objpublisher;
+    //Network.objPublisher objpublisher;
     Network.StatsPublisher statsPublisher;
     private float statsPublisherMessageLimiter = 0.f;
     
@@ -128,7 +128,7 @@ public class Controller {
             }
         }
         
-        objpublisher = new Network.objPublisher();
+        Network.objPublisher.objPublisher_start();
         statsPublisher = new Network.StatsPublisher();
         timer.start();
     }
@@ -165,11 +165,11 @@ public class Controller {
         }
         
         // Loads all the vehicles that come to the harbor
-        seaShipsToArrive = GenerateArrivalVehicles.GetSeaBoats();
-        bargesToArrive = GenerateArrivalVehicles.GetInlandBoats();
-        trainsToArrive = GenerateArrivalVehicles.GetTrains();
-        trucksToArrive = GenerateArrivalVehicles.GetTrucks();
-        
+        seaShipsToArrive = MatchVehicles.GetSeaBoats();
+        bargesToArrive = MatchVehicles.GetInlandBoats();
+        trainsToArrive = MatchVehicles.GetTrains();
+        trucksToArrive = MatchVehicles.GetTrucks();
+
         for(TransportVehicle vehicle : bargesToArrive){
             System.out.println(vehicle.GetArrivalDate() + " barge" );
             System.out.println(vehicle.storage.Count());
@@ -305,8 +305,10 @@ public class Controller {
         for(Vehicle vehicle : presentVehicles){
             vehicle.update(timeToUpdate);
             
+            
             if(((TransportVehicle)vehicle).Destroy()){
                 presentVehicles.remove(vehicle);
+                Network.objPublisher.destroyVehicle(vehicle);
             }            
             if(simulationTime.getTime() >= ((TransportVehicle)vehicle).GetDepartureDate().getTime()){
                 ((TransportVehicle)vehicle).Departure();
@@ -340,9 +342,7 @@ public class Controller {
         // Updates all the messageQueue
         UpdateMessages();
         
-        if(presentVehicles.size()>0){
-            objpublisher.syncVehicle(presentVehicles.get(0));
-        }
+
         
         // Send StatsMessage every 1000ms
         statsPublisherMessageLimiter += gameTime;
@@ -640,6 +640,8 @@ public class Controller {
                 
                 // Add the vehicle that arrived
                 presentVehicles.add(vehicle);
+                Network.objPublisher.createVehicle(vehicle);
+                
                 // Request cranes
                 for(int i = 0 ; i < requests; i++){
                     messageQueue.add(new Message(
