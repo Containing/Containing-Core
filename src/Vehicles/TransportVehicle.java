@@ -2,7 +2,9 @@ package Vehicles;
 
 import Helpers.Vector3f;
 import Main.Container;
+import Parkinglot.Parkinglot;
 import Pathfinding.Node;
+import Pathfinding.Pathfinder;
 import Storage.Storage_Area;
 import java.util.Date;
 
@@ -77,12 +79,22 @@ public class TransportVehicle extends Vehicle {
                     "\nstartPosition: " + startPosition);
         }        
         this.position = startPosition.getPosition();
-        this.destination = startPosition;
+        this.destination = new Parkinglot(1, startPosition);
         this.arrivalDate = arrivalDate;
         this.departureDate = departureDate;
         this.arrivalCompany = arrivalCompany;
         this.vehicleType = vehicleType;
         this.storage = new Storage_Area((int)containerArraySize.x, (int)containerArraySize.z, (int)containerArraySize.y, position);        
+    }
+        
+    /**
+     * Sets the destination node for this vehicle.
+     * @param destination The destination Node.
+     */
+    public void setDestination(Node destination) throws Exception{
+        this.destination = new Parkinglot(1, destination);
+        this.route = Pathfinding.Pathfinder.findShortest(Pathfinder.findClosestNode(position), destination, storage.Count() == 0);
+        this.routeIndex = 1;
     }
     
     public void setPostion(Vector3f position){
@@ -96,7 +108,11 @@ public class TransportVehicle extends Vehicle {
      */
     @Override
     public void update(float gameTime) throws Exception {
-        if (position == destination.getPosition()){
+        if (position == destination.node.getPosition()){
+            if(!parked){
+                
+            }
+            
             if(departure){
                 destroy = true;
             }                

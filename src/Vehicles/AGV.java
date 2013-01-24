@@ -3,8 +3,7 @@ package Vehicles;
 import Crane.Crane;
 import Crane.StorageCrane;
 import Helpers.*;
-import Main.Container;
-import Pathfinding.Node;
+import Parkinglot.Parkinglot;
 import Pathfinding.Pathfinder;
 import Storage.Storage_Area;
 import java.util.ArrayList;
@@ -26,22 +25,50 @@ public class AGV extends Vehicle implements IMessageReceiver {
     }
     private boolean needDeliverAssignment = false;
     
-    public AGV(Node startPosition) throws Exception{
+    public AGV(Parkinglot startPosition) throws Exception{
         if (startPosition == null){
             throw new Exception("\nThe input variable can't be null:"+
                     "\nstartPosition: " + startPosition);
         }
         else{
-            this.position = startPosition.getPosition();
+            this.position = startPosition.node.getPosition();
             this.destination = startPosition;
             storage = new Storage_Area(1, 1, 1, position);
         }
         assignments = new ArrayList();
     }
 
+    public void setDestination(Object destinationObject) throws Exception{
+        if (CheckCrane(destinationObject)){
+            this.destination = ((Crane)assignments.get(0).DestinationObject()).parkinglotAGV;
+        }
+        else if (CheckStorageCrane(destinationObject)){
+            this.destination = ((StorageCrane)assignments.get(0).DestinationObject()).parkinglotAGV;
+        }
+        else{
+            throw new Exception("The input isn't a crane or storageCrane: " + destinationObject);
+        }
+        
+        this.route = Pathfinding.Pathfinder.findShortest(Pathfinder.findClosestNode(position), destination.node, storage.Count() == 0);
+        this.routeIndex = 1;
+    }
+    
+    private boolean CheckCrane(Object input){
+        return Crane.class == input.getClass();
+    }
+    private boolean CheckStorageCrane(Object input){
+        return StorageCrane.class == input.getClass();
+    } 
+    
+    
     @Override
     public void update(float gameTime) throws Exception {
-        if (position == destination.getPosition()){
+        if (position == destination.node.getPosition()){
+            if (!parked) {
+                destination.park(this);
+                parked = true;
+            }
+            
             if(!Available()){
                 if(assignments.get(0).DestinationObject().getClass() == Crane.class){
                     Crane crane = (Crane)(assignments.get(0).DestinationObject());
@@ -102,7 +129,15 @@ public class AGV extends Vehicle implements IMessageReceiver {
                     // Remove assingment because the container is fetched
                     assignments.remove(0);    
                     if(!assignments.isEmpty()){
-                        destination = assignments.get(0).DestinationNode();
+                        if (CheckCrane(assignments.get(0).DestinationObject())){
+                            this.setDestination(((Crane)assignments.get(0).DestinationObject()).parkinglotAGV);
+                        }
+                        else if (CheckStorageCrane(assignments.get(0).DestinationObject())){
+                            this.setDestination(((StorageCrane)assignments.get(0).DestinationObject()).parkinglotAGV);
+                        }
+                        else{
+                            throw new Exception("Something went wrong with the next assignement: " + assignments.get(0));
+                        }
                     }
                 }
             }
@@ -115,7 +150,15 @@ public class AGV extends Vehicle implements IMessageReceiver {
                     // Remove assingment because the contianer is deliverd
                     assignments.remove(0); 
                     if(!assignments.isEmpty()){
-                        destination = assignments.get(0).DestinationNode();
+                        if (CheckCrane(assignments.get(0).DestinationObject())){
+                            this.setDestination(((Crane)assignments.get(0).DestinationObject()).parkinglotAGV);
+                        }
+                        else if (CheckStorageCrane(assignments.get(0).DestinationObject())){
+                            this.setDestination(((StorageCrane)assignments.get(0).DestinationObject()).parkinglotAGV);
+                        }
+                        else{
+                            throw new Exception("Something went wrong with the next assignement: " + assignments.get(0));
+                        }
                     }
                 }
             }
@@ -192,7 +235,16 @@ public class AGV extends Vehicle implements IMessageReceiver {
             assignments = new ArrayList();
         }
         assignments.add(mess);
-        destination = mess.DestinationNode();
+        
+        if (CheckCrane(assignments.get(0).DestinationObject())){
+            this.setDestination(((Crane)assignments.get(0).DestinationObject()).parkinglotAGV);
+        }
+        else if (CheckStorageCrane(assignments.get(0).DestinationObject())){
+            this.setDestination(((StorageCrane)assignments.get(0).DestinationObject()).parkinglotAGV);
+        }
+        else{
+            throw new Exception("Something went wrong with the next assignement: " + assignments.get(0));
+        }
     }
 }
 

@@ -1,6 +1,9 @@
 package Vehicles;
 
+import Crane.Crane;
+import Crane.StorageCrane;
 import Helpers.Vector3f;
+import Parkinglot.Parkinglot;
 import Pathfinding.Node;
 import Pathfinding.Pathfinder;
 import Storage.Storage_Area;
@@ -21,7 +24,7 @@ public abstract class Vehicle {
     /**
      * The destination node for this vehicle
      */
-    protected Node destination;
+    protected Parkinglot destination;
     /**
      * The position of this vehicle
      */
@@ -47,22 +50,14 @@ public abstract class Vehicle {
      */
     public int Id;
     
-    /**
-     * Sets the destination node for this vehicle.
-     * @param destination The destination Node.
-     */
-    public void setDestination(Node destination) throws Exception{
-        this.destination = destination;
-        this.route = Pathfinding.Pathfinder.findShortest(Pathfinder.findClosestNode(position), destination, storage.Count() == 0);
-        this.routeIndex = 1;
-    }
+    protected boolean parked = false;
     
     /**
      * Gets the destination node of this vehicle.
      * @return The destination node, returns position Node if their is no path.
      */
     public Node getDestination() {
-        return destination;
+        return destination.node;
     }
     
     /**
@@ -78,14 +73,6 @@ public abstract class Vehicle {
      * @param gameTime The elapsed gameTime.
      */
     public abstract void update(float gameTime) throws Exception;
-    
-    public Storage_Area GetStorage() {
-        return storage;
-    }
-    
-    public void SetStorage(Storage_Area sa) {
-        storage = sa;
-    }
     
     /**
      * Gets the current type of this vehcile
