@@ -15,6 +15,7 @@ import java.util.List;
 import updateTimer.updateTimer;
 import Crane.*;
 import Network.StatsMessage;
+import Parkinglot.Parkinglot;
 import Pathfinding.Pathfinder;
 import java.io.File;
 import java.sql.PreparedStatement;
@@ -225,7 +226,8 @@ public class Controller {
         
         // Adds 100 AGVs
         for(int i = 0; i < 100; i++){
-            agvList.add(new AGV(new Node(1,0)));
+            // todo change the dummie node to a real one
+            agvList.add(new AGV(new Parkinglot(1, new Node())));
         }       
         
         // Initializes the dates
@@ -384,7 +386,7 @@ public class Controller {
                     // The agv that's available
                     Vehicle agv = agvList.get(indexAGV);
                     //Sets the destination of the AGV
-                    agv.setDestination(message.DestinationNode());
+                    //agv.setDestination(message.DestinationNode());
                     //Copies the message to the message queue
                     ((AGV)agv).SendMessage(message);
                     // When it's a fetch message send a delivery message
@@ -530,7 +532,7 @@ public class Controller {
             availableTrains = 0;
 
         for(Vehicle vehicle : presentVehicles) {
-            boolean isAvailable = !vehicle.GetStorage().isFilled();
+            boolean isAvailable = !vehicle.storage.isFilled();
             switch(vehicle.GetVehicleType()) {
                 case truck:
                     if(isAvailable)

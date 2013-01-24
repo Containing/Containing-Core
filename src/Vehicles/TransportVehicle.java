@@ -1,5 +1,7 @@
 package Vehicles;
 
+import Crane.Crane;
+import Crane.StorageCrane;
 import Helpers.Vector3f;
 import Main.Container;
 import Parkinglot.Parkinglot;
@@ -88,12 +90,34 @@ public class TransportVehicle extends Vehicle {
     }
         
     /**
-     * Sets the destination node for this vehicle.
-     * @param destination The destination Node.
+     * Set the destination for the vehicle.
+     * @param destination The destination node.
+     * @throws Exception If something goes wrong while calculating the route.
      */
     public void setDestination(Node destination) throws Exception{
         this.destination = new Parkinglot(1, destination);
         this.route = Pathfinding.Pathfinder.findShortest(Pathfinder.findClosestNode(position), destination, storage.Count() == 0);
+        this.routeIndex = 1;
+    }
+    
+    /**
+     * Gets the destination from the destinationObject
+     * Sets the found destination for the vehicle.
+     * @param destinationObject The destination Object.
+     * @throws Exception If something goes wrong while calculating the route.
+     */
+    public void setDestination(Object destinationObject) throws Exception{
+        if (Crane.class == destinationObject.getClass()){
+            this.destination = ((Crane)destinationObject).parkinglotTransport;
+        }
+        else if (StorageCrane.class == destinationObject.getClass()){
+            this.destination = ((StorageCrane)destinationObject).parkinglotTransport;
+        }
+        else{
+            throw new Exception("The input isn't a crane or storageCrane: " + destinationObject);
+        }
+        
+        this.route = Pathfinding.Pathfinder.findShortest(Pathfinder.findClosestNode(position), destination.node, storage.Count() == 0);
         this.routeIndex = 1;
     }
     
@@ -112,7 +136,6 @@ public class TransportVehicle extends Vehicle {
             if(!parked){
                 
             }
-            
             if(departure){
                 destroy = true;
             }                
