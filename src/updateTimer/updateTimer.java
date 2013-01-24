@@ -16,6 +16,7 @@ public class updateTimer implements Runnable{
 
     private float targetFPS = 30;
     private float currentFPS = 0;
+    private long prevTime;
 
     private Thread t;
 
@@ -31,6 +32,7 @@ public class updateTimer implements Runnable{
     
     public void start(){
         running = true;
+        prevTime = System.nanoTime();
         if(!t.isAlive())t.start();
     }
     
@@ -50,9 +52,8 @@ public class updateTimer implements Runnable{
 
     @Override
     public void run() {
-        long curTime, prevTime, timeDiff;
+        long curTime, timeDiff;
         
-        prevTime = System.nanoTime();
         if(running) {
             curTime = System.nanoTime();
             try {
