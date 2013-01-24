@@ -116,6 +116,7 @@ public class Controller {
      */
     public Controller() throws Exception
     {
+        Network.objPublisher.objPublisher_start();
         // Initializes the class variables
         Initialize();        
         // Walk's through all the method's in this class
@@ -128,7 +129,7 @@ public class Controller {
             }
         }
         
-        Network.objPublisher.objPublisher_start();
+        
         statsPublisher = new Network.StatsPublisher();
         timer.start();
     }
@@ -307,8 +308,8 @@ public class Controller {
             
             
             if(((TransportVehicle)vehicle).Destroy()){
-                presentVehicles.remove(vehicle);
                 Network.objPublisher.destroyVehicle(vehicle);
+                presentVehicles.remove(vehicle);
             }            
             if(simulationTime.getTime() >= ((TransportVehicle)vehicle).GetDepartureDate().getTime()){
                 ((TransportVehicle)vehicle).Departure();

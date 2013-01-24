@@ -586,7 +586,8 @@ public class Pathfinder {
  
     private static boolean nodesContains(Node i){
         for(Node n : Nodes){
-            if(n.equals(i))return true;
+            if(n!=null)
+                if(n.equals(i))return true;
         }
         return false;
     }
