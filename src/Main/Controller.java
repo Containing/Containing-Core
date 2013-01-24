@@ -8,7 +8,6 @@ import Helpers.Id_Position;
 import Helpers.*;
 import Pathfinding.Node;
 import Vehicles.*;
-import Storage.Storage_Area;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Date;
@@ -522,10 +521,10 @@ public class Controller {
         
         // Storage areas
         int i = 0;
-        for(Storage_Area storage_area : storageArea) {
-            msg.areas.put("Area " + ++i, storage_area.Count());
+        for(StorageCrane storage_crane : storageCranes) {
+            msg.areas.put("Area " + ++i, storage_crane.GetStorageArea().Count());
         }
-        
+
         // Available Vehicles
         int availableAgvs = 0,
             availableTrucks = 0,

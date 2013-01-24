@@ -125,4 +125,12 @@ public class StorageCrane extends Crane
     {
         
     }
+    
+    /**
+     * Retrieve storage area
+     * @return Storage_Area
+     */
+    public final Storage_Area GetStorageArea() {
+        return _storageField;
+    }
 }
