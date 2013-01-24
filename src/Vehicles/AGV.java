@@ -12,8 +12,8 @@ import java.util.List;
 
 public class AGV extends Vehicle implements IMessageReceiver {
 
-    private final float SpeedWithContainer = 72;
-    private final float SpeedWithoutContainer = 144;    
+    private final float SpeedWithContainer = 20/3.6f;
+    private final float SpeedWithoutContainer = 40/3.6f;    
     private List<Message> assignments;    
     
     public boolean NeedDeliverAssignment()
@@ -52,17 +52,32 @@ public class AGV extends Vehicle implements IMessageReceiver {
                     crane.parkinglotAGV.park(this);
                 }
             }
+        } 
+        else if(position == route[routeIndex].getPosition()){
+            routeIndex++;
         }
         else{
-            if (storage.Count() == 0){
-                // follow route SpeedWithoutContainer
-                // update position
+            float speed = (storage.Count() == 0) ? SpeedWithoutContainer : SpeedWithContainer;
+            Vector3f NextNode = route[routeIndex].getPosition();
+            Vector3f diff = new Vector3f(   NextNode.x - this.getPosition().x,
+                                            NextNode.y - this.getPosition().y,
+                                            NextNode.z - this.getPosition().z);
+            diff.normalize();
+            diff.x*=gameTime*speed;
+            diff.y*=gameTime*speed;
+            diff.z*=gameTime*speed;
+            
+            Vector3f temp = new Vector3f(position);
+            temp.AddVector3f(diff);
+
+            if (Vector3f.distance(getPosition(), temp) < Vector3f.distance(getPosition(), NextNode)){
+                this.position.AddVector3f(diff);
             }
             else{
-                // follow route SpeedWithContainer
-                // update position
+                this.position = NextNode;
             }
-        }   
+        } 
+        
         // When the AGV has assignments
         if(!Available()){
             // When the AGV needs to fetch a container
