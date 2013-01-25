@@ -10,6 +10,7 @@ import org.zeromq.*;
  * @author Christiaan
  */
 public class StatsPublisher {
+    private ZMQ.Context context;
     private ZMQ.Socket publisher;
     
     /**
@@ -17,9 +18,17 @@ public class StatsPublisher {
      */
     public StatsPublisher() {
         //  Prepare our context and socket
-        ZMQ.Context context = ZMQ.context(1);
+        context = ZMQ.context(1);
         publisher = context.socket(ZMQ.PUB);
         publisher.bind("tcp://*:6000");
+    }
+    
+    /**
+     * Close socket
+     */
+    public void Close() {
+        publisher.close();
+        context.term();
     }
     
     /**
