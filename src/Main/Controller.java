@@ -154,17 +154,6 @@ public class Controller {
         agvList = new ArrayList();          
         storageCranes = new ArrayList();
         
-        // Loads or restores the database
-        File f = new File("db/dump.db");
-        if(!f.exists()){
-            // When it doesn't exists
-            XML.XMLBinder.GenerateContainerDatabase("src/XML/xml7.xml");
-            Database.dumpDatabase();
-        }
-        else {
-            Database.restoreDump();
-        }
-        
         // Loads all the vehicles that come to the harbor
         seaShipsToArrive = MatchVehicles.GetSeaBoats();
         bargesToArrive = MatchVehicles.GetInlandBoats();
