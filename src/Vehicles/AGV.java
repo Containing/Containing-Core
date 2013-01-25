@@ -3,8 +3,7 @@ package Vehicles;
 import Crane.Crane;
 import Crane.StorageCrane;
 import Helpers.*;
-import Main.Container;
-import Pathfinding.Node;
+import Parkinglot.Parkinglot;
 import Pathfinding.Pathfinder;
 import Storage.Storage_Area;
 import java.util.ArrayList;
@@ -12,8 +11,8 @@ import java.util.List;
 
 public class AGV extends Vehicle implements IMessageReceiver {
 
-    private final float SpeedWithContainer = 72;
-    private final float SpeedWithoutContainer = 144;    
+    private final float SpeedWithContainer = 20/3.6f;
+    private final float SpeedWithoutContainer = 40/3.6f;    
     private List<Message> assignments;    
     
     public boolean NeedDeliverAssignment()
@@ -26,43 +25,79 @@ public class AGV extends Vehicle implements IMessageReceiver {
     }
     private boolean needDeliverAssignment = false;
     
-    public AGV(Node startPosition) throws Exception{
+    public AGV(Parkinglot startPosition) throws Exception{
         if (startPosition == null){
             throw new Exception("\nThe input variable can't be null:"+
                     "\nstartPosition: " + startPosition);
         }
         else{
-            this.position = startPosition.getPosition();
+            this.position = startPosition.node.getPosition();
             this.destination = startPosition;
             storage = new Storage_Area(1, 1, 1, position);
         }
         assignments = new ArrayList();
     }
 
-    @Override
-    public void update(float gameTime) throws Exception {
-        if (position == destination.getPosition()){
-            if(!Available()){
-                if(assignments.get(0).DestinationObject().getClass() == Crane.class){
-                    Crane crane = (Crane)(assignments.get(0).DestinationObject());
-                    crane.parkinglotAGV.park(this);
-                }
-                else if (assignments.get(0).DestinationObject().getClass() == StorageCrane.class){
-                    StorageCrane crane = (StorageCrane)(assignments.get(0).DestinationObject());
-                    crane.parkinglotAGV.park(this);
-                }
-            }
+    public void setDestination(Object destinationObject) throws Exception{
+        if (Crane.class == destinationObject.getClass()){
+            this.destination = ((Crane)destinationObject).parkinglotAGV;
+        }
+        else if (StorageCrane.class == destinationObject.getClass()){
+            this.destination = ((StorageCrane)destinationObject).parkinglotAGV;
         }
         else{
-            if (storage.Count() == 0){
-                // follow route SpeedWithoutContainer
-                // update position
+            throw new Exception("The input isn't a crane or storageCrane: " + destinationObject);
+        }
+        
+        this.route = Pathfinding.Pathfinder.findShortest(Pathfinder.findClosestNode(position), destination.node, storage.Count() == 0);
+        this.routeIndex = 1;
+    }
+    
+    
+    @Override
+    public void update(float gameTime) throws Exception {
+        if (position == destination.node.getPosition()){
+            if (!parked) {
+                destination.park(this);
+                parked = true;
+            }
+            
+//            if(!Available()){
+//                if(assignments.get(0).DestinationObject().getClass() == Crane.class){
+//                    Crane crane = (Crane)(assignments.get(0).DestinationObject());
+//                    crane.parkinglotAGV.park(this);
+//                }
+//                else if (assignments.get(0).DestinationObject().getClass() == StorageCrane.class){
+//                    StorageCrane crane = (StorageCrane)(assignments.get(0).DestinationObject());
+//                    crane.parkinglotAGV.park(this);
+//                }
+//            }
+        } 
+        else if(position == route[routeIndex].getPosition()){
+            routeIndex++;
+        }
+        else{
+            float speed = (storage.Count() == 0) ? SpeedWithoutContainer : SpeedWithContainer;
+            Vector3f NextNode = route[routeIndex].getPosition();
+            Vector3f diff = new Vector3f(   NextNode.x - this.getPosition().x,
+                                            NextNode.y - this.getPosition().y,
+                                            NextNode.z - this.getPosition().z);
+            diff.normalize();
+            diff.x*=gameTime*speed;
+            diff.y*=gameTime*speed;
+            diff.z*=gameTime*speed;
+            
+            Vector3f temp = new Vector3f(position);
+            temp.AddVector3f(diff);
+
+            if (Vector3f.distance(getPosition(), temp) < Vector3f.distance(getPosition(), NextNode)){
+                this.position.AddVector3f(diff);
             }
             else{
-                // follow route SpeedWithContainer
-                // update position
+                this.position = NextNode;
             }
-        }   
+        } 
+        
         // When the AGV has assignments
         if(!Available()){
             // When the AGV needs to fetch a container
@@ -87,7 +122,15 @@ public class AGV extends Vehicle implements IMessageReceiver {
                     // Remove assingment because the container is fetched
                     assignments.remove(0);    
                     if(!assignments.isEmpty()){
-                        destination = assignments.get(0).DestinationNode();
+                        if (Crane.class == assignments.get(0).DestinationObject().getClass()){
+                            this.setDestination(((Crane)assignments.get(0).DestinationObject()).parkinglotAGV);
+                        }
+                        else if (StorageCrane.class == assignments.get(0).DestinationObject().getClass()){
+                            this.setDestination(((StorageCrane)assignments.get(0).DestinationObject()).parkinglotAGV);
+                        }
+                        else{
+                            throw new Exception("Something went wrong with the next assignement: " + assignments.get(0));
+                        }
                     }
                 }
             }
@@ -100,7 +143,15 @@ public class AGV extends Vehicle implements IMessageReceiver {
                     // Remove assingment because the contianer is deliverd
                     assignments.remove(0); 
                     if(!assignments.isEmpty()){
-                        destination = assignments.get(0).DestinationNode();
+                        if (Crane.class == assignments.get(0).DestinationObject().getClass()){
+                            this.setDestination(((Crane)assignments.get(0).DestinationObject()).parkinglotAGV);
+                        }
+                        else if (StorageCrane.class == assignments.get(0).DestinationObject().getClass()){
+                            this.setDestination(((StorageCrane)assignments.get(0).DestinationObject()).parkinglotAGV);
+                        }
+                        else{
+                            throw new Exception("Something went wrong with the next assignement: " + assignments.get(0));
+                        }
                     }
                 }
             }
@@ -177,7 +228,16 @@ public class AGV extends Vehicle implements IMessageReceiver {
             assignments = new ArrayList();
         }
         assignments.add(mess);
-        destination = mess.DestinationNode();
+        
+        if (Crane.class == assignments.get(0).DestinationObject().getClass()){
+            this.setDestination(((Crane)assignments.get(0).DestinationObject()).parkinglotAGV);
+        }
+        else if (StorageCrane.class == assignments.get(0).DestinationObject().getClass()){
+            this.setDestination(((StorageCrane)assignments.get(0).DestinationObject()).parkinglotAGV);
+        }
+        else{
+            throw new Exception("Something went wrong with the next assignement: " + assignments.get(0));
+        }
     }
 }
 

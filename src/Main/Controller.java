@@ -8,18 +8,21 @@ import Helpers.Id_Position;
 import Helpers.*;
 import Pathfinding.Node;
 import Vehicles.*;
-import Storage.Storage_Area;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import updateTimer.updateTimer;
 import Crane.*;
+import Network.StatsMessage;
+import Network.objPublisher;
 import Parkinglot.Parkinglot;
 import Pathfinding.Pathfinder;
 import java.io.File;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 
 
 /**
@@ -72,6 +75,7 @@ public class Controller {
     // Networkhandler
     Network.objPublisher objpublisher;
     Network.StatsPublisher statsPublisher;
+    private float statsPublisherMessageLimiter = 0.f;
     
     // </editor-fold>
     
@@ -115,22 +119,16 @@ public class Controller {
     {
         // Initializes the class variables
         Initialize();        
-        // Walk's through all the method's in this class
-        for(Method method : this.getClass().getMethods()){
-            // When the method equals the update method
-            if("Update".equals(method.getName())){
-                // Construct a new update timer
-                timer = new updateTimer(method, this);
-                break;
-            }
-        }
-        
-        objpublisher = new Network.objPublisher();
+        // use Update-method for the timer
+        timer = new updateTimer(this.getClass().getMethod("Update", new Class[] {float.class}), this);
+
+        objpublisher = new objPublisher();
         statsPublisher = new Network.StatsPublisher();
         
-        // Start's and run's the timer for updating the application
+        GenerateArrivalVehicles.objpublisher = objpublisher;
+        GenerateDepartureVehicles.objpublisher = objpublisher;
+        
         timer.start();
-        timer.run();
     }
     
     // </editor-fold>
@@ -153,23 +151,12 @@ public class Controller {
         agvList = new ArrayList();          
         storageCranes = new ArrayList();
         
-        // Loads or restores the database
-        File f = new File("db/dump.db");
-        if(!f.exists()){
-            // When it doesn't exists
-            XML.XMLBinder.GenerateContainerDatabase("src/XML/xml7.xml");
-            Database.dumpDatabase();
-        }
-        else {
-            Database.restoreDump();
-        }
-        
         // Loads all the vehicles that come to the harbor
-        seaShipsToArrive = GenerateArrivalVehicles.GetSeaBoats();
-        bargesToArrive = GenerateArrivalVehicles.GetInlandBoats();
-        trainsToArrive = GenerateArrivalVehicles.GetTrains();
-        trucksToArrive = GenerateArrivalVehicles.GetTrucks();
-        
+        seaShipsToArrive = MatchVehicles.GetSeaBoats();
+        bargesToArrive = MatchVehicles.GetInlandBoats();
+        trainsToArrive = MatchVehicles.GetTrains();
+        trucksToArrive = MatchVehicles.GetTrucks();
+
         for(TransportVehicle vehicle : bargesToArrive){
             System.out.println(vehicle.GetArrivalDate() + " barge" );
             System.out.println(vehicle.storage.Count());
@@ -226,7 +213,8 @@ public class Controller {
         
         // Adds 100 AGVs
         for(int i = 0; i < 100; i++){
-            agvList.add(new AGV(new Node(1,0)));
+            // todo change the dummie node to a real one
+            agvList.add(new AGV(new Parkinglot(1, new Node())));
         }       
         
         // Initializes the dates
@@ -251,6 +239,21 @@ public class Controller {
     // </editor-fold>
     
     // <editor-fold defaultstate="collapsed" desc="Update">
+    
+    /**
+     * Runs the timer for updating the application
+     */
+    public void Run() {
+        timer.run();
+    }
+    
+    /**
+     * Properly teardown controller
+     */
+    public void Teardown() {
+        statsPublisher.Close();
+        objpublisher.close();
+    }
     
     /**
      * Updates simulation logic
@@ -297,7 +300,9 @@ public class Controller {
         for(Vehicle vehicle : presentVehicles){
             vehicle.update(timeToUpdate);
             
+            
             if(((TransportVehicle)vehicle).Destroy()){
+                objpublisher.destroyVehicle(vehicle);
                 presentVehicles.remove(vehicle);
             }            
             if(simulationTime.getTime() >= ((TransportVehicle)vehicle).GetDepartureDate().getTime()){
@@ -332,8 +337,13 @@ public class Controller {
         // Updates all the messageQueue
         UpdateMessages();
         
-        if(presentVehicles.size()>0){
-            objpublisher.syncVehicle(presentVehicles.get(0));
+
+        
+        // Send StatsMessage every 1000ms
+        statsPublisherMessageLimiter += gameTime;
+        if(statsPublisherMessageLimiter >= 1.f) {
+            SendStatsMessage();
+            statsPublisherMessageLimiter = 0.f;
         }
     }
     
@@ -371,7 +381,7 @@ public class Controller {
                     // The agv that's available
                     Vehicle agv = agvList.get(indexAGV);
                     //Sets the destination of the AGV
-                    agv.setDestination(message.DestinationNode());
+                    //agv.setDestination(message.DestinationNode());
                     //Copies the message to the message queue
                     ((AGV)agv).SendMessage(message);
                     // When it's a fetch message send a delivery message
@@ -483,6 +493,64 @@ public class Controller {
     
     // </editor-fold>
     
+    /**
+     * Sends a StatsMessage to all listening subscribers
+     * @throws Exception 
+     */
+    protected void SendStatsMessage() throws Exception {
+        StatsMessage msg = new StatsMessage();
+        msg.date = (Date)simulationTime.clone();
+        // Containers
+        msg.containers_outgoing = depatureContainers.size();
+        
+        DateFormat df = new SimpleDateFormat("yy-MM-dd HH:mm");
+        String query = "SELECT COUNT(id) " +
+                       "FROM container " +
+                       "WHERE arrivalDateStart <= ? " +
+                       "AND arrivalDateEnd >= ? ";
+        PreparedStatement stm = Database.createPreparedStatement(query);
+        String date = df.format(simulationTime);
+        stm.setString(1, date);
+        stm.setString(2, date);
+        ResultSet getCount = Database.executeQuery(stm);
+        msg.containers_incoming = getCount.getLong(1);
+        
+        // Storage areas
+        int i = 0;
+        for(StorageCrane storage_crane : storageCranes) {
+            msg.areas.put("Area " + ++i, storage_crane.GetStorageArea().Count());
+        }
+
+        // Available Vehicles
+        int availableAgvs = 0,
+            availableTrucks = 0,
+            availableTrains = 0;
+
+        for(Vehicle vehicle : presentVehicles) {
+            boolean isAvailable = !vehicle.storage.isFilled();
+            switch(vehicle.GetVehicleType()) {
+                case truck:
+                    if(isAvailable)
+                        availableTrucks++;
+                break;
+                case train:
+                    if(isAvailable)
+                        availableTrains++;
+                break;
+                case AGV:
+                    if(vehicle instanceof AGV && ((AGV)vehicle).Available())
+                       availableAgvs++; 
+                break;
+            }
+        }
+        
+        msg.vehicles.put("AGV", availableAgvs);
+        msg.vehicles.put("TRUCK", availableTrucks);
+        msg.vehicles.put("TRAIN", availableTrains);
+        
+        statsPublisher.SendStatsMessage(msg);
+    }
+    
     // <editor-fold defaultstate="collapsed" desc="Container Methods">
     
     /**
@@ -567,6 +635,8 @@ public class Controller {
                 
                 // Add the vehicle that arrived
                 presentVehicles.add(vehicle);
+                objpublisher.createVehicle(vehicle);
+                
                 // Request cranes
                 for(int i = 0 ; i < requests; i++){
                     messageQueue.add(new Message(

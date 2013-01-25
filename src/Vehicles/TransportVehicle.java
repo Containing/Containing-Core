@@ -1,8 +1,13 @@
 package Vehicles;
 
+import Crane.Crane;
+import Crane.StorageCrane;
 import Helpers.Vector3f;
 import Main.Container;
+import Network.objPublisher;
+import Parkinglot.Parkinglot;
 import Pathfinding.Node;
+import Pathfinding.Pathfinder;
 import Storage.Storage_Area;
 import java.util.Date;
 
@@ -39,6 +44,11 @@ public class TransportVehicle extends Vehicle {
     boolean destroy;
     
     /**
+     * Reference to objPublisher
+     */
+    final objPublisher objpublisher;
+    
+    /**
      * When called the transport vehicle will leave the harbor
      */
     public void Departure()
@@ -65,7 +75,7 @@ public class TransportVehicle extends Vehicle {
      * @param startPosition The node the vehicle arrives
      * @throws Exception 
      */
-    public TransportVehicle(Date arrivalDate, Date departureDate, String arrivalCompany, VehicleType vehicleType, Vector3f containerArraySize, Node startPosition) throws Exception
+    public TransportVehicle(Date arrivalDate, Date departureDate, String arrivalCompany, VehicleType vehicleType, Vector3f containerArraySize, Node startPosition, objPublisher objpublisher) throws Exception
     {
         if (arrivalDate == null || departureDate == null || arrivalCompany == null || containerArraySize == null || startPosition == null || vehicleType == null){
             throw new Exception("\nThe input variable can't be null:"+
@@ -77,12 +87,45 @@ public class TransportVehicle extends Vehicle {
                     "\nstartPosition: " + startPosition);
         }        
         this.position = startPosition.getPosition();
-        this.destination = startPosition;
+        this.destination = new Parkinglot(1, startPosition);
         this.arrivalDate = arrivalDate;
         this.departureDate = departureDate;
         this.arrivalCompany = arrivalCompany;
         this.vehicleType = vehicleType;
         this.storage = new Storage_Area((int)containerArraySize.x, (int)containerArraySize.z, (int)containerArraySize.y, position);        
+        this.objpublisher = objpublisher;
+    }
+        
+    /**
+     * Set the destination for the vehicle.
+     * @param destination The destination node.
+     * @throws Exception If something goes wrong while calculating the route.
+     */
+    public void setDestination(Node destination) throws Exception{
+        this.destination = new Parkinglot(1, destination);
+        this.route = Pathfinding.Pathfinder.findShortest(Pathfinder.findClosestNode(position), destination, storage.Count() == 0);
+        this.routeIndex = 1;
+    }
+    
+    /**
+     * Gets the destination from the destinationObject
+     * Sets the found destination for the vehicle.
+     * @param destinationObject The destination Object.
+     * @throws Exception If something goes wrong while calculating the route.
+     */
+    public void setDestination(Object destinationObject) throws Exception{
+        if (Crane.class == destinationObject.getClass()){
+            this.destination = ((Crane)destinationObject).parkinglotTransport;
+        }
+        else if (StorageCrane.class == destinationObject.getClass()){
+            this.destination = ((StorageCrane)destinationObject).parkinglotTransport;
+        }
+        else{
+            throw new Exception("The input isn't a crane or storageCrane: " + destinationObject);
+        }
+        
+        this.route = Pathfinding.Pathfinder.findShortest(Pathfinder.findClosestNode(position), destination.node, storage.Count() == 0);
+        this.routeIndex = 1;
     }
     
     public void setPostion(Vector3f position){
@@ -96,13 +139,17 @@ public class TransportVehicle extends Vehicle {
      */
     @Override
     public void update(float gameTime) throws Exception {
-        if (position == destination.getPosition()){
+        if (position == destination.node.getPosition()){
+            if(!parked){
+                
+            }
             if(departure){
                 destroy = true;
             }                
         }
         else if(position == route[routeIndex].getPosition()){
             routeIndex++;
+            objpublisher.syncVehicle(this);
         }
         else{
             Vector3f NextNode = route[routeIndex].getPosition();

@@ -1,5 +1,7 @@
 package Helpers;
 
+import java.util.regex.Pattern;
+
 public class Vector3f {
     public Vector3f()
     {
@@ -7,18 +9,56 @@ public class Vector3f {
         this.y = 0;
         this.z = 0;
     }
-
     public Vector3f(float x, float y, float z)
     {
         this.x = x;
         this.y = y;
         this.z = z;
     }
-    
     public Vector3f(Vector3f copy){
         this.x = copy.x;
         this.y = copy.y;
         this.z = copy.z;
+    }
+    
+    public Vector3f(String input) throws Exception{
+        new Vector3f(input, "XYZ");
+    }
+    
+    public Vector3f(String input, String format) throws Exception{
+        if(input == null){throw new Exception("Error:\nInput can't be null");}
+        if(input.length() % 3 != 0){throw new Exception("Error:\nInput has to be an x times 3 value ");}
+        if(Pattern.matches("[0-9]+", input) == false){throw new Exception("Error:\nInput may only container numbers");}
+        if(format == null){throw new Exception("Error:\\nFormat can't be null");}
+        if(format.length() != 3){throw new Exception("Error:\nFormat has to be 3 chars");}
+        if(Pattern.matches("[XYZ]+", format.toUpperCase()) == false){throw new Exception("Error:\nFormat may only container X,Y or Z");}
+        
+        char[] formatC = format.toLowerCase().toCharArray();
+        char[] inputC = input.toCharArray();
+        int counter = 0;
+        String x = "0";
+        String y = "0";
+        String z = "0";
+        for (int i = 0; i < 3; i++) {
+            switch(formatC[i]){
+                    case 'x':
+                    for (int j = counter; j < counter+input.length()/3; j++)
+                        x += Character.toString(inputC[j]);
+                    break;
+                    case 'y':
+                    for (int j = counter; j < counter+input.length()/3; j++)
+                        y += Character.toString(inputC[j]);
+                    break;
+                    case 'z':
+                    for (int j = counter; j < counter+input.length()/3; j++)
+                        z += Character.toString(inputC[j]);
+                    break;
+            }
+            counter += (input.length() / 3);
+        }
+        this.x = Integer.parseInt(x);
+        this.y = Integer.parseInt(y);
+        this.z = Integer.parseInt(z);
     }
     
     public float x;
@@ -31,6 +71,28 @@ public class Vector3f {
         return "[X:" + (int)x + ",Y:" + (int)y + ",Z:" + (int)z + "]";
     }
     
+    public String toString(String format) throws Exception{
+        if(format == null){throw new Exception("Error:\\nFormat can't be null");}
+        if(format.length() != 3){throw new Exception("Error:\nFormat has to be 3 chars");}
+        if(Pattern.matches("[XYZ]+", format.toUpperCase()) == false){throw new Exception("Error:\nFormat may only container X,Y or Z");}
+        String returnString = "";
+        
+        char[] formatC = format.toLowerCase().toCharArray();
+        for (int i = 0; i < 3; i++) {
+            switch(formatC[i]){
+                    case 'x':
+                    returnString += (int)this.x;
+                    break;
+                    case 'y':
+                    returnString += (int)this.y;
+                    break;
+                    case 'z':
+                    returnString += (int)this.z;
+                    break;
+            }
+        }
+        return returnString;
+    }
     public void normalize(){
         float length = length();
         x/=length;

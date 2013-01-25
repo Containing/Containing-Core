@@ -3,6 +3,7 @@ package Vehicles;
 import Helpers.Vector3f;
 import Main.Container;
 import Main.Database;
+import Network.objPublisher;
 import Pathfinding.Node;
 import Storage.Storage_Area;
 import java.sql.PreparedStatement;
@@ -16,6 +17,12 @@ import java.util.List;
  * @author Tonnie Boersma
  */
 public class GenerateDepartureVehicles {
+    
+    /**
+     * Reference to objPublisher
+     */
+    public static objPublisher objpublisher;
+    
         /**
      * Test the code
      * @param args
@@ -60,7 +67,7 @@ public class GenerateDepartureVehicles {
             int x = (int)((float)getBoats.getInt("containers") / storage.y*storage.z) + 1;
             //BoatList.add(new Boat(departureDateStart, departureDateEnd, "departureShip", storage, new Node()));
             BoatList.add(new TransportVehicle(departureDateStart, departureDateEnd, "departureShip", 
-                    kindSchip.equals("zeeschip") ? Vehicle.VehicleType.seaBoat : Vehicle.VehicleType.inlandBoat, new Vector3f(x, storage.y, storage.z), new Node()));
+                    kindSchip.equals("zeeschip") ? Vehicle.VehicleType.seaBoat : Vehicle.VehicleType.inlandBoat, new Vector3f(x, storage.y, storage.z), new Node(), objpublisher));
         }
         
         return BoatList;
@@ -83,7 +90,7 @@ public class GenerateDepartureVehicles {
             int lenght = getTrains.getInt("containers");
             //TrainList.add(new Train(departureDateStart, departureDateEnd, "departureShip", lenght, new Node()));
             TrainList.add(new TransportVehicle(departureDateStart, departureDateEnd, "departureTrain", 
-                    Vehicle.VehicleType.train,new Vector3f(lenght, 1, 1), new Node()));
+                    Vehicle.VehicleType.train,new Vector3f(lenght, 1, 1), new Node(), objpublisher));
         }
         
         return TrainList;
@@ -104,7 +111,7 @@ public class GenerateDepartureVehicles {
             Date departureDateEnd = Container.df.parse(getTrucks.getString("departureDateEnd"));
             //TruckList.add(new Truck(departureDateStart, departureDateEnd, "departureShip", new Node()));
             TruckList.add(new TransportVehicle(departureDateStart, departureDateEnd, "departureTrain", 
-                    Vehicle.VehicleType.truck, new Vector3f(1, 1, 1), new Node()));
+                    Vehicle.VehicleType.truck, new Vector3f(1, 1, 1), new Node(), objpublisher));
         }
         
         return TruckList;
