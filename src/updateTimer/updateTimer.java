@@ -9,7 +9,7 @@ import java.util.logging.Logger;
  *
  * @author EightOneGulf
  */
-public class updateTimer implements Runnable{
+public class updateTimer {
     private Method updateMethod;
     private Object updateObject;
     private boolean running;
@@ -18,22 +18,14 @@ public class updateTimer implements Runnable{
     private float currentFPS = 0;
     private long prevTime;
 
-    private Thread t;
-
     public updateTimer(Method updateMethod, Object updateObject){
         this.updateMethod = updateMethod;
         this.updateObject = updateObject;
-        this.t = new Thread(this);
-    }
-
-    public boolean isAlive(){
-        return t.isAlive();
     }
     
     public void start(){
         running = true;
         prevTime = System.nanoTime();
-        if(!t.isAlive())t.start();
     }
     
     public void stop(){
@@ -50,7 +42,6 @@ public class updateTimer implements Runnable{
         return currentFPS;
     }
 
-    @Override
     public void run() {
         long curTime, timeDiff;
         
