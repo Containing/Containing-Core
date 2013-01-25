@@ -251,6 +251,14 @@ public class Controller {
     }
     
     /**
+     * Properly teardown controller
+     */
+    public void Teardown() {
+        statsPublisher.Close();
+        objpublisher.close();
+    }
+    
+    /**
      * Updates simulation logic
      * @param gameTime 
      */
