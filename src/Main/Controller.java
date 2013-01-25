@@ -129,7 +129,7 @@ public class Controller {
             }
         }
         
-        objpublisher = new objPublisher(); 
+        objpublisher = new objPublisher();
         statsPublisher = new Network.StatsPublisher();
         timer.start();
     }
