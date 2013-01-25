@@ -303,7 +303,7 @@ public class Pathfinder {
         
         // </editor-fold>
         
-        // <editor-fold defaultstate="collapsed" desc="truck route   nodes(176-205), parkinglot(49-68)">
+        // <editor-fold defaultstate="collapsed" desc="truck route   nodes(176-205, 1050-1070), parkinglot(49-68)">
         
         float distanceToDockTruck = 50; // todo edit this value
         float distandeBetweenNodesTruck = 200;
@@ -319,6 +319,12 @@ public class Pathfinder {
         Nodes[199] = new Node(totalLenght+distanceToDockTruck+distandeBetweenNodesTruck, totalWidth-distanceToMainRoad);
         
         for (int i = 0; i < 20; i++) {
+            Nodes[1050+i] = new Node(totalLenght+distanceToDockTruck+distandeBetweenNodesTruck+distanceToStorage+storageWidth/20/2+storageWidth/20*i, totalWidth-distanceToMainRoad);
+        }
+        
+        
+        // path
+        for (int i = 0; i < 20; i++) {
             pathList.add(new Path(Nodes[187], Nodes[176+i]));
             pathList.add(new Path(Nodes[176+i], Nodes[186]));
         }
@@ -326,6 +332,11 @@ public class Pathfinder {
         pathList.add(new Path(Nodes[197], Nodes[195]));
         pathList.add(new Path(Nodes[176], Nodes[196]));
         pathList.add(new Path(Nodes[196], Nodes[198]));
+        
+        pathList.add(new Path(Nodes[1050], Nodes[199]));
+        for (int i = 0; i < 19; i++) {
+            pathList.add(new Path(Nodes[1069-i], Nodes[1069-i-1]));
+        }
         
         // </editor-fold>
         
@@ -357,7 +368,7 @@ public class Pathfinder {
         }
         // </editor-fold>
         
-        // <editor-fold defaultstate="collapsed" desc="Strorage Parkinglots   nodes(236-437), parkinglot(71,271)">
+        // <editor-fold defaultstate="collapsed" desc="Strorage Parkinglots   nodes(236-1037), parkinglot(71,271)">
         
         //Nodes
         float storagesize = storageLenght/100;

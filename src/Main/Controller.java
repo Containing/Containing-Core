@@ -119,16 +119,9 @@ public class Controller {
     {
         // Initializes the class variables
         Initialize();        
-        // Walk's through all the method's in this class
-        for(Method method : this.getClass().getMethods()){
-            // When the method equals the update method
-            if("Update".equals(method.getName())){
-                // Construct a new update timer
-                timer = new updateTimer(method, this);
-                break;
-            }
-        }
-        
+        // use Update-method for the timer
+        timer = new updateTimer(this.getClass().getMethod("Update", new Class[] {float.class}), this);
+
         objpublisher = new objPublisher();
         statsPublisher = new Network.StatsPublisher();
         
