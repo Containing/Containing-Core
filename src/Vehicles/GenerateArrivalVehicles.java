@@ -3,6 +3,7 @@ package Vehicles;
 import Helpers.Vector3f;
 import Main.Container;
 import Main.Database;
+import Network.objPublisher;
 import Pathfinding.Node;
 import Vehicles.Vehicle.VehicleType;
 import java.sql.PreparedStatement;
@@ -16,6 +17,12 @@ import java.util.List;
  * @author Tonnie Boersma
  */
 public class GenerateArrivalVehicles {
+    
+    /**
+     * Reference to objPublisher
+     */
+    public static objPublisher objpublisher;
+    
     /**
      * Test the code
      * @param args
@@ -85,13 +92,13 @@ public class GenerateArrivalVehicles {
                 for (int i = 0; i < amount; i++) {
                     //BoatList.add(new Boat(arrivalDateStart, arrivalDateEnd, arrivalCompany, new Vector3f(x, y, z), /*SpawnNode*/new Node(0, 0)));
                     BoatList.add(new TransportVehicle(arrivalDateStart, arrivalDateEnd, arrivalCompany, 
-                            kindSchip.equals("zeeschip") ? VehicleType.seaBoat : VehicleType.inlandBoat, new Vector3f(x, y, z), new Node()));
+                            kindSchip.equals("zeeschip") ? VehicleType.seaBoat : VehicleType.inlandBoat, new Vector3f(x, y, z), new Node(), objpublisher));
                 }
             }
             else{
                 // add one boat
                 BoatList.add(new TransportVehicle(arrivalDateStart, arrivalDateEnd, arrivalCompany,
-                        kindSchip.equals("zeeschip") ? VehicleType.seaBoat : VehicleType.inlandBoat, new Vector3f(x, y, z), new Node()));
+                        kindSchip.equals("zeeschip") ? VehicleType.seaBoat : VehicleType.inlandBoat, new Vector3f(x, y, z), new Node(), objpublisher));
             }
         }
         
@@ -188,13 +195,13 @@ public class GenerateArrivalVehicles {
                 for (int i = 0; i < amount; i++) {
                     //TrainList.add(new Train(arrivalDateStart, arrivalDateEnd, arrivalCompany, x, /*SpawnNode*/new Node(0, 0)));
                     TrainList.add(new TransportVehicle(arrivalDateStart, arrivalDateEnd, arrivalCompany,
-                            VehicleType.train ,new Vector3f(x, 1, 1), new Node()));
+                            VehicleType.train ,new Vector3f(x, 1, 1), new Node(), objpublisher));
                 }
             }
             else{
                 // add one train
                     TrainList.add(new TransportVehicle(arrivalDateStart, arrivalDateEnd, arrivalCompany,
-                            VehicleType.train ,new Vector3f(x, 1, 1), new Node()));
+                            VehicleType.train ,new Vector3f(x, 1, 1), new Node(), objpublisher));
             }
         }
         
@@ -277,7 +284,7 @@ public class GenerateArrivalVehicles {
             Container container = ConvertToContainer(rs);
             //Truck truck = new Truck(container.getArrivalDateStart(), container.getArrivalDateEnd(), container.getArrivalCompany(), /*SpawnNode*/new Node(0, 0));
             TransportVehicle truck = new TransportVehicle(container.getArrivalDateStart(), container.getArrivalDateEnd(), container.getArrivalCompany(), 
-                    VehicleType.truck ,new Vector3f(1, 1, 1), new Node());
+                    VehicleType.truck ,new Vector3f(1, 1, 1), new Node(), objpublisher);
             // push the container on the truck.
             truck.storage.pushContainer(container, 0, 0);
             TruckList.add(truck);

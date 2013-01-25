@@ -131,6 +131,10 @@ public class Controller {
         
         objpublisher = new objPublisher();
         statsPublisher = new Network.StatsPublisher();
+        
+        GenerateArrivalVehicles.objpublisher = objpublisher;
+        GenerateDepartureVehicles.objpublisher = objpublisher;
+        
         timer.start();
     }
     

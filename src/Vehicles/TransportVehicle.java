@@ -4,6 +4,7 @@ import Crane.Crane;
 import Crane.StorageCrane;
 import Helpers.Vector3f;
 import Main.Container;
+import Network.objPublisher;
 import Parkinglot.Parkinglot;
 import Pathfinding.Node;
 import Pathfinding.Pathfinder;
@@ -43,6 +44,11 @@ public class TransportVehicle extends Vehicle {
     boolean destroy;
     
     /**
+     * Reference to objPublisher
+     */
+    final objPublisher objpublisher;
+    
+    /**
      * When called the transport vehicle will leave the harbor
      */
     public void Departure()
@@ -69,7 +75,7 @@ public class TransportVehicle extends Vehicle {
      * @param startPosition The node the vehicle arrives
      * @throws Exception 
      */
-    public TransportVehicle(Date arrivalDate, Date departureDate, String arrivalCompany, VehicleType vehicleType, Vector3f containerArraySize, Node startPosition) throws Exception
+    public TransportVehicle(Date arrivalDate, Date departureDate, String arrivalCompany, VehicleType vehicleType, Vector3f containerArraySize, Node startPosition, objPublisher objpublisher) throws Exception
     {
         if (arrivalDate == null || departureDate == null || arrivalCompany == null || containerArraySize == null || startPosition == null || vehicleType == null){
             throw new Exception("\nThe input variable can't be null:"+
@@ -87,6 +93,7 @@ public class TransportVehicle extends Vehicle {
         this.arrivalCompany = arrivalCompany;
         this.vehicleType = vehicleType;
         this.storage = new Storage_Area((int)containerArraySize.x, (int)containerArraySize.z, (int)containerArraySize.y, position);        
+        this.objpublisher = objpublisher;
     }
         
     /**
@@ -142,7 +149,7 @@ public class TransportVehicle extends Vehicle {
         }
         else if(position == route[routeIndex].getPosition()){
             routeIndex++;
-            Network.objPublisher.syncVehicle(this);
+            objpublisher.syncVehicle(this);
         }
         else{
             Vector3f NextNode = route[routeIndex].getPosition();
