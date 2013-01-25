@@ -20,7 +20,7 @@ public class objPublisher {
         //  Prepare our context and socket
         ZMQ.Context context = ZMQ.context(1);
         publisher = context.socket(ZMQ.PUB);
-        publisher.bind("tcp://*:6000");
+        publisher.bind("tcp://*:6001");
         System.out.println("Net: Listening on 6001");
     }
     
