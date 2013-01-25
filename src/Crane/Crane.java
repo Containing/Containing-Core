@@ -128,11 +128,6 @@ public class Crane implements IMessageReceiver
         {
             if (storage.Count(_currentRow, w) < storage.getHeight())
             {
-                //Move container over crane rail.
-                _taskTimeLeft += _moveContainer * w;
-                //Lower container.
-                _taskTimeLeft += _lower * (storage.getHeight() - storage.Count(_currentRow, w));
-                
                 return loadContainer(_currentRow, w, storage);
             }             
         }
@@ -150,12 +145,6 @@ public class Crane implements IMessageReceiver
             {
                 if (storage.Count(_currentRow, column) > 0)
                 {
-                    //Securing the container.
-                    _taskTimeLeft += _secureContainer;
-                    //Raising the container.
-                    _taskTimeLeft += _raise * (storage.getHeight() - storage.Count(_currentRow, column));
-                    //Move container over crane rail.
-                    _taskTimeLeft += _moveContainer * column;
                     return unloadContainer(_currentRow, column, storage);
                 }
             }
@@ -163,12 +152,6 @@ public class Crane implements IMessageReceiver
 
         else if (storage.Count(_currentRow, columnIndex) > 0)
         {
-            //Securing the container.
-            _taskTimeLeft += _secureContainer;
-            //Raising the container.
-            _taskTimeLeft += _raise * (storage.getHeight() - storage.Count(_currentRow, columnIndex));
-            //Move container over crane rail.
-            _taskTimeLeft += _moveContainer;
             return unloadContainer(_currentRow, columnIndex, storage);
         }
         
@@ -293,12 +276,6 @@ public class Crane implements IMessageReceiver
         else if (row > _currentRow)
             { move = row - _currentRow; }
         
-        if (_carriedContainer != null)
-            { _taskTimeLeft += _moveLoaded * move; }
-        
-        else
-            { _taskTimeLeft += _moveEmpty * move; }
-        
         _currentRow = row;
     }
     
@@ -318,7 +295,101 @@ public class Crane implements IMessageReceiver
             }
             else if (_tasks.isEmpty() == false)
             {
+                Storage_Area storage = null;
+                boolean taskPossible = false;
                 
+                if (_tasks.get(0) == _taskList.loadAGV || _tasks.get(0) == _taskList.unloadAGV)
+                {
+                    try
+                    {
+                        AGV a = (AGV)parkinglotAGV.getVehicles().get(0);
+                        storage = a.storage;
+                        taskPossible = true;
+                    }
+                    catch (Exception e)
+                    {
+                        taskPossible = false;
+                    }
+                }
+                
+                else if (_tasks.get(0) == _taskList.loadTransport || _tasks.get(0) == _taskList.unloadTransport)
+                {
+                    try
+                    {
+                        TransportVehicle t = (TransportVehicle)parkinglotTransport.getVehicles().get(0);
+                        storage = t.storage;
+                        taskPossible = true;
+                    }
+                    catch (Exception e)
+                    {
+                        taskPossible = false;
+                    }
+                }
+                
+                if (taskPossible == true)
+                {
+                    if (_taskTimeLeft > 0)
+                    {
+                        _taskTimeLeft -= updateTime;
+                        
+                        if (_taskTimeLeft <= 0)
+                        {
+                            try
+                            {
+                                switch (_tasks.get(0))
+                                {
+                                    case moveRowBase: moveRow(0); break;
+                                    case moveRowUp: moveRow(_currentRow + 1); break;
+                                    case loadAGV: loadAGV(storage); break;
+                                    case unloadAGV: unloadAGV(storage); break;
+                                    case loadTransport: loadTransport(storage); break;
+                                    case unloadTransport: unloadTransport(storage); break;            
+                                }
+                                
+                                if (_tasks.get(0) == _taskList.loadAGV || _tasks.get(0) == _taskList.unloadAGV)
+                                {
+                                    AGV a = (AGV)parkinglotAGV.getVehicles().get(0);
+                                    a.storage = storage;
+                                    parkinglotAGV.setVehicle(a, 0);
+                                }
+                                
+                                else if (_tasks.get(0) == _taskList.loadTransport || _tasks.get(0) == _taskList.unloadTransport)
+                                {
+                                    TransportVehicle t = (TransportVehicle)parkinglotTransport.getVehicles().get(0);
+                                    t.storage = storage;
+                                    parkinglotTransport.setVehicle(t, 0);
+                                }
+                                
+                                if (_taskTimeLeft < 0)
+                                {   
+                                    float time = _taskTimeLeft * -1;
+                                    _taskTimeLeft = 0;
+                                    this.update(time);
+                                }
+                            }
+                            catch (Exception e)
+                                { System.out.println(e.getMessage()); }
+                        }
+                    }
+
+                    else
+                    {
+                        try
+                        {
+                            switch (_tasks.get(0))
+                            {
+                                case moveRowBase: _taskTimeLeft = checkTimeMove(0); break;
+                                case moveRowUp: _taskTimeLeft = checkTimeMove(_currentRow + 1); break;
+                                case loadAGV: _taskTimeLeft = _secureContainer + (_lower * 7); break;
+                                case unloadAGV: _taskTimeLeft = _secureContainer + (_raise * 7); break;
+                                case loadTransport: _taskTimeLeft = checkTimeLoad(storage); break;
+                                case unloadTransport: _taskTimeLeft = checkTimeLoad(storage); break;            
+                            }
+                        }
+                        catch (Exception e)
+                            { System.out.println(e.getMessage()); }
+                    }
+                }
             }
             
             else

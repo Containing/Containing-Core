@@ -50,6 +50,25 @@ public class Parkinglot <T>
     }
     
     /**
+     *
+     * @param vehicle
+     * @param index
+     * @throws Exception
+     */
+    public void setVehicle (T vehicle, int index) throws Exception
+    {
+        if (vehicle != null)
+        {
+            _parkingSpace.set(index, vehicle);
+        }
+        
+        else
+        {
+            throw new Exception("Can't set a null object as vehicle.");
+        }
+    }
+    
+    /**
      * 
      * @param vehicle The vehicle to be parked.
      * @return True if succesful.
