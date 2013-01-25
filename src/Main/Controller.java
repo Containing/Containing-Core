@@ -15,6 +15,7 @@ import java.util.List;
 import updateTimer.updateTimer;
 import Crane.*;
 import Network.StatsMessage;
+import Network.objPublisher;
 import Parkinglot.Parkinglot;
 import Pathfinding.Pathfinder;
 import java.io.File;
@@ -72,7 +73,7 @@ public class Controller {
     Date shipmentTime;   
     
     // Networkhandler
-    //Network.objPublisher objpublisher;
+    Network.objPublisher objpublisher;
     Network.StatsPublisher statsPublisher;
     private float statsPublisherMessageLimiter = 0.f;
     
@@ -116,7 +117,6 @@ public class Controller {
      */
     public Controller() throws Exception
     {
-        Network.objPublisher.objPublisher_start();
         // Initializes the class variables
         Initialize();        
         // Walk's through all the method's in this class
@@ -129,7 +129,7 @@ public class Controller {
             }
         }
         
-        
+        objpublisher = new objPublisher(); 
         statsPublisher = new Network.StatsPublisher();
         timer.start();
     }
@@ -308,7 +308,7 @@ public class Controller {
             
             
             if(((TransportVehicle)vehicle).Destroy()){
-                Network.objPublisher.destroyVehicle(vehicle);
+                objpublisher.destroyVehicle(vehicle);
                 presentVehicles.remove(vehicle);
             }            
             if(simulationTime.getTime() >= ((TransportVehicle)vehicle).GetDepartureDate().getTime()){
@@ -641,7 +641,7 @@ public class Controller {
                 
                 // Add the vehicle that arrived
                 presentVehicles.add(vehicle);
-                Network.objPublisher.createVehicle(vehicle);
+                objpublisher.createVehicle(vehicle);
                 
                 // Request cranes
                 for(int i = 0 ; i < requests; i++){

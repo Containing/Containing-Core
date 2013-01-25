@@ -10,17 +10,29 @@ import org.zeromq.*;
  * @author EightOneGulf
  */
 public class objPublisher {
-    private static ZMQ.Socket publisher;
+    private ZMQ.Socket publisher;
     private static ZMQ.Context context;
-    public static void objPublisher_start(){
+    
+    /**
+     * Constructor
+     */
+    public objPublisher() {
         //  Prepare our context and socket
-        context = ZMQ.context(1);
+        ZMQ.Context context = ZMQ.context(1);
         publisher = context.socket(ZMQ.PUB);
-        publisher.bind("tcp://*:6001");
+        publisher.bind("tcp://*:6000");
         System.out.println("Net: Listening on 6001");
     }
     
-    public static void createVehicle(Vehicles.TransportVehicle vehicle){
+    /**
+     * Close socket
+     */
+    public void close() {
+        publisher.close();
+        context.term();
+    }
+    
+    public void createVehicle(Vehicles.TransportVehicle vehicle){
         //42Byte total
         byte[] b = new byte[42];
         int vehicleID = vehicle.Id;
@@ -50,7 +62,7 @@ public class objPublisher {
         System.out.println("Net: Creating " + vehicleID);
     }
 
-    public static void syncVehicle(Vehicles.Vehicle vehicle){        
+    public void syncVehicle(Vehicles.Vehicle vehicle){        
         //29Byte total
         byte[] b = new byte[29];
 
@@ -73,7 +85,7 @@ public class objPublisher {
         System.out.println("Net: Syncing " + vehicleID);
     }
     
-    public static void destroyVehicle(Vehicles.Vehicle vehicle){
+    public void destroyVehicle(Vehicles.Vehicle vehicle){
         //5Byte total
         byte[] b = new byte[29];
         int vehicleID = vehicle.Id;
