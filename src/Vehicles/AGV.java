@@ -15,6 +15,10 @@ public class AGV extends Vehicle implements IMessageReceiver {
     private final float SpeedWithoutContainer = 40/3.6f;    
     private List<Message> assignments;    
     
+    /**
+     * When the agv has a container but no assingments
+     * @return True if it needs a deliver assignment
+     */
     public boolean NeedDeliverAssignment()
     {
         if(needDeliverAssignment){
@@ -39,11 +43,14 @@ public class AGV extends Vehicle implements IMessageReceiver {
     }
 
     public void setDestination(Object destinationObject) throws Exception{
-        if (Crane.class == destinationObject.getClass()){
+        if (destinationObject.getClass() == Crane.class){
             this.destination = ((Crane)destinationObject).parkinglotAGV;
         }
-        else if (StorageCrane.class == destinationObject.getClass()){
+        else if (destinationObject.getClass() == StorageCrane.class){
             this.destination = ((StorageCrane)destinationObject).parkinglotAGV;
+        }
+        else if (destinationObject.getClass() == Parkinglot.class){
+            this.destination = (Parkinglot)destinationObject;
         }
         else{
             throw new Exception("The input isn't a crane or storageCrane: " + destinationObject);
@@ -56,26 +63,19 @@ public class AGV extends Vehicle implements IMessageReceiver {
     
     @Override
     public void update(float gameTime) throws Exception {
+        // When the destination position is reached
         if (position == destination.node.getPosition()){
             if (!parked) {
+                // Park on the parkinglot
                 destination.park(this);
                 parked = true;
             }
-            
-//            if(!Available()){
-//                if(assignments.get(0).DestinationObject().getClass() == Crane.class){
-//                    Crane crane = (Crane)(assignments.get(0).DestinationObject());
-//                    crane.parkinglotAGV.park(this);
-//                }
-//                else if (assignments.get(0).DestinationObject().getClass() == StorageCrane.class){
-//                    StorageCrane crane = (StorageCrane)(assignments.get(0).DestinationObject());
-//                    crane.parkinglotAGV.park(this);
-//                }
-//            }
         } 
+        // Go to the next node on the route if this node is reached
         else if(position == route[routeIndex].getPosition()){
             routeIndex++;
         }
+        // Move the agv to the next position on his route
         else{
             float speed = (storage.Count() == 0) ? SpeedWithoutContainer : SpeedWithContainer;
             Vector3f NextNode = route[routeIndex].getPosition();
@@ -100,96 +100,67 @@ public class AGV extends Vehicle implements IMessageReceiver {
         
         // When the AGV has assignments
         if(!Available()){
-            // When the AGV needs to fetch a container
+            // When the AGV's current assingment is to fetch a container
             if(assignments.get(0).Fetch()){
-                // When the AGV has a container on him
+                // When the AGV already fetched the container
                 if(storage.Count() > 0){
-                    //Container.TransportType transportType = storage.peakContainer(0, 0).getDepartureTransportType();
-                    switch(storage.peekContainer(0,0).getDepartureTransportType()){
-                        case trein:
-                            //destination = trein parking node
-                            break;
-                        case zeeschip:
-                            //destination = zeeschip parking node
-                            break;
-                        case binnenschip:
-                            //destination = binnenship parking node
-                            break;
-                        case vrachtauto :
-                            //destination = vrachtauto parking node
-                            break;
-                    }
                     // Remove assingment because the container is fetched
                     assignments.remove(0);    
                     if(!assignments.isEmpty()){
-                        if (Crane.class == assignments.get(0).DestinationObject().getClass()){
-                            this.setDestination(((Crane)assignments.get(0).DestinationObject()).parkinglotAGV);
-                        }
-                        else if (StorageCrane.class == assignments.get(0).DestinationObject().getClass()){
-                            this.setDestination(((StorageCrane)assignments.get(0).DestinationObject()).parkinglotAGV);
-                        }
-                        else{
-                            throw new Exception("Something went wrong with the next assignement: " + assignments.get(0));
-                        }
+                        this.setDestination(assignments.get(0).DestinationObject());
+                    }
+                    // The agv needs a deliver assignment
+                    else{
+                        
                     }
                 }
             }
-            // When the AGV need's to deliver a container
-            else if(assignments.get(0).Deliver())
-            {
-                // When the AGV doesn't has a contianer on him
-                if(!storage.isFilled())
-                {
+            // When the AGV's current assignment is to deliver a container
+            else if(assignments.get(0).Deliver()){
+                // When the AGV already deliverd the container
+                if(!storage.isFilled()){
                     // Remove assingment because the contianer is deliverd
                     assignments.remove(0); 
                     if(!assignments.isEmpty()){
-                        if (Crane.class == assignments.get(0).DestinationObject().getClass()){
-                            this.setDestination(((Crane)assignments.get(0).DestinationObject()).parkinglotAGV);
-                        }
-                        else if (StorageCrane.class == assignments.get(0).DestinationObject().getClass()){
-                            this.setDestination(((StorageCrane)assignments.get(0).DestinationObject()).parkinglotAGV);
-                        }
-                        else{
-                            throw new Exception("Something went wrong with the next assignement: " + assignments.get(0));
-                        }
+                        this.setDestination(assignments.get(0).DestinationObject());
                     }
                 }
             }
-            else
-            {
+            else{
                 // When the assignment is not is Deliver, Fetch
                 throw new Exception("Wrong assignment AGV Can't Load or Unload");
-            }
-            // When there are no assignments left
-            if(Available())
-            {
-                // When the AGV has no assignments but still has a container 
-                if(storage.isFilled()){
-                    needDeliverAssignment = true;
-                }
-                // Default parkinglot 0
-                int index = 0;
-                // Default set on first parkinglot
-                float distance = Vector3f.distance(this.position, Pathfinder.parkinglots[0].node.getPosition());  
-                
-                float tempDist = Vector3f.distance(this.position, Pathfinder.parkinglots[11].node.getPosition());             
-                if(distance > tempDist){
-                    distance = tempDist;
-                    index = 11;
-                }                
-                tempDist = Vector3f.distance(this.position, Pathfinder.parkinglots[20].node.getPosition());    
-                if(distance > tempDist){
-                    distance = tempDist;
-                    index = 20;
-                }                
-                tempDist = Vector3f.distance(this.position, Pathfinder.parkinglots[41].node.getPosition());    
-                if(distance > tempDist){
-                    distance = tempDist;
-                    index = 41;
-                }
-            }
+            }            
         }
-        
+        // When the agv has no assignments left
+        if(Available()){
+            // When the AGV still carries a container 
+            if(storage.isFilled()){
+                needDeliverAssignment = true;
+            }
+            // Default parkinglot 0
+            int index = 0;
+            // Default set on first parkinglot
+            float distance = Vector3f.distance(this.position, Pathfinder.parkinglots[0].node.getPosition());  
+            
+            // Calculate what the nearest parkinglot is
+            float tempDist = Vector3f.distance(this.position, Pathfinder.parkinglots[11].node.getPosition());             
+            if(distance > tempDist){
+                distance = tempDist;
+                index = 11;
+            }                
+            tempDist = Vector3f.distance(this.position, Pathfinder.parkinglots[20].node.getPosition());    
+            if(distance > tempDist){
+                distance = tempDist;
+                index = 20;
+            }                
+            tempDist = Vector3f.distance(this.position, Pathfinder.parkinglots[41].node.getPosition());    
+            if(distance > tempDist){
+                distance = tempDist;
+                index = 41;
+            }
+            // Sends the agv to the nearest parkinglot
+            this.setDestination(Pathfinder.parkinglots[index]);
+        }        
     }
     
     /**

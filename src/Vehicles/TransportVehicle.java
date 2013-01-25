@@ -94,6 +94,7 @@ public class TransportVehicle extends Vehicle {
         this.vehicleType = vehicleType;
         this.storage = new Storage_Area((int)containerArraySize.x, (int)containerArraySize.z, (int)containerArraySize.y, position);        
         this.objpublisher = objpublisher;
+        this.destroy = false;
     }
         
     /**
@@ -120,6 +121,9 @@ public class TransportVehicle extends Vehicle {
         else if (StorageCrane.class == destinationObject.getClass()){
             this.destination = ((StorageCrane)destinationObject).parkinglotTransport;
         }
+        else if (destinationObject.getClass() == Parkinglot.class){
+            this.destination = (Parkinglot)destinationObject;
+        }
         else{
             throw new Exception("The input isn't a crane or storageCrane: " + destinationObject);
         }
@@ -130,6 +134,10 @@ public class TransportVehicle extends Vehicle {
     
     public void setPostion(Vector3f position){
         this.position = position;        
+    
+    }
+    public void setPostion(Node position){
+        this.position = position.getPosition();        
     
     }
     /**

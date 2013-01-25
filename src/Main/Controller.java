@@ -220,8 +220,8 @@ public class Controller {
         
         // Adds 100 AGVs
         for(int i = 0; i < 100; i++){
-            // todo change the dummie node to a real one
-            agvList.add(new AGV(new Parkinglot(1, new Node())));
+            // Set there positions on the parking nodes of each storage crane
+            agvList.add(new AGV(Pathfinder.parkinglots[71 +i]));
         }       
         
         // Initializes the dates
@@ -235,7 +235,7 @@ public class Controller {
         // Sets the simulationTime equal to the first shipment
         simulationTime.setTime(shipmentTime.getTime());
         // Sets the simulationTime 1 hour before the first shipment  
-        simulationTime.setHours(simulationTime.getHours() -1);
+       // simulationTime.setHours(simulationTime.getHours() -1);
         
         // Gets the first delivery of containers
         // Also sets the deliveryTime
@@ -280,6 +280,29 @@ public class Controller {
             agv.update(timeToUpdate);
             // When an agv has a container but no assignments
             if(((AGV)agv).NeedDeliverAssignment()){
+                Container con = agv.storage.peekContainer(0,0);
+                // When the container needs to be transported
+                if(simulationTime.getTime() >= con.getDepartureDateStart().getTime()){
+                    switch(con.getDepartureTransportType())
+                    {
+                        case vrachtauto:
+                            truckCranes = CranesToCheck(truckCranes,(AGV)agv,con);
+                            break;
+                        case zeeschip:
+                            seaCranes = CranesToCheck(seaCranes,(AGV)agv,con);
+                            break;
+                        case binnenschip:
+                            bargeCranes = CranesToCheck(bargeCranes,(AGV)agv,con);
+                            break;
+                        case trein:
+                            trainCranes = CranesToCheck(trainCranes,(AGV)agv,con);
+                            break;             
+                    }                    
+                }
+                // When it needs to be stored on the storage
+                else{
+                    StorageCranesToCheck(storageCranes,(AGV)agv, agv.storage.peekContainer(0, 0));
+                }
                 messageQueue.add(new Message(
                     agv,
                     Crane.class,
@@ -319,14 +342,41 @@ public class Controller {
         
         // When the next shipment arrives
         if(simulationTime.getTime() >= shipmentTime.getTime()){
+            
+            List<Integer> startNodes = new ArrayList<Integer>();
+            List<Integer> destParkinglots = new ArrayList<Integer>();  
+            
+            startNodes.add(111);
+            destParkinglots.add(46);
             // When a schip Arrives send 10 cranes
-            seaShipsToArrive = CheckArrival(seaShipsToArrive, 10);
+            seaShipsToArrive = CheckArrival(seaShipsToArrive, 10,startNodes,destParkinglots);
+            
+            startNodes = new ArrayList<Integer>();   
+            destParkinglots = new ArrayList<Integer>();  
+            for(int i = 0; i <2; i++){
+                startNodes.add(162 + (i *10));
+                destParkinglots.add(47 + i);
+            }            
             // When a barges Arrives send 4 cranes
-            bargesToArrive = CheckArrival(bargesToArrive, 4);
+            bargesToArrive = CheckArrival(bargesToArrive, 4, startNodes, destParkinglots);
+            
+            startNodes = new ArrayList<Integer>();   
+            destParkinglots = new ArrayList<Integer>();  
+            for(int i = 0; i <2; i++){
+                startNodes.add(207 + (i *10));
+                destParkinglots.add(69 + i);
+            } 
             // When a train Arrives send 2 cranes
-            trainsToArrive = CheckArrival(trainsToArrive, 2);
+            trainsToArrive = CheckArrival(trainsToArrive, 2, startNodes, destParkinglots);
+            
+            startNodes = new ArrayList<Integer>();   
+            destParkinglots = new ArrayList<Integer>();  
+            for(int i = 0; i <20; i++){
+                startNodes.add(1050 + i);
+                destParkinglots.add(49 + i);
+            } 
             // When a truck Arrives send a crane
-            trucksToArrive = CheckArrival(trucksToArrive, 1);
+            trucksToArrive = CheckArrival(trucksToArrive, 1,startNodes,destParkinglots);
             
             // Gets the next shipment time
             GetNextArrivalDate();
@@ -625,16 +675,20 @@ public class Controller {
      * @return The list without the arrived vehicles
      * @throws Exception 
      */
-    private List<TransportVehicle> CheckArrival(List<TransportVehicle> toCheck, int requests) throws Exception{
+    private List<TransportVehicle> CheckArrival(List<TransportVehicle> toCheck, int requests ,
+            List<Integer> startNodes, List<Integer> destParkinglots) throws Exception{
         if (toCheck == null){
             throw new Exception("toCheck isn't initialized");
         }
+        int counter =0 ;
         // Checks if seaShips arrive
         if(toCheck.size() > 0){
             // While there are transport vehicles arriving
             while(simulationTime.getTime() >= toCheck.get(0).GetArrivalDate().getTime()){
                 // The vehicle that arrived
                 TransportVehicle vehicle = toCheck.get(0);
+                vehicle.setPostion(Pathfinder.Nodes[startNodes.get(counter)]);
+                vehicle.setDestination(Pathfinder.parkinglots[destParkinglots.get(counter++)]);                
                 // Removes the vehicle that arrived
                 toCheck.remove(0);
                 
@@ -753,6 +807,58 @@ public class Controller {
     }    
     
     /**
+     * Checks if a crane's available for an agv to unload it's container
+     * @param toCheck The crane array to check
+     * @param agv The agv that requests a crane
+     * @param message The fetch message of the agv
+     * @return The crane array that's checked
+     * @throws Exception 
+     */
+    private Crane[] CranesToCheck(Crane[] toCheck,AGV agv, Container con) throws Exception{
+        // Boolean if there's a crane that can handel the message
+        boolean found = false;
+        // Check every crane
+        for(int i = 0; i< toCheck.length; i++){
+            // When the agv can deliver the container to this crane
+            if(toCheck[i].Available() && toCheck[i].parkinglotTransport.isFull()){
+                // Send a message to unload the agv to the crane
+                toCheck[i].SendMessage(new Message(
+                    agv,
+                    toCheck[i],
+                    Message.ACTION.Unload,
+                    con));
+                // When the agv his assignments need to be destroyed
+                boolean destroy = false;
+                // When it needs to destroy it's messages
+                if(!agv.Available()){
+                    if(agv.GetMessage().Deliver()){
+                        destroy = true;                       
+                    }
+                }
+                // Send a delivery message to the agv
+                agv.SendMessage(new Message(
+                    toCheck[i],
+                    agv,
+                    Message.ACTION.Deliver,
+                    con),
+                    destroy);
+                // There was a crane found to deliver the container
+                found  = true;
+                break;                
+            }
+        }
+        // When there's no crane available to deliver the container to
+        if(!found){
+            messageQueue.add(new Message(
+                agv,
+                toCheck[0],
+                Message.ACTION.Unload,
+                con));
+        }      
+        return toCheck;
+    }       
+    
+    /**
      * Checks every crane if the AGV stands on the destination node
      * @param toCheck The cranes to check
      * @param message The message to check
@@ -832,5 +938,57 @@ public class Controller {
         messageQueue.remove(message);        
         return toCheck;
     }
+    
+    
+    /**
+     * Checks if a storagecrane's available for an agv to unload it's container
+     * @param toCheck The crane list to check
+     * @param agv The agv that requests a storagecrane
+     * @param message The fetch message of the agv
+     * @return The crane list that's checked
+     * @throws Exception 
+     */
+    private List<StorageCrane> StorageCranesToCheck(List<StorageCrane> toCheck,AGV agv, Container con) throws Exception{
+        // When a crane was found
+        boolean found = false;
+        // Check every storage Crane if the can unload an agv 
+        for(StorageCrane crane : toCheck){
+            if(crane.Available()){
+                // Send a message to the storagcrane to unload the agv
+                crane.SendMessage(new Message(
+                        crane,
+                        agv,
+                        Message.ACTION.Unload,
+                        con));
+                // When the assignments need to be destroyed
+                boolean destroy = false;
+                // When the agv needs to destroy it's assignments
+                if(!agv.Available()){
+                    if(agv.GetMessage().Deliver()){
+                        destroy = true;
+                    }
+                }
+                // Send a deliver assignement to the agv
+                agv.SendMessage(new Message(
+                    crane,
+                    agv,
+                    Message.ACTION.Deliver,
+                    con),
+                    destroy);
+                found = true;
+                break;
+            }
+        }
+        // When there was no storage crane available
+        if(!found){
+            messageQueue.add(new Message(
+                agv,
+                toCheck.get(0),
+                Message.ACTION.Unload,
+                con));
+        }   
+        return toCheck;
+    }
+    
     // </editor-fold>
 }
