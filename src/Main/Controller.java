@@ -156,17 +156,6 @@ public class Controller {
         bargesToArrive = MatchVehicles.GetInlandBoats();
         trainsToArrive = MatchVehicles.GetTrains();
         trucksToArrive = MatchVehicles.GetTrucks();
-<<<<<<< HEAD
-=======
-
-//        for(TransportVehicle vehicle : bargesToArrive){
-//            System.out.println(vehicle.GetArrivalDate() + " barge" );
-//            System.out.println(vehicle.storage.Count());
-//        }
-//        for(TransportVehicle vehicle : bargesToArrive){
-//            System.out.println(vehicle.GetDepartureDate() + "barge ");
-//        }
->>>>>>> b62f71f2050a670db95f34b3b4e5bdbe887f00e8
         
         // Initializes space for the cranes        
         seaCranes = new Crane[10];
@@ -323,15 +312,23 @@ public class Controller {
             crane.update(timeToUpdate);
         }        
         // Updates the logic of each docked vehicle
+        // Todo check this part !!!
         for(Vehicle vehicle : presentVehicles){
-            //vehicle.update(timeToUpdate);            
+            vehicle.update(timeToUpdate);
+        }
+        
+        int counter = presentVehicles.size();
+        for (int i = 0; i < counter; i++) {
+            TransportVehicle currentTransportVehicle = (TransportVehicle)presentVehicles.get(i);
             
-            if(((TransportVehicle)vehicle).Destroy()){
-                objpublisher.destroyVehicle(vehicle);
-                presentVehicles.remove(vehicle);
+            if(currentTransportVehicle.Destroy()){
+                objpublisher.destroyVehicle(currentTransportVehicle);
+                presentVehicles.remove(currentTransportVehicle);
+                i--;
+                counter--;
             }            
-            if(simulationTime.getTime() >= ((TransportVehicle)vehicle).GetDepartureDate().getTime()){
-                ((TransportVehicle)vehicle).Departure();
+            if(simulationTime.getTime() >= currentTransportVehicle.GetDepartureDate().getTime()){
+                currentTransportVehicle.Departure();
             }
         }     
         
