@@ -157,13 +157,13 @@ public class Controller {
         trainsToArrive = MatchVehicles.GetTrains();
         trucksToArrive = MatchVehicles.GetTrucks();
 
-        for(TransportVehicle vehicle : bargesToArrive){
-            System.out.println(vehicle.GetArrivalDate() + " barge" );
-            System.out.println(vehicle.storage.Count());
-        }
-        for(TransportVehicle vehicle : bargesToArrive){
-            System.out.println(vehicle.GetDepartureDate() + "barge ");
-        }
+//        for(TransportVehicle vehicle : bargesToArrive){
+//            System.out.println(vehicle.GetArrivalDate() + " barge" );
+//            System.out.println(vehicle.storage.Count());
+//        }
+//        for(TransportVehicle vehicle : bargesToArrive){
+//            System.out.println(vehicle.GetDepartureDate() + "barge ");
+//        }
         
         // Initializes space for the cranes        
         seaCranes = new Crane[10];
