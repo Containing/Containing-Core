@@ -38,7 +38,34 @@ public class Parkinglot <T>
      */
     public ArrayList<T> getVehicles () throws Exception
     {
-        return _parkingSpace;
+        if (_parked > 0)
+        {
+            return _parkingSpace;
+        }
+        
+        else
+        {
+            throw new Exception("Can't request the vehicles from an empty parkinglot.");
+        }
+    }
+    
+    /**
+     *
+     * @param vehicle
+     * @param index
+     * @throws Exception
+     */
+    public void setVehicle (T vehicle, int index) throws Exception
+    {
+        if (vehicle != null)
+        {
+            _parkingSpace.set(index, vehicle);
+        }
+        
+        else
+        {
+            throw new Exception("Can't set a null object as vehicle.");
+        }
     }
     
     /**

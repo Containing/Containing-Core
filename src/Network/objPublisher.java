@@ -37,6 +37,22 @@ public class objPublisher {
         byte[] b = new byte[42];
         int vehicleID = vehicle.Id;
         byte vehicleType = 0;
+        
+        if(vehicle.GetVehicleType() == Vehicles.TransportVehicle.VehicleType.AGV){
+            vehicleType = 0;
+        }else if(vehicle.GetVehicleType() == Vehicles.TransportVehicle.VehicleType.inlandBoat){
+            vehicleType = 1;
+        }else if(vehicle.GetVehicleType() == Vehicles.TransportVehicle.VehicleType.seaBoat){
+            vehicleType = 2;
+        }else if(vehicle.GetVehicleType() == Vehicles.TransportVehicle.VehicleType.train){
+            vehicleType = 3;
+        }else if(vehicle.GetVehicleType() == Vehicles.TransportVehicle.VehicleType.truck){
+            vehicleType = 4;
+        }
+        
+
+        
+        
         Helpers.Vector3f pos = vehicle.getPosition();
         Helpers.Vector3f des = vehicle.getDestination().getPosition();
         

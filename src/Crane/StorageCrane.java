@@ -38,7 +38,57 @@ public class StorageCrane extends Crane
         _storageMap = new HashMap(_storageField.getLength() * _storageField.getWidth());
     }
     
-    public void getContainer (String containerID) throws Exception
+    private void loadContainer (Storage_Area storage, int row, int column) throws Exception
+    {
+        if (_carriedContainer == null)
+            { throw new Exception("Can't place an container when one isn't being carried."); }
+        
+        else if (storage.isFilled() == true) 
+            { throw new Exception("Can't place an container in a full storage."); }
+        
+        else if (row < 0 || row > storage.getLength() || column < 0 || column > storage.getWidth())
+            { throw new Exception("Row or column don't exist."); }
+                
+        else if (storage.Count(row, column) == storage.getHeight())
+            { throw new Exception("Can't stack containers higher than 6."); }
+        
+        moveRow(row);
+        //Move container over crane rail.
+        _taskTimeLeft += _moveContainer * column;
+        //Lower container.
+        _taskTimeLeft += _lower * (storage.getHeight() - storage.Count(_currentRow, column));
+        storage.pushContainer(_carriedContainer, _currentRow, column);
+        _carriedContainer = null;
+    }
+    
+    private Container unloadContainer (Storage_Area storage, int row, int column) throws Exception
+    {
+        if (_carriedContainer != null)
+            { throw new Exception("Can't grab an container when one is already being carried."); }
+        
+        else if (storage.Count() == 0)
+            { throw new Exception("Can't grab an container from an empty storage."); }
+        
+        else if (row < 0 || row > storage.getLength() || column < 0 || column > storage.getWidth())
+            { throw new Exception("Row or column don't exist."); }
+
+        else if (storage.Count(row, column) == 0)
+            { throw new Exception("Can't grab an container from an empty stack."); }
+        
+        Container cont = null;
+        moveRow(row);
+        //Securing the container.
+        _taskTimeLeft += _secureContainer;
+        //Raising the container.
+        _taskTimeLeft += _raise * (storage.getHeight() - storage.Count(_currentRow, column));
+        //Move container over crane rail.
+        _taskTimeLeft += _moveContainer * column;
+        cont = storage.popContainer(_currentRow, column);
+        
+        return cont;
+    }
+    
+    private void getContainer (String containerID) throws Exception
     {
         if (_carriedContainer != null)
             { throw new Exception("Can't get an container when one is being carried."); }
@@ -71,7 +121,7 @@ public class StorageCrane extends Crane
         }
     }
 
-    public void storeContainer () throws Exception
+    private void storeContainer () throws Exception
     {
         if (_carriedContainer == null)
             { throw new Exception("Can't store an container when none is being carried."); }
