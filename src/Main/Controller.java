@@ -156,14 +156,6 @@ public class Controller {
         bargesToArrive = MatchVehicles.GetInlandBoats();
         trainsToArrive = MatchVehicles.GetTrains();
         trucksToArrive = MatchVehicles.GetTrucks();
-
-        for(TransportVehicle vehicle : bargesToArrive){
-            System.out.println(vehicle.GetArrivalDate() + " barge" );
-            System.out.println(vehicle.storage.Count());
-        }
-        for(TransportVehicle vehicle : bargesToArrive){
-            System.out.println(vehicle.GetDepartureDate() + "barge ");
-        }
         
         // Initializes space for the cranes        
         seaCranes = new Crane[10];
@@ -321,8 +313,7 @@ public class Controller {
         }        
         // Updates the logic of each docked vehicle
         for(Vehicle vehicle : presentVehicles){
-            vehicle.update(timeToUpdate);
-            
+            //vehicle.update(timeToUpdate);            
             
             if(((TransportVehicle)vehicle).Destroy()){
                 objpublisher.destroyVehicle(vehicle);
@@ -336,37 +327,38 @@ public class Controller {
         // When the next shipment arrives
         if(simulationTime.getTime() >= shipmentTime.getTime()){
             
-            List<Integer> startNodes = new ArrayList<Integer>();
-            List<Integer> destParkinglots = new ArrayList<Integer>();  
-            
-            startNodes.add(111);
-            destParkinglots.add(46);
+            //List<Integer> startNodes = new ArrayList<Integer>();
+            //List<Integer> destParkinglots = new ArrayList<Integer>();  
+            List<Node> startNodes = new ArrayList<Node>();
+            List<Parkinglot> destParkinglots = new ArrayList<Parkinglot>();
+            startNodes.add(Pathfinder.Nodes[111]);
+            destParkinglots.add(Pathfinder.parkinglots[46]);
             // When a schip Arrives send 10 cranes
             seaShipsToArrive = CheckArrival(seaShipsToArrive, 10,startNodes,destParkinglots);
             
-            startNodes = new ArrayList<Integer>();   
-            destParkinglots = new ArrayList<Integer>();  
+            startNodes = new ArrayList<Node>();
+            destParkinglots = new ArrayList<Parkinglot>();
             for(int i = 0; i <2; i++){
-                startNodes.add(162 + (i *10));
-                destParkinglots.add(47 + i);
+                startNodes.add(Pathfinder.Nodes[162 + (i *10)]);
+                destParkinglots.add(Pathfinder.parkinglots[47 + i]);
             }            
             // When a barges Arrives send 4 cranes
             bargesToArrive = CheckArrival(bargesToArrive, 4, startNodes, destParkinglots);
             
-            startNodes = new ArrayList<Integer>();   
-            destParkinglots = new ArrayList<Integer>();  
+            startNodes = new ArrayList<Node>();
+            destParkinglots = new ArrayList<Parkinglot>();
             for(int i = 0; i <2; i++){
-                startNodes.add(207 + (i *10));
-                destParkinglots.add(69 + i);
+                startNodes.add(Pathfinder.Nodes[207 + (i *10)]);
+                destParkinglots.add(Pathfinder.parkinglots[69 + i]);
             } 
             // When a train Arrives send 2 cranes
             trainsToArrive = CheckArrival(trainsToArrive, 2, startNodes, destParkinglots);
             
-            startNodes = new ArrayList<Integer>();   
-            destParkinglots = new ArrayList<Integer>();  
+            startNodes = new ArrayList<Node>();  
+            destParkinglots = new ArrayList<Parkinglot>();
             for(int i = 0; i <20; i++){
-                startNodes.add(1050 + i);
-                destParkinglots.add(49 + i);
+                startNodes.add(Pathfinder.Nodes[1050 + i]);
+                destParkinglots.add(Pathfinder.parkinglots[49 + i]);
             } 
             // When a truck Arrives send a crane
             trucksToArrive = CheckArrival(trucksToArrive, 1,startNodes,destParkinglots);
@@ -409,6 +401,8 @@ public class Controller {
         
         // Checks every message
         for(Message message : messageQueue){
+            
+            // <editor-fold defaultstate="collapsed" desc="AGV">
             // When the message requests an AGV 
             if(message.RequestedObject().equals(AGV.class)){
                 if(!nonAble){
@@ -462,6 +456,8 @@ public class Controller {
                     }                
                 }
             }
+            // </editor-fold>
+            
             // When the message requests a crane
             else if(message.RequestedObject().equals(Crane.class)){
                 // When a vehicle requested the crane
@@ -469,34 +465,34 @@ public class Controller {
                     // Switch between the vechile types
                     switch(((Vehicle)message.DestinationObject()).GetVehicleType()){
                         case truck:
-                            truckCranes = TransportRequestsCrane(truckCranes, message);
+                            truckCranes = TransportRequestsCrane(truckCranes, (Message)message);
                             break;
                         case train:
-                            trainCranes = TransportRequestsCrane(trainCranes,message);
+                            trainCranes = TransportRequestsCrane(trainCranes,(Message)message);
                             break;
                         case seaBoat:
-                            seaCranes = TransportRequestsCrane(seaCranes,message);
+                            seaCranes = TransportRequestsCrane(seaCranes,(Message)message);
                             break;
                         case inlandBoat:
-                            bargeCranes = TransportRequestsCrane(bargeCranes, message);
+                            bargeCranes = TransportRequestsCrane(bargeCranes, (Message)message);
                             break;
-                        case AGV:
-                            switch(message.GetContainer().getDepartureTransportType())
-                            {
-                                case vrachtauto:
-                                    truckCranes = CranesToCheck(truckCranes,(AGV)message.DestinationObject(),message);
-                                    break;
-                                case zeeschip:
-                                    seaCranes = CranesToCheck(seaCranes,(AGV)message.DestinationObject(),message);
-                                    break;
-                                case binnenschip:
-                                    bargeCranes = CranesToCheck(bargeCranes,(AGV)message.DestinationObject(),message);
-                                    break;
-                                case trein:
-                                    trainCranes = CranesToCheck(trainCranes,(AGV)message.DestinationObject(),message);
-                                    break;
-                            }
-                            break;
+//                        case AGV:
+//                            switch(message.GetContainer().getDepartureTransportType())
+//                            {
+//                                case vrachtauto:
+//                                    truckCranes = CranesToCheck(truckCranes,(AGV)message.DestinationObject(),message);
+//                                    break;
+//                                case zeeschip:
+//                                    seaCranes = CranesToCheck(seaCranes,(AGV)message.DestinationObject(),message);
+//                                    break;
+//                                case binnenschip:
+//                                    bargeCranes = CranesToCheck(bargeCranes,(AGV)message.DestinationObject(),message);
+//                                    break;
+//                                case trein:
+//                                    trainCranes = CranesToCheck(trainCranes,(AGV)message.DestinationObject(),message);
+//                                    break;
+//                            }
+//                            break;
                     }
                 }
                 // When an AGV wants to store it's container
@@ -669,7 +665,7 @@ public class Controller {
      * @throws Exception 
      */
     private List<TransportVehicle> CheckArrival(List<TransportVehicle> toCheck, int requests ,
-            List<Integer> startNodes, List<Integer> destParkinglots) throws Exception{
+            List<Node> startNodes, List<Parkinglot> destParkinglots) throws Exception{
         if (toCheck == null){
             throw new Exception("toCheck isn't initialized");
         }
@@ -680,8 +676,14 @@ public class Controller {
             while(simulationTime.getTime() >= toCheck.get(0).GetArrivalDate().getTime()){
                 // The vehicle that arrived
                 TransportVehicle vehicle = toCheck.get(0);
-                vehicle.setPostion(Pathfinder.Nodes[startNodes.get(counter)]);
-                vehicle.setDestination(Pathfinder.parkinglots[destParkinglots.get(counter++)]);                
+                vehicle.setPostion((Node)startNodes.get(counter));
+                vehicle.setDestination(destParkinglots.get(counter++));         
+                if(counter >= startNodes.size() || 
+                   counter >= destParkinglots.size()){
+                    counter = 0;
+                }
+                
+                System.out.println(vehicle.getPosition() + "   " + vehicle.getDestination().getPosition());
                 // Removes the vehicle that arrived
                 toCheck.remove(0);
                 
@@ -861,7 +863,7 @@ public class Controller {
     private Crane[] TransportRequestsCrane(Crane[] toCheck, Message message) throws Exception{
         for(int i = 0 ; i < toCheck.length; i++){
             // When the vehcile is on the position of the crane for un/loading
-            if(toCheck[i].parkinglotTransport.node == message.DestinationNode()){
+            if(toCheck[i].parkinglotTransport.node.equals(message.DestinationNode())){
                 // Sends the message copy to the crane
                 toCheck[i].SendMessage(message);
                 // Request an AGV to fetch the first container for the crane

@@ -157,7 +157,7 @@ public class TransportVehicle extends Vehicle {
         }
         else if(position == route[routeIndex].getPosition()){
             routeIndex++;
-            objpublisher.syncVehicle(this);
+            //objpublisher.syncVehicle(this);
         }
         else{
             Vector3f NextNode = route[routeIndex].getPosition();
