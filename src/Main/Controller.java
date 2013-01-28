@@ -124,10 +124,10 @@ public class Controller {
 
         objpublisher = new objPublisher();
         statsPublisher = new Network.StatsPublisher();
-        
+
         GenerateArrivalVehicles.objpublisher = objpublisher;
         GenerateDepartureVehicles.objpublisher = objpublisher;
-        
+
         timer.start();
     }
     
@@ -143,7 +143,7 @@ public class Controller {
         // Generates the node area
         Pathfinder.generateArea();
         // Default multiplier value
-        multiplier = 100;
+        multiplier = 10;
         
         // Initializes new ArrayLists
         messageQueue = new ArrayList();
@@ -218,7 +218,8 @@ public class Controller {
         GetNextArrivalDate();   
         
         // Sets the simulationTime equal to the first shipment
-        simulationTime.setTime(shipmentTime.getTime());
+        simulationTime.setTime(shipmentTime.getTime()-1000*60*20);
+        
         // Sets the simulationTime 1 hour before the first shipment  
        // simulationTime.setHours(simulationTime.getHours() -1);
         
@@ -228,7 +229,7 @@ public class Controller {
         waitingContainers = new ArrayList();
     }
     
-    // </editor-fold>
+    // </editor-fold>cc
     
     // <editor-fold defaultstate="collapsed" desc="Update">
     

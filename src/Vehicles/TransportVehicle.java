@@ -32,7 +32,7 @@ public class TransportVehicle extends Vehicle {
     /**
      * The speed of this vehicle
      */
-    float speed = 5f;
+    public float speed = 5f;
     
     /**
      * If the vehicle is going to departure
@@ -156,7 +156,8 @@ public class TransportVehicle extends Vehicle {
         }
         else if(position == route[routeIndex].getPosition()){
             routeIndex++;
-            //objpublisher.syncVehicle(this);
+            if(objpublisher!=null)
+                objpublisher.syncVehicle(this);
         }
         else{
             Vector3f NextNode = route[routeIndex].getPosition();

@@ -21,7 +21,7 @@ public class ContainingCore {
         File f = new File("db/dump.db");
         if(!f.exists()){
             // When it doesn't exists
-            XML.XMLBinder.GenerateContainerDatabase("src/XML/xml1.xml");
+            XML.XMLBinder.GenerateContainerDatabase("src/XML/xml6.xml");
             Database.dumpDatabase();
         }
         else {
