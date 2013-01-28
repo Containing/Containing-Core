@@ -297,7 +297,7 @@ public class GenerateArrivalVehicles {
      * @throws Exception If something goes wrong while excecuting the query
      */
     public static Container ConvertToContainer(ResultSet rs) throws Exception{
-        Container returnContainer = new Container(rs.getString("id"));
+        Container returnContainer = new Container(rs.getInt("id"));
         
         returnContainer.setArrival( Container.df.parse(rs.getString("arrivalDateStart")), 
                                     Container.df.parse(rs.getString("arrivalDateEnd")),

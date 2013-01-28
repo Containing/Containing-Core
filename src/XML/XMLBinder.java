@@ -188,7 +188,7 @@ public class XMLBinder {
                 
                 // add values to the update query.
                 String aankomstDatum = AddZero(aankomst_datum_j.evalXPathToString()) + "-" + AddZero(aankomst_datum_m.evalXPathToString()) + "-" + AddZero(aankomst_datum_d.evalXPathToString()) + " ";
-                stm.setString(1, "id" + counter); // id
+                stm.setInt(1, counter); // id
                 String[] aankomstTijdVan = aankomst_tijd_van.evalXPathToString().split("\\.");
                 stm.setString(2,  aankomstDatum + AddZero(aankomstTijdVan[0]) + ":" +  AddZero(aankomstTijdVan[1])); //arrivalDateStart
                 String[] aankomstTijdTot = aankomst_tijd_tot.evalXPathToString().split("\\.");

@@ -124,10 +124,10 @@ public class objPublisher {
         Helpers.byteHelper.addToArray(Helpers.byteHelper.toByta(vehicleId), b, 1);
         Helpers.byteHelper.addToArray(Helpers.byteHelper.toByta(containers.size()), b, 5);
         for (int i = 0; i < containers.size(); i++) {
-            Helpers.byteHelper.addToArray(Helpers.byteHelper.toByta(containers.size()), b, 9+16*i);
-            Helpers.byteHelper.addToArray(Helpers.byteHelper.toByta(containers.size()), b, 13+16*i);
-            Helpers.byteHelper.addToArray(Helpers.byteHelper.toByta(containers.size()), b, 17+16*i);
-            Helpers.byteHelper.addToArray(Helpers.byteHelper.toByta(containers.size()), b, 21+16*i);
+            Helpers.byteHelper.addToArray(Helpers.byteHelper.toByta(containers.get(i).getId()), b, 9+16*i); // containerId
+            Helpers.byteHelper.addToArray(Helpers.byteHelper.toByta(containers.get(i).getArrivalPosition().x), b, 13+16*i); // posX
+            Helpers.byteHelper.addToArray(Helpers.byteHelper.toByta(containers.get(i).getArrivalPosition().y), b, 17+16*i); // posY
+            Helpers.byteHelper.addToArray(Helpers.byteHelper.toByta(containers.get(i).getArrivalPosition().z), b, 21+16*i); // posZ
         }
     }
     public void addContainerOnStorage(Vector3f position, String id){
