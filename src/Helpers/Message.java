@@ -155,19 +155,19 @@ public class Message {
      */
     public Node DestinationNode() throws Exception
     {
-        if(destinationObject instanceof TransportVehicle){            
+        if(destinationObject.getClass() == TransportVehicle.class){            
             if(((TransportVehicle)destinationObject).getDestination() == null){
                 throw new Exception("destination node is null");
             }
             return ((TransportVehicle)destinationObject).getDestination();    
         }        
-        else if (destinationObject.equals(Crane.class)){
+        else if (destinationObject.getClass() == Crane.class){
             if(((Crane)destinationObject).parkinglotAGV.node == null){
                 throw new Exception("destination node is null");
             }
             return ((Crane)destinationObject).parkinglotAGV.node;
         }
-        else if (destinationObject.equals(StorageCrane.class)){
+        else if (destinationObject.getClass() == StorageCrane.class){
             if(((StorageCrane)destinationObject).parkinglotAGV.node == null){
                 throw new Exception("destination node is null");
             }
