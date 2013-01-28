@@ -2,6 +2,7 @@ package Crane;
 
 import Helpers.IMessageReceiver;
 import Helpers.Message;
+import Helpers.Vector3f;
 import Main.Container;
 import Parkinglot.Parkinglot;
 import Storage.Storage_Area;
@@ -34,13 +35,17 @@ public class Crane implements IMessageReceiver
     protected Container _carriedContainer;
     protected int _currentRow;
     protected float _taskTimeLeft;
+    protected ArrayList<Message> _Assignments;
     
     private enum _taskList { loadAGV, unloadAGV, loadTransport, unloadTransport, moveRowUp, moveRowBase }
     private ArrayList<_taskList> _tasks;
-    private ArrayList<Message> _Assignments;
     private int _totalCranes;
+    private CraneType _Type;
+    private int _ID;
+    private Vector3f _position;
+    private float _rotation;
         
-    public Crane (int railsLocation, CraneType type, Parkinglot parkingAGV, Parkinglot parkingTransport) throws Exception
+    public Crane (int ID, float rotation, Vector3f position, int railsLocation, CraneType type, Parkinglot parkingAGV, Parkinglot parkingTransport) throws Exception
     {
         if (parkingAGV == null || parkingTransport == null)
             { throw new Exception("A parkinglot can't be null."); }
@@ -48,9 +53,14 @@ public class Crane implements IMessageReceiver
         if (railsLocation < 1)
             { throw new Exception("The range can't be smaller than zero."); }
         
+        
         parkinglotAGV = parkingAGV;
         parkinglotTransport = parkingTransport;
 
+        _ID = ID;
+        _Type = type;
+        _rotation = rotation;
+        _position = position;
         _tasks = new ArrayList<_taskList>();
         _Assignments = new ArrayList<Message>();
         _railsLocation = railsLocation;
@@ -72,18 +82,45 @@ public class Crane implements IMessageReceiver
         }
     }
 
-    private int getBestRowIndex(Storage_Area storage, int columnIndex) throws Exception 
+    public int getID ()
     {
-        if (0 > columnIndex || columnIndex > storage.getWidth())
-            { throw new Exception("Row " + columnIndex + " doesn't exist on this storage."); }        
+        return _ID;
+    }
+    
+    public CraneType getType ()
+    {
+        return _Type;
+    }
+    
+    public float getRotation ()
+    {
+        return _rotation;
+    }
+    
+    public Vector3f getPosition ()
+    {
+        return _position;
+    }
+    
+    /**
+     * Returns the best stack in the row determined by the date of the containers.
+     * @param storage
+     * @param columnIndex
+     * @return
+     * @throws Exception 
+     */
+    private int getBestColumnIndex(Storage_Area storage, int rowIndex) throws Exception 
+    {
+        if (0 > rowIndex || rowIndex > storage.getWidth())
+            { throw new Exception("Row " + rowIndex + " doesn't exist on this storage."); }        
 
             Date date = null;
 
         for (int w = 0; w < storage.getWidth(); w++) 
         {
-            if (storage.Count(columnIndex, w) > 0)
+            if (storage.Count(rowIndex, w) > 0)
             {
-                Date now = storage.peekContainer(columnIndex, w).getDepartureDateStart();
+                Date now = storage.peekContainer(rowIndex, w).getDepartureDateStart();
 
                 if (date == null)
                     { date = now; }
@@ -95,9 +132,9 @@ public class Crane implements IMessageReceiver
         
         for (int w = 0; w < storage.getWidth(); w++) 
         {
-            if (storage.Count(columnIndex, w) > 0)
+            if (storage.Count(rowIndex, w) > 0)
             {
-                if (date == storage.peekContainer(columnIndex, w).getDepartureDateStart())
+                if (date == storage.peekContainer(rowIndex, w).getDepartureDateStart())
                     { return w; }
             }
         }
@@ -105,11 +142,23 @@ public class Crane implements IMessageReceiver
         return -1;
     }
     
+    /**
+     * Loads the AGV using the loadContainer method.
+     * @param storage
+     * @return Returns the storage area which houses the changes made.
+     * @throws Exception when it's not possible to load the AGV.
+     */
     private Storage_Area loadAGV (Storage_Area storage) throws Exception
     {
         return loadContainer(0,0, storage);
     }
     
+    /**
+     * Unloads the AGV using the unloadContainer method.
+     * @param storage
+     * @return Returns the storage area which houses the changes made.
+     * @throws Exception when it's not possible to unload the AGV.
+     */
     private Storage_Area unloadAGV (Storage_Area storage) throws Exception
     {
         return unloadContainer(0,0, storage);
@@ -118,7 +167,7 @@ public class Crane implements IMessageReceiver
     /**
      * 
      * @param storage
-     * @return
+     * @return Returns the storage area which houses the changes made.
      * @throws Exception When no container is being carried, when the storage is full,
      * when the current row is full.
      */
@@ -137,7 +186,7 @@ public class Crane implements IMessageReceiver
     
     private Storage_Area unloadTransport (Storage_Area storage) throws Exception
     {
-        int columnIndex = getBestRowIndex(storage, _currentRow);
+        int columnIndex = getBestColumnIndex(storage, _currentRow);
 
         if (columnIndex == -1)
         { 
@@ -215,7 +264,7 @@ public class Crane implements IMessageReceiver
     private float checkTimeUnload (Storage_Area storage) throws Exception
     {
         float time = 0;
-        int columnIndex = getBestRowIndex(storage, _currentRow);
+        int columnIndex = getBestColumnIndex(storage, _currentRow);
 
         if (columnIndex == -1)
         { 
@@ -246,6 +295,11 @@ public class Crane implements IMessageReceiver
         return time;
     }
     
+    /**
+     * Checks how long it takes to move towards the designated row.
+     * @param row
+     * @return
+     */
     protected float checkTimeMove (int row)
     {
         float time = 0;
@@ -266,6 +320,10 @@ public class Crane implements IMessageReceiver
         return time;
     }
     
+    /**
+     * Moves the crane to the designated row.
+     * @param row
+     */
     protected void moveRow (int row)
     {
         int move = 0;
@@ -279,6 +337,12 @@ public class Crane implements IMessageReceiver
         _currentRow = row;
     }
     
+    /**
+     * Handles all operations for the crane. Uses the given messages to define
+     * what it's actions are. The updateTime is used to determine how much of 
+     * the actions it's able to accomplish in the given time.
+     * @param updateTime
+     */
     public void update(float updateTime)
     {
         if (parkinglotAGV.isEmpty() == false || parkinglotTransport.isEmpty() == false 
