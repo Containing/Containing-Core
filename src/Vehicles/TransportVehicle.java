@@ -42,7 +42,6 @@ public class TransportVehicle extends Vehicle {
      * If the vehicle doesn't need to be updated anymore
      */
     boolean destroy;
-    
     /**
      * Reference to objPublisher
      */
@@ -51,10 +50,10 @@ public class TransportVehicle extends Vehicle {
     /**
      * When called the transport vehicle will leave the harbor
      */
-    public void Departure()
+    public void Departure(Node destination) throws Exception
     {
         departure = true;
-        // Set next destination
+        setDestination(destination);
     }
     /**
      * When the vehicle needs to be destroyed

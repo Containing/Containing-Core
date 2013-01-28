@@ -42,6 +42,11 @@ public class AGV extends Vehicle implements IMessageReceiver {
         assignments = new ArrayList();
     }
 
+    /**
+     * Sets the destination to the parkinglot of the given object
+     * @param destinationObject The object to go
+     * @throws Exception 
+     */
     public void setDestination(Object destinationObject) throws Exception{
         if (destinationObject.getClass() == Crane.class){
             this.destination = ((Crane)destinationObject).parkinglotAGV;
@@ -55,12 +60,16 @@ public class AGV extends Vehicle implements IMessageReceiver {
         else{
             throw new Exception("The input isn't a crane or storageCrane: " + destinationObject);
         }
-        
+        // Finds the route the agv has to follow
         this.route = Pathfinding.Pathfinder.findShortest(Pathfinder.findClosestNode(position), destination.node, storage.Count() == 0);
         this.routeIndex = 1;
     }
     
-    
+    /**
+     * Updates the movement of the agv
+     * @param gameTime The elapsed game time
+     * @throws Exception 
+     */
     @Override
     public void update(float gameTime) throws Exception {
         // When the destination position is reached
@@ -108,10 +117,6 @@ public class AGV extends Vehicle implements IMessageReceiver {
                     assignments.remove(0);    
                     if(!assignments.isEmpty()){
                         this.setDestination(assignments.get(0).DestinationObject());
-                    }
-                    // The agv needs a deliver assignment
-                    else{
-                        
                     }
                 }
             }
@@ -164,14 +169,18 @@ public class AGV extends Vehicle implements IMessageReceiver {
     }
     
     /**
-     * When there are no assignments for the AGV
-     * @return 
+     * Returns weather the agv has assignments
+     * @return True if there are no assignments left 
      */
     @Override
     public boolean Available(){
         return assignments.isEmpty();
     }
     
+    /**
+     * Gets the current assignment message the agv is working on
+     * @return The first message
+     */
     public Message GetMessage(){
         if(assignments.isEmpty()){
             return null;

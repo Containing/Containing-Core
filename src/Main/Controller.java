@@ -40,7 +40,7 @@ public class Controller {
     // List with all the present transport vehicles
     List<TransportVehicle> presentVehicles;
     // List with all AGVs
-    List<Vehicle> agvList;    
+    List<AGV> agvList;    
     
     // List with all the Vehicles that will arrive
     List<TransportVehicle> seaShipsToArrive;
@@ -261,23 +261,23 @@ public class Controller {
         System.out.println(elapsedTime);
         
         // Updates the logic of each AGV
-        for(Vehicle agv : agvList){
+        for(AGV agv : agvList){
             agv.update(elapsedTime);
             // When an agv has a container but no assignments
-            if(((AGV)agv).NeedDeliverAssignment()){
+            if(agv.NeedDeliverAssignment()){
                 Container con = agv.storage.peekContainer(0,0);
                 // When the container needs to be transported
                 if(simulationTime.getTime() >= con.getDepartureDateStart().getTime()){
                     switch(con.getDepartureTransportType())
                     {
                         case vrachtauto:
-                            truckCranes = CranesToCheck(truckCranes,(AGV)agv,con);
+                            truckCranes = CranesToCheck(truckCranes,agv,con);
                             break;
                         case zeeschip:
-                            seaCranes = CranesToCheck(seaCranes,(AGV)agv,con);
+                            seaCranes = CranesToCheck(seaCranes,agv,con);
                             break;
                         case binnenschip:
-                            bargeCranes = CranesToCheck(bargeCranes,(AGV)agv,con);
+                            bargeCranes = CranesToCheck(bargeCranes,agv,con);
                             break;
                         case trein:
                             trainCranes = CranesToCheck(trainCranes,(AGV)agv,con);
@@ -286,7 +286,7 @@ public class Controller {
                 }
                 // When it needs to be stored on the storage
                 else{
-                    StorageCranesToCheck(storageCranes,(AGV)agv, agv.storage.peekContainer(0, 0));
+                    StorageCranesToCheck(storageCranes,agv, agv.storage.peekContainer(0, 0));
                 }
                 messageQueue.add(new Message(
                     agv,
@@ -308,18 +308,19 @@ public class Controller {
         for(Crane crane : trainCranes){
             crane.update(elapsedTime);
         }
+        // Updates the logic of each storagecrane
         for(StorageCrane crane : storageCranes){
             crane.update(elapsedTime);
         }        
         // Updates the logic of each docked vehicle
-        // Todo check this part !!!
         for(Vehicle vehicle : presentVehicles){
             vehicle.update(elapsedTime);
         }
         
+        // Updates the vehicles that are present in the harbor
         int counter = presentVehicles.size();
         for (int i = 0; i < counter; i++) {
-            TransportVehicle currentTransportVehicle = (TransportVehicle)presentVehicles.get(i);
+            TransportVehicle currentTransportVehicle = presentVehicles.get(i);
             
             if(currentTransportVehicle.Destroy()){
                 objpublisher.destroyVehicle(currentTransportVehicle);
@@ -328,24 +329,47 @@ public class Controller {
                 counter--;
             }            
             if(simulationTime.getTime() >= currentTransportVehicle.GetDepartureDate().getTime()){
-                currentTransportVehicle.Departure();
+                switch(currentTransportVehicle.GetVehicleType())
+                {
+                    case inlandBoat:
+                        if(currentTransportVehicle.getDestination() == Pathfinder.parkinglots[130].node){
+                            currentTransportVehicle.Departure(Pathfinder.Nodes[142]);
+                        }
+                        else{
+                            currentTransportVehicle.Departure(Pathfinder.Nodes[152]);
+                        } 
+                        break;
+                    case truck:
+                        currentTransportVehicle.Departure(Pathfinder.Nodes[198]);
+                        break;
+                    case seaBoat :
+                        currentTransportVehicle.Departure(Pathfinder.Nodes[122]);
+                        break;
+                    case train:
+                        if(currentTransportVehicle.getDestination() == Pathfinder.parkinglots[206].node){
+                            currentTransportVehicle.Departure(Pathfinder.Nodes[230]);
+                        }
+                        else{
+                            currentTransportVehicle.Departure(Pathfinder.Nodes[231]);
+                        }
+                        break;
+                }
             }
         }     
         
         // When the next shipment arrives
         if(simulationTime.getTime() >= shipmentTime.getTime()){
-            
-            //List<Integer> startNodes = new ArrayList<Integer>();
-            //List<Integer> destParkinglots = new ArrayList<Integer>();  
+            // The spawn positions for the vehicle and there parkinglots
             List<Node> startNodes = new ArrayList<Node>();
             List<Parkinglot> destParkinglots = new ArrayList<Parkinglot>();
+            
             startNodes.add(Pathfinder.Nodes[111]);
             destParkinglots.add(Pathfinder.parkinglots[46]);
-            // When a schip Arrives send 10 cranes
+            // When a ship arrives send 10 cranes
             seaShipsToArrive = CheckArrival(seaShipsToArrive, 10,startNodes,destParkinglots);
             
-            startNodes = new ArrayList<Node>();
-            destParkinglots = new ArrayList<Parkinglot>();
+            startNodes.clear();
+            destParkinglots.clear();
             for(int i = 0; i <2; i++){
                 startNodes.add(Pathfinder.Nodes[162 + (i *10)]);
                 destParkinglots.add(Pathfinder.parkinglots[47 + i]);
@@ -353,8 +377,8 @@ public class Controller {
             // When a barges Arrives send 4 cranes
             bargesToArrive = CheckArrival(bargesToArrive, 4, startNodes, destParkinglots);
             
-            startNodes = new ArrayList<Node>();
-            destParkinglots = new ArrayList<Parkinglot>();
+            startNodes.clear();
+            destParkinglots.clear();
             for(int i = 0; i <2; i++){
                 startNodes.add(Pathfinder.Nodes[207 + (i *10)]);
                 destParkinglots.add(Pathfinder.parkinglots[69 + i]);
@@ -362,8 +386,8 @@ public class Controller {
             // When a train Arrives send 2 cranes
             trainsToArrive = CheckArrival(trainsToArrive, 2, startNodes, destParkinglots);
             
-            startNodes = new ArrayList<Node>();  
-            destParkinglots = new ArrayList<Parkinglot>();
+            startNodes.clear();  
+            destParkinglots.clear();
             for(int i = 0; i <20; i++){
                 startNodes.add(Pathfinder.Nodes[1050 + i]);
                 destParkinglots.add(Pathfinder.parkinglots[49 + i]);
@@ -386,8 +410,6 @@ public class Controller {
         }
         // Updates all the messageQueue
         UpdateMessages();
-        
-
         
         // Send StatsMessage every 1000ms
         statsPublisherMessageLimiter += gameTime;
@@ -484,23 +506,23 @@ public class Controller {
                         case inlandBoat:
                             bargeCranes = TransportRequestsCrane(bargeCranes, (Message)message);
                             break;
-//                        case AGV:
-//                            switch(message.GetContainer().getDepartureTransportType())
-//                            {
-//                                case vrachtauto:
-//                                    truckCranes = CranesToCheck(truckCranes,(AGV)message.DestinationObject(),message);
-//                                    break;
-//                                case zeeschip:
-//                                    seaCranes = CranesToCheck(seaCranes,(AGV)message.DestinationObject(),message);
-//                                    break;
-//                                case binnenschip:
-//                                    bargeCranes = CranesToCheck(bargeCranes,(AGV)message.DestinationObject(),message);
-//                                    break;
-//                                case trein:
-//                                    trainCranes = CranesToCheck(trainCranes,(AGV)message.DestinationObject(),message);
-//                                    break;
-//                            }
-//                            break;
+                        case AGV:
+                            switch(message.GetContainer().getDepartureTransportType())
+                            {
+                                case vrachtauto:
+                                    truckCranes = CranesToCheck(truckCranes,(AGV)message.DestinationObject(),message);
+                                    break;
+                                case zeeschip:
+                                    seaCranes = CranesToCheck(seaCranes,(AGV)message.DestinationObject(),message);
+                                    break;
+                                case binnenschip:
+                                    bargeCranes = CranesToCheck(bargeCranes,(AGV)message.DestinationObject(),message);
+                                    break;
+                                case trein:
+                                    trainCranes = CranesToCheck(trainCranes,(AGV)message.DestinationObject(),message);
+                                    break;
+                            }
+                            break;
                     }
                 }
                 // When an AGV wants to store it's container
