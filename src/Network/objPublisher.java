@@ -129,11 +129,28 @@ public class objPublisher {
             Helpers.byteHelper.addToArray(Helpers.byteHelper.toByta(containers.get(i).getArrivalPosition().y), b, 17+16*i); // posY
             Helpers.byteHelper.addToArray(Helpers.byteHelper.toByta(containers.get(i).getArrivalPosition().z), b, 21+16*i); // posZ
         }
+        publisher.send(b, 0);
+        System.out.println("Net: CreateStorage for " + vehicleId);
     }
-    public void addContainerOnStorage(Vector3f position, String id){
+    public void addContainerOnStorage(Vector3f position, int containerId, int VehicleId){
+        byte[] b = new byte[21]; 
+        b[0] = 5; 
+        Helpers.byteHelper.addToArray(Helpers.byteHelper.toByta(VehicleId), b, 1);
+        Helpers.byteHelper.addToArray(Helpers.byteHelper.toByta(containerId), b, 5);
+        Helpers.byteHelper.addToArray(Helpers.byteHelper.toByta(position.x), b, 9);
+        Helpers.byteHelper.addToArray(Helpers.byteHelper.toByta(position.y), b, 13);
+        Helpers.byteHelper.addToArray(Helpers.byteHelper.toByta(position.z), b, 17);
         
+        publisher.send(b, 0);
+        System.out.println("Net: Add container " + containerId);
     }
-    public void removeXontainerFromStorage(String id){
+    public void removeContainerFromStorage(int VehicleId, int ContainerId){
+        byte[] b = new byte[9]; 
+        b[0] = 4; 
+        Helpers.byteHelper.addToArray(Helpers.byteHelper.toByta(VehicleId), b, 1);
+        Helpers.byteHelper.addToArray(Helpers.byteHelper.toByta(ContainerId), b, 5);
         
+        publisher.send(b, 0);
+        System.out.println("Net: Remove container " + ContainerId);
     }
 }
