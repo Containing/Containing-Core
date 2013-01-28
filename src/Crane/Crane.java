@@ -360,12 +360,17 @@ public class Crane implements IMessageReceiver
                                     parkinglotTransport.setVehicle(t, 0);
                                 }
                                 
+                                _tasks.remove(0);
+                                
                                 if (_taskTimeLeft < 0)
                                 {   
                                     float time = _taskTimeLeft * -1;
                                     _taskTimeLeft = 0;
                                     this.update(time);
                                 }
+                                
+                                if (_tasks.isEmpty() == true)
+                                    { _Assignments.remove(0); }
                             }
                             catch (Exception e)
                                 { System.out.println(e.getMessage()); }
