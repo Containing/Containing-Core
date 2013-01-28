@@ -253,16 +253,16 @@ public class Controller {
      */
     public void Update(float gameTime ) throws Exception{        
         // Time that passed by this update
-        float timeToUpdate = multiplier * gameTime;
-        simulationTime.setTime(simulationTime.getTime()+ (long)(timeToUpdate * 1000));
+        float elapsedTime = multiplier * gameTime;
+        simulationTime.setTime(simulationTime.getTime()+ (long)(elapsedTime * 1000));
         
         System.out.println(simulationTime);
         System.out.println(gameTime);
-        System.out.println(timeToUpdate);
+        System.out.println(elapsedTime);
         
         // Updates the logic of each AGV
         for(Vehicle agv : agvList){
-            agv.update(timeToUpdate);
+            agv.update(elapsedTime);
             // When an agv has a container but no assignments
             if(((AGV)agv).NeedDeliverAssignment()){
                 Container con = agv.storage.peekContainer(0,0);
@@ -297,24 +297,24 @@ public class Controller {
         }
         // Updates the logic of each crane
         for(Crane crane : seaCranes){
-            crane.update(timeToUpdate);
+            crane.update(elapsedTime);
         }
         for(Crane crane : bargeCranes){
-            crane.update(timeToUpdate);
+            crane.update(elapsedTime);
         }
         for(Crane crane : truckCranes){
-            crane.update(timeToUpdate);
+            crane.update(elapsedTime);
         }
         for(Crane crane : trainCranes){
-            crane.update(timeToUpdate);
+            crane.update(elapsedTime);
         }
         for(StorageCrane crane : storageCranes){
-            crane.update(timeToUpdate);
+            crane.update(elapsedTime);
         }        
         // Updates the logic of each docked vehicle
         // Todo check this part !!!
         for(Vehicle vehicle : presentVehicles){
-            vehicle.update(timeToUpdate);
+            vehicle.update(elapsedTime);
         }
         
         int counter = presentVehicles.size();
@@ -669,6 +669,9 @@ public class Controller {
     /**
      * Checks if from the given list vehicles are arriving
      * @param toCheck The list to check
+     * @param requests The amount of cranes requested for this vehicle
+     * @param startNodes The nodes the vehicles spawn
+     * @param destParkinglots The destination node where the vehcile has to go
      * @return The list without the arrived vehicles
      * @throws Exception 
      */
@@ -691,17 +694,14 @@ public class Controller {
                     counter = 0;
                 }
                 
-                System.out.println(vehicle.getPosition() + "   " + vehicle.getDestination().getPosition());
-                // Removes the vehicle that arrived
-                toCheck.remove(0);
-                
+                System.out.println(vehicle.getPosition() + "   " + vehicle.getDestination().getPosition());                
                 System.out.println(vehicle.GetVehicleType().toString() + " arrived" + vehicle.GetArrivalDate() );
                 
                 // Add the vehicle that arrived
                 presentVehicles.add(vehicle);
                 objpublisher.createVehicle(vehicle);
                 
-                // Request cranes
+                // Request cranes for the vehicle
                 for(int i = 0 ; i < requests; i++){
                     messageQueue.add(new Message(
                         vehicle,
@@ -713,6 +713,8 @@ public class Controller {
                 if(toCheck.isEmpty()){
                     break;
                 }
+                // Removes the vehicle that arrived
+                toCheck.remove(0);
             }
         }
         return toCheck;
