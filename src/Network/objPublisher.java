@@ -1,7 +1,10 @@
 package Network;
 
+import Helpers.Vector3f;
+import Main.Container;
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectOutputStream;
+import java.util.List;
 import java.util.Random;
 import org.zeromq.*;
 
@@ -106,10 +109,31 @@ public class objPublisher {
         byte[] b = new byte[29];
         int vehicleID = vehicle.Id;
 
-        b[0] = 1;       //Operation ID
+        b[0] = 2;       //Operation ID
         Helpers.byteHelper.addToArray(Helpers.byteHelper.toByta(vehicleID), b, 1);
         
         publisher.send(b, 0);
         System.out.println("Net: Destroying " + vehicleID);
+    }
+    
+    public void createStorage(int vehicleId, List<Container> containers){
+        byte[] b = new byte[9+(containers.size()*16)];
+
+        b[0] = 3;       //Operation ID
+        
+        Helpers.byteHelper.addToArray(Helpers.byteHelper.toByta(vehicleId), b, 1);
+        Helpers.byteHelper.addToArray(Helpers.byteHelper.toByta(containers.size()), b, 5);
+        for (int i = 0; i < containers.size(); i++) {
+            Helpers.byteHelper.addToArray(Helpers.byteHelper.toByta(containers.size()), b, 9+16*i);
+            Helpers.byteHelper.addToArray(Helpers.byteHelper.toByta(containers.size()), b, 13+16*i);
+            Helpers.byteHelper.addToArray(Helpers.byteHelper.toByta(containers.size()), b, 17+16*i);
+            Helpers.byteHelper.addToArray(Helpers.byteHelper.toByta(containers.size()), b, 21+16*i);
+        }
+    }
+    public void addContainerOnStorage(Vector3f position, String id){
+        
+    }
+    public void removeXontainerFromStorage(String id){
+        
     }
 }
