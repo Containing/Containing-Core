@@ -380,7 +380,7 @@ public class Controller {
             startNodes.clear();
             destParkinglots.clear();
             for(int i = 0; i <2; i++){
-                startNodes.add(Pathfinder.Nodes[207 + (i *10)]);
+                startNodes.add(Pathfinder.Nodes[217 + (i *10)]);
                 destParkinglots.add(Pathfinder.parkinglots[69 + i]);
             } 
             // When a train Arrives send 2 cranes
