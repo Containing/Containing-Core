@@ -32,7 +32,7 @@ public class TransportVehicle extends Vehicle {
     /**
      * The speed of this vehicle
      */
-    float speed = 5f;
+    public float speed = 5f;
     
     /**
      * If the vehicle is going to departure
@@ -42,7 +42,6 @@ public class TransportVehicle extends Vehicle {
      * If the vehicle doesn't need to be updated anymore
      */
     boolean destroy;
-    
     /**
      * Reference to objPublisher
      */
@@ -51,10 +50,10 @@ public class TransportVehicle extends Vehicle {
     /**
      * When called the transport vehicle will leave the harbor
      */
-    public void Departure()
+    public void Departure(Node destination) throws Exception
     {
         departure = true;
-        // Set next destination
+        setDestination(destination);
     }
     /**
      * When the vehicle needs to be destroyed
@@ -157,7 +156,8 @@ public class TransportVehicle extends Vehicle {
         }
         else if(position == route[routeIndex].getPosition()){
             routeIndex++;
-            //objpublisher.syncVehicle(this);
+            if(objpublisher!=null)
+                objpublisher.syncVehicle(this);
         }
         else{
             Vector3f NextNode = route[routeIndex].getPosition();
