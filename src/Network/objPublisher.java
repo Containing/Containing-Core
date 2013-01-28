@@ -185,7 +185,7 @@ public class objPublisher {
         Helpers.byteHelper.addToArray(Helpers.byteHelper.toByta(pos.y), b, 9);
         Helpers.byteHelper.addToArray(Helpers.byteHelper.toByta(pos.z), b, 13);
         
-        Helpers.byteHelper.addToArray(Helpers.byteHelper.toByta(crane.rotation), b, 17);        
+        Helpers.byteHelper.addToArray(Helpers.byteHelper.toByta(crane.getRotation()), b, 17);        
         Helpers.byteHelper.addToArray(Helpers.byteHelper.toByta(vehicleType), b, 21);
         
         publisher.send(b, 0);
