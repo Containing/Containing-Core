@@ -45,7 +45,7 @@ public class Crane implements IMessageReceiver
     private Vector3f _position;
     private float _rotation;
         
-    public Crane (int ID, float rotation, Vector3f position, int railsLocation, CraneType type, Parkinglot parkingAGV, Parkinglot parkingTransport) throws Exception
+    public Crane (int ID, Vector3f position, int railsLocation, CraneType type, Parkinglot parkingAGV, Parkinglot parkingTransport) throws Exception
     {
         if (parkingAGV == null || parkingTransport == null)
             { throw new Exception("A parkinglot can't be null."); }
@@ -59,7 +59,6 @@ public class Crane implements IMessageReceiver
 
         _ID = ID;
         _Type = type;
-        _rotation = rotation;
         _position = position;
         _tasks = new ArrayList<_taskList>();
         _Assignments = new ArrayList<Message>();
@@ -67,17 +66,17 @@ public class Crane implements IMessageReceiver
         
         switch (type)
         {
-            case barge: _raise = 30f; _lower = 30f; _moveContainer = 1f; _moveLoaded = 2f; _moveEmpty = 1f; _totalCranes = 4;
+            case barge: _raise = 30f; _lower = 30f; _moveContainer = 1f; _moveLoaded = 2f; _moveEmpty = 1f; _totalCranes = 4; _rotation = 0;
                         break;
-            case seaship: _raise = 0; _lower = 0; _moveContainer = 300f; _moveLoaded = 0; _moveEmpty = 1.5f; _totalCranes = 10;
+            case seaship: _raise = 0; _lower = 0; _moveContainer = 300f; _moveLoaded = 0; _moveEmpty = 1.5f; _totalCranes = 10; _rotation = 90;
                         break;
-            case storage: _raise = 30f; _lower = 30f; _moveContainer = 0.5f; _moveLoaded = 3f; _moveEmpty = 2f; _totalCranes = 1;
+            case storage: _raise = 30f; _lower = 30f; _moveContainer = 0.5f; _moveLoaded = 3f; _moveEmpty = 2f; _totalCranes = 1; _rotation = 0;
                         break;
-            case train: _raise = 60; _lower = 30; _moveContainer = 0.5f; _moveLoaded = 3f; _moveEmpty = 2f; _totalCranes = 2;
+            case train: _raise = 60; _lower = 30; _moveContainer = 0.5f; _moveLoaded = 3f; _moveEmpty = 2f; _totalCranes = 2; _rotation = 180;
                         break;
-            case truck: _raise = 60; _lower = 60; _moveContainer = 0; _moveLoaded = 1f; _moveEmpty = 1f; _totalCranes = 4;
+            case truck: _raise = 60; _lower = 60; _moveContainer = 0; _moveLoaded = 1f; _moveEmpty = 1f; _totalCranes = 4; _rotation = 270;
                         break;
-            default:    _raise = 0; _lower = 0; _moveContainer = 0; _moveLoaded = 0; _moveEmpty = 0; _totalCranes = 1;
+            default:    _raise = 0; _lower = 0; _moveContainer = 0; _moveLoaded = 0; _moveEmpty = 0; _totalCranes = 1; _rotation = 0;
                         break;
         }
     }
