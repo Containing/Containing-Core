@@ -344,7 +344,7 @@ public class Crane implements IMessageReceiver
      */
     public void update(float updateTime)
     {
-        if (parkinglotAGV.isEmpty() == false || parkinglotTransport.isEmpty() == false 
+        if ((parkinglotAGV.isEmpty() == false || parkinglotTransport.isEmpty() == false) 
             && Available() == false && updateTime > 0)
         {
             Message message = _Assignments.get(0);
