@@ -450,6 +450,7 @@ public class Controller {
                     //agv.setDestination(message.DestinationNode());
                     //Copies the message to the message queue
                     ((AGV)agv).SendMessage(message);
+                    ((AGV)agv).setDestination(message.DestinationObject());
                     // When it's a fetch message send a delivery message
                     if(message.Fetch() && message.GetContainer() != null){
                         // When the destination object is a crane
