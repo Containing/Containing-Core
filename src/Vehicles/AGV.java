@@ -89,7 +89,8 @@ public class AGV extends Vehicle implements IMessageReceiver {
         // Go to the next node on the route if this node is reached
         else if(position == route[routeIndex].getPosition()){
             routeIndex++;
-            this.objpublisher.syncVehicle(this);
+            if(this.objpublisher!=null)
+                this.objpublisher.syncVehicle(this);
         }
         // Move the agv to the next position on his route
         else{

@@ -118,12 +118,13 @@ public class Controller {
      */
     public Controller() throws Exception
     {
+        objpublisher = new objPublisher();
         // Initializes the class variables
         Initialize();        
         // use Update-method for the timer
         timer = new updateTimer(this.getClass().getMethod("Update", new Class[] {float.class}), this);
 
-        objpublisher = new objPublisher();
+
         statsPublisher = new Network.StatsPublisher();
 
         GenerateArrivalVehicles.objpublisher = objpublisher;
@@ -423,7 +424,7 @@ public class Controller {
             
             // <editor-fold defaultstate="collapsed" desc="AGV">
             // When the message requests an AGV 
-            if(message.RequestedObject().equals(AGV.class)){
+            if(message.RequestedObject().getClass() == AGV.class){
                 if(!nonAble){
                     float distance = Float.MAX_VALUE;
                     // Skip every agv that's not available
