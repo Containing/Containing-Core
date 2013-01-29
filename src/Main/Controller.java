@@ -151,12 +151,6 @@ public class Controller {
         agvList = new ArrayList();          
         storageCranes = new ArrayList();
         
-        // Loads all the vehicles that come to the harbor
-        seaShipsToArrive = MatchVehicles.GetSeaBoats();
-        bargesToArrive = MatchVehicles.GetInlandBoats();
-        trainsToArrive = MatchVehicles.GetTrains();
-        trucksToArrive = MatchVehicles.GetTrucks();
-        
         // Initializes space for the cranes        
         seaCranes = new Crane[10];
         bargeCranes = new Crane[8];
@@ -192,6 +186,12 @@ public class Controller {
             agvList.add(agv);
             objpublisher.createVehicle(agv);
         }       
+                
+        // Loads all the vehicles that come to the harbor
+        seaShipsToArrive = MatchVehicles.GetSeaBoats();
+        bargesToArrive = MatchVehicles.GetInlandBoats();
+        trainsToArrive = MatchVehicles.GetTrains();
+        trucksToArrive = MatchVehicles.GetTrucks();
         
         // Initializes the dates
         deliveryTime = new Date(); 
