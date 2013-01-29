@@ -103,25 +103,25 @@ public class Pathfinder {
         
         // Paths
         // n
-        pathList.add(new Path(Nodes[4], Nodes[0]));
-        pathList.add(new Path(Nodes[5], Nodes[1]));
-        pathList.add(new Path(Nodes[2], Nodes[6]));
-        pathList.add(new Path(Nodes[3], Nodes[7]));
+        pathList.add(new Path(Nodes[4], Nodes[0], true));
+        pathList.add(new Path(Nodes[5], Nodes[1], true));
+        pathList.add(new Path(Nodes[2], Nodes[6], true));
+        pathList.add(new Path(Nodes[3], Nodes[7], true));
         // o
-        pathList.add(new Path(Nodes[8], Nodes[4]));
-        pathList.add(new Path(Nodes[9], Nodes[5]));
-        pathList.add(new Path(Nodes[6], Nodes[10]));
-        pathList.add(new Path(Nodes[7], Nodes[11]));
+        pathList.add(new Path(Nodes[8], Nodes[4], true));
+        pathList.add(new Path(Nodes[9], Nodes[5], true));
+        pathList.add(new Path(Nodes[6], Nodes[10], true));
+        pathList.add(new Path(Nodes[7], Nodes[11], true));
         // z
-        pathList.add(new Path(Nodes[12], Nodes[8]));
-        pathList.add(new Path(Nodes[13], Nodes[9]));
-        pathList.add(new Path(Nodes[10], Nodes[14]));
-        pathList.add(new Path(Nodes[11], Nodes[15]));
+        pathList.add(new Path(Nodes[12], Nodes[8], true));
+        pathList.add(new Path(Nodes[13], Nodes[9], true));
+        pathList.add(new Path(Nodes[10], Nodes[14], true));
+        pathList.add(new Path(Nodes[11], Nodes[15], true));
         // w
-        pathList.add(new Path(Nodes[0], Nodes[12]));
-        pathList.add(new Path(Nodes[1], Nodes[13]));
-        pathList.add(new Path(Nodes[14], Nodes[2]));
-        pathList.add(new Path(Nodes[15], Nodes[3]));
+        pathList.add(new Path(Nodes[0], Nodes[12], true));
+        pathList.add(new Path(Nodes[1], Nodes[13], true));
+        pathList.add(new Path(Nodes[14], Nodes[2], true));
+        pathList.add(new Path(Nodes[15], Nodes[3], true));
         
         // </editor-fold>
         
@@ -141,18 +141,18 @@ public class Pathfinder {
         
         // Paths
         for (int i = 0; i < 4; i++) {
-            pathList.add(new Path(Nodes[i], Nodes[16])); // squar n w to start node
+            pathList.add(new Path(Nodes[i], Nodes[16], true)); // squar n w to start node
         }
-        pathList.add(new Path(Nodes[16], Nodes[21])); // n o corner to parkinglot path node
+        pathList.add(new Path(Nodes[16], Nodes[21], true)); // n o corner to parkinglot path node
         pathList.add(new Path(Nodes[20], Nodes[21])); // parkinglot to parkinglot path node
-        pathList.add(new Path(Nodes[21], Nodes[17])); // parkinglot path node to n w corner
+        pathList.add(new Path(Nodes[21], Nodes[17], true)); // parkinglot path node to n w corner
         for (int i = 0; i < 10; i++) {
-            pathList.add(new Path(Nodes[17], Nodes[22+i])); // n w corner to crane
-            pathList.add(new Path(Nodes[22+i], Nodes[18])); // crane to z w corner
+            pathList.add(new Path(Nodes[17], Nodes[22+i], true)); // n w corner to crane
+            pathList.add(new Path(Nodes[22+i], Nodes[18], true)); // crane to z w corner
         }
-        pathList.add(new Path(Nodes[18], Nodes[19])); // z w corner to z o corner
+        pathList.add(new Path(Nodes[18], Nodes[19], true)); // z w corner to z o corner
         for (int i = 0; i < 4; i++) {
-            pathList.add(new Path(Nodes[19], Nodes[12+i])); // z o corner to squar z w
+            pathList.add(new Path(Nodes[19], Nodes[12+i], true)); // z o corner to squar z w
         }
         // </editor-fold>
         
@@ -172,18 +172,18 @@ public class Pathfinder {
         
         // Paths
         for (int i = 0; i < 4; i++) {
-            pathList.add(new Path(Nodes[12+i], Nodes[37])); // squar z w to start node
+            pathList.add(new Path(Nodes[12+i], Nodes[37], true)); // squar z w to start node
         }
-        pathList.add(new Path(Nodes[37], Nodes[41])); // n w corner to parkinglot path node
+        pathList.add(new Path(Nodes[37], Nodes[41], true)); // n w corner to parkinglot path node
         pathList.add(new Path(Nodes[41], Nodes[40])); // parkinglot to parkinglot path node
-        pathList.add(new Path(Nodes[41], Nodes[38])); // parkinglot path node to z w corner
+        pathList.add(new Path(Nodes[41], Nodes[38], true)); // parkinglot path node to z w corner
         for (int i = 0; i < 8; i++) {
-            pathList.add(new Path(Nodes[38], Nodes[42+i])); // n w corner to crane
-            pathList.add(new Path(Nodes[42+i], Nodes[39])); // crane to z w corner
+            pathList.add(new Path(Nodes[38], Nodes[42+i], true)); // n w corner to crane
+            pathList.add(new Path(Nodes[42+i], Nodes[39], true)); // crane to z w corner
         }
-        pathList.add(new Path(Nodes[39], Nodes[36])); // z w corner to z o corner
+        pathList.add(new Path(Nodes[39], Nodes[36], true)); // z w corner to z o corner
         for (int i = 0; i < 4; i++) {
-            pathList.add(new Path(Nodes[36], Nodes[8+i])); // z o corner to squar z w
+            pathList.add(new Path(Nodes[36], Nodes[8+i], true)); // z o corner to squar z w
         }
         // </editor-fold>
 
@@ -203,18 +203,18 @@ public class Pathfinder {
         
         // Paths
         for (int i = 0; i < 4; i++) {
-            pathList.add(new Path(Nodes[8+i], Nodes[56])); // squar z o to start node
+            pathList.add(new Path(Nodes[8+i], Nodes[56], true)); // squar z o to start node
         }
-        pathList.add(new Path(Nodes[56], Nodes[61])); // n w corner to parkinglot path node
+        pathList.add(new Path(Nodes[56], Nodes[61], true)); // n w corner to parkinglot path node
         pathList.add(new Path(Nodes[60], Nodes[61])); // parkinglot to parkinglot path node
-        pathList.add(new Path(Nodes[61], Nodes[57])); // parkinglot path node to z o corner
+        pathList.add(new Path(Nodes[61], Nodes[57], true)); // parkinglot path node to z o corner
         for (int i = 0; i < 20; i++) {
-            pathList.add(new Path(Nodes[57], Nodes[62+i])); // z o corner to crane
-            pathList.add(new Path(Nodes[62+i], Nodes[58])); // crane to n o corner
+            pathList.add(new Path(Nodes[57], Nodes[62+i], true)); // z o corner to crane
+            pathList.add(new Path(Nodes[62+i], Nodes[58], true)); // crane to n o corner
         }
-        pathList.add(new Path(Nodes[58], Nodes[59])); // n o corner to n w corner
+        pathList.add(new Path(Nodes[58], Nodes[59], true)); // n o corner to n w corner
         for (int i = 0; i < 4; i++) {
-            pathList.add(new Path(Nodes[59], Nodes[4+i])); // n w corner to squar n o
+            pathList.add(new Path(Nodes[59], Nodes[4+i], true)); // n w corner to squar n o
         }
         // </editor-fold>
         
@@ -234,18 +234,18 @@ public class Pathfinder {
         
         // Paths
         for (int i = 0; i < 4; i++) {
-            pathList.add(new Path(Nodes[4+i], Nodes[86])); // squar n o to start node
+            pathList.add(new Path(Nodes[4+i], Nodes[86], true)); // squar n o to start node
         }
-        pathList.add(new Path(Nodes[86], Nodes[90])); // z o corner to parkinglot path node
+        pathList.add(new Path(Nodes[86], Nodes[90], true)); // z o corner to parkinglot path node
         pathList.add(new Path(Nodes[91], Nodes[90])); // parkinglot to parkinglot path node
-        pathList.add(new Path(Nodes[90], Nodes[87])); // parkinglot path node to n o corner
+        pathList.add(new Path(Nodes[90], Nodes[87], true)); // parkinglot path node to n o corner
         for (int i = 0; i < 4; i++) {
-            pathList.add(new Path(Nodes[87], Nodes[92+i])); // n o corner to crane
-            pathList.add(new Path(Nodes[92+i], Nodes[88])); // crane to n w corner
+            pathList.add(new Path(Nodes[87], Nodes[92+i], true)); // n o corner to crane
+            pathList.add(new Path(Nodes[92+i], Nodes[88], true)); // crane to n w corner
         }
-        pathList.add(new Path(Nodes[88], Nodes[89])); // n w corner to z w corner
+        pathList.add(new Path(Nodes[88], Nodes[89], true)); // n w corner to z w corner
         for (int i = 0; i < 4; i++) {
-            pathList.add(new Path(Nodes[89], Nodes[i])); // z w corner to squar n w
+            pathList.add(new Path(Nodes[89], Nodes[i], true)); // z w corner to squar n w
         }
         // </editor-fold>
 
@@ -385,20 +385,33 @@ public class Pathfinder {
         }
         
         // Path
-        for (int i = 0; i < 4; i++) {
-            pathList.add(new Path(Nodes[12+i], Nodes[36+((2+i)*100)]));
-            pathList.add(new Path(Nodes[8+i], Nodes[35+((3+i)*100)]));
-            pathList.add(new Path(Nodes[7-i], Nodes[35+((7+i)*100)]));
-            pathList.add(new Path(Nodes[3-i], Nodes[36+((6+i)*100)]));
-        }
+        pathList.add(new Path(Nodes[236], Nodes[12], true));
+        pathList.add(new Path(Nodes[336], Nodes[13], true));
+        pathList.add(new Path(Nodes[14], Nodes[436], true));
+        pathList.add(new Path(Nodes[15], Nodes[536], true));
+
+        pathList.add(new Path(Nodes[8], Nodes[335], true));
+        pathList.add(new Path(Nodes[9], Nodes[435], true));
+        pathList.add(new Path(Nodes[535], Nodes[10], true));
+        pathList.add(new Path(Nodes[635], Nodes[11], true));
+       
+        pathList.add(new Path(Nodes[636], Nodes[3], true));
+        pathList.add(new Path(Nodes[736], Nodes[2], true));
+        pathList.add(new Path(Nodes[1], Nodes[836], true));
+        pathList.add(new Path(Nodes[0], Nodes[936], true));
+        
+        pathList.add(new Path(Nodes[7], Nodes[735], true));
+        pathList.add(new Path(Nodes[6], Nodes[835], true));
+        pathList.add(new Path(Nodes[935], Nodes[5], true));
+        pathList.add(new Path(Nodes[1035], Nodes[4], true));
         
         for (int i = 0; i < 99; i++) {
-            pathList.add(new Path(Nodes[236+i], Nodes[236+i+1]));
-            pathList.add(new Path(Nodes[336+i], Nodes[336+i+1]));
+            pathList.add(new Path(Nodes[335-i], Nodes[335-(i+1)]));
+            pathList.add(new Path(Nodes[435-1], Nodes[435-(i+1)]));
             pathList.add(new Path(Nodes[436+i], Nodes[436+i+1]));
             pathList.add(new Path(Nodes[536+i], Nodes[536+i+1]));
-            pathList.add(new Path(Nodes[636+i], Nodes[636+i+1]));
-            pathList.add(new Path(Nodes[736+i], Nodes[736+i+1]));
+            pathList.add(new Path(Nodes[735-i], Nodes[735-(i+1)]));
+            pathList.add(new Path(Nodes[835-i], Nodes[835-(i+1)]));
             pathList.add(new Path(Nodes[836+i], Nodes[836+i+1]));
             pathList.add(new Path(Nodes[936+i], Nodes[936+i+1]));
         }

@@ -45,7 +45,7 @@ public class Crane implements IMessageReceiver
     private Vector3f _position;
     private float _rotation;
         
-    public Crane (int ID, Vector3f position, int railsLocation, CraneType type, Parkinglot parkingAGV, Parkinglot parkingTransport) throws Exception
+    public Crane (int ID, int railsLocation, CraneType type, Parkinglot parkingAGV, Parkinglot parkingTransport) throws Exception
     {
         if (parkingAGV == null || parkingTransport == null)
             { throw new Exception("A parkinglot can't be null."); }
@@ -59,7 +59,7 @@ public class Crane implements IMessageReceiver
 
         _ID = ID;
         _Type = type;
-        _position = position;
+        _position = parkingAGV.node.getPosition();
         _tasks = new ArrayList<_taskList>();
         _Assignments = new ArrayList<Message>();
         _railsLocation = railsLocation;
