@@ -64,6 +64,7 @@ public class Controller {
     
     // List with all the messages for the controller
     List<Message> messageQueue;
+    List<Message> pendingRemoval;
     
     // The simulation time of this application
     Date simulationTime;
@@ -147,6 +148,7 @@ public class Controller {
         
         // Initializes new ArrayLists
         messageQueue = new ArrayList();
+        pendingRemoval = new ArrayList();
         presentVehicles = new ArrayList();        
         agvList = new ArrayList();          
         storageCranes = new ArrayList();
@@ -395,6 +397,8 @@ public class Controller {
         }
         // Updates all the messageQueue
         UpdateMessages();
+        // Remove all the messages that are handeld
+        ApplyRemoval();
         
         // Send StatsMessage every 1000ms
         statsPublisherMessageLimiter += gameTime;
@@ -612,6 +616,14 @@ public class Controller {
         statsPublisher.SendStatsMessage(msg);
     }
     
+    private void ApplyRemoval()
+    {
+        for(Message mess : pendingRemoval){
+            messageQueue.remove(mess);
+        }
+        pendingRemoval.clear();
+    }
+    
     // <editor-fold defaultstate="collapsed" desc="Container Methods">
     
     /**
@@ -814,7 +826,7 @@ public class Controller {
                 message.GetContainer()));
         }
         // Message was handeld so remove it        
-        messageQueue.remove(message);        
+        pendingRemoval.add(message);        
         return toCheck;
     }    
     
@@ -892,7 +904,7 @@ public class Controller {
                         (Container)null));
                 }  
                 //Message was handeld so remove it
-                messageQueue.remove(message);
+                pendingRemoval.add(message);
                 break;
             }
         }
@@ -947,7 +959,7 @@ public class Controller {
                 message.GetContainer()));
         }
         // Message was handeld so remove it        
-        messageQueue.remove(message);        
+         pendingRemoval.add(message);      
         return toCheck;
     }
     
