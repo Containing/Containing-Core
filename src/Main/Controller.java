@@ -144,7 +144,7 @@ public class Controller {
         // Generates the node area
         Pathfinder.generateArea();
         // Default multiplier value
-        multiplier = 1;
+        multiplier = 100;
         
         // Initializes new ArrayLists
         messageQueue = new ArrayList<Message>();
@@ -426,7 +426,7 @@ public class Controller {
             Message message = messageQueue.get(m);            
             // <editor-fold defaultstate="collapsed" desc="AGV">
             // When the message requests an AGV 
-            if(message.RequestedObject().getClass() == AGV.class){
+            if( message.RequestedObject().equals(AGV.class)){
                 if(!nonAble){
                     float distance = Float.MAX_VALUE;
                     // Skip every agv that's not available
@@ -482,7 +482,7 @@ public class Controller {
             // </editor-fold>
             
             // When the message requests a crane
-             if(message.RequestedObject().equals(Crane.class)){
+            else if(message.RequestedObject().equals(Crane.class)){
                 // When a vehicle requested the crane
                 if(message.DestinationObject() instanceof Vehicle){
                     // Switch between the vechile types
