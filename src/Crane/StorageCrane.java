@@ -4,11 +4,13 @@
  */
 package Crane;
 
+import Helpers.Message;
 import Helpers.Vector3f;
 import Main.Container;
 import Parkinglot.Parkinglot;
 import Storage.Storage_Area;
 import Vehicles.AGV;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
@@ -23,19 +25,19 @@ import java.util.HashMap;
  */
 public class StorageCrane extends Crane
 {
-    public Vector3f position;
-    
     private Storage_Area _storageField;
     private HashMap _storageMap;
+    private enum _taskList { unloadA, unloadB, loadA, loadB, getContainer, storeContainer, moveRow, moveBase };
+    private ArrayList<_taskList> _tasks;
     
     public StorageCrane (Parkinglot<AGV> parkingA, Parkinglot<AGV> parkingB) throws Exception
     {
-        super(1, Crane.CraneType.storage, parkingA, parkingB);
+        super(1, 3f, Vector3f.GetCenter(parkingA.node.getPosition(), parkingB.node.getPosition()), 1, Crane.CraneType.storage, parkingA, parkingB);
 
-        position = Vector3f.GetCenter(parkingA.node.getPosition(), parkingB.node.getPosition());
-        Storage_Area storage = new Storage_Area(98,6,6, position);   
+        Storage_Area storage = new Storage_Area(98,6,6, Vector3f.GetCenter(parkingA.node.getPosition(), parkingB.node.getPosition()));   
         _storageField = storage;
         _storageMap = new HashMap(_storageField.getLength() * _storageField.getWidth());
+        _tasks = new ArrayList<_taskList>();
     }
     
     private void loadContainer (Storage_Area storage, int row, int column) throws Exception
@@ -52,6 +54,7 @@ public class StorageCrane extends Crane
         else if (storage.Count(row, column) == storage.getHeight())
             { throw new Exception("Can't stack containers higher than 6."); }
         
+        _taskTimeLeft += checkTimeMove(row);
         moveRow(row);
         //Move container over crane rail.
         _taskTimeLeft += _moveContainer * column;
@@ -110,6 +113,7 @@ public class StorageCrane extends Crane
         else
         {
             _storageMap.remove(containerID);
+            this.unloadContainer(_storageField, _currentRow, _currentRow);
 
             if (_storageField.Count(coordinates[0], coordinates[1]) > 0)
             {                
@@ -173,7 +177,107 @@ public class StorageCrane extends Crane
     @Override
     public void update(float updateTime)
     {
-        
+        if (parkinglotAGV.isEmpty() == false || parkinglotTransport.isEmpty() == false 
+            && Available() == false && updateTime > 0)
+        {
+            Message message = _Assignments.get(0);
+            
+            if (message.Load() == false && message.UnLoad() == false)
+            {
+                _Assignments.remove(0);
+                this.update(updateTime);
+            }
+            
+            else if (_tasks.isEmpty() == false)
+            {
+                
+            }
+            
+            else
+            {
+                if (message.Load() == true)
+                {
+                    try 
+                    {
+                        if (parkinglotAGV.isEmpty() == false)
+                        {
+                            ArrayList<AGV> agvList = parkinglotAGV.getVehicles();
+                            for (AGV agv : agvList)
+                            {
+                                if (message.DestinationObject().equals(agv))
+                                {
+                                    _tasks.add(_taskList.getContainer);
+                                    _tasks.add(_taskList.loadA);
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    catch (Exception e)
+                        { System.out.println(e); }
+                    
+                    try 
+                    {
+                        if (parkinglotAGV.isEmpty() == false)
+                        {
+                            ArrayList<AGV> agvList = parkinglotTransport.getVehicles();
+                            for (AGV agv : agvList)
+                            {
+                                if (message.DestinationObject().equals(agv))
+                                {
+                                    _tasks.add(_taskList.getContainer);
+                                    _tasks.add(_taskList.loadB);
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    catch (Exception e)
+                        { System.out.println(e); }
+                }
+                
+                else if (message.UnLoad() == true)
+                {
+                    try 
+                    {
+                        if (parkinglotAGV.isEmpty() == false)
+                        {
+                            ArrayList<AGV> agvList = parkinglotAGV.getVehicles();
+                            for (AGV agv : agvList)
+                            {
+                                if (message.DestinationObject().equals(agv))
+                                {
+                                    _tasks.add(_taskList.unloadA);
+                                    _tasks.add(_taskList.storeContainer);
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    catch (Exception e)
+                        { System.out.println(e); }
+                    
+                    try 
+                    {
+                        if (parkinglotAGV.isEmpty() == false)
+                        {
+                            ArrayList<AGV> agvList = parkinglotTransport.getVehicles();
+                            for (AGV agv : agvList)
+                            {
+                                if (message.DestinationObject().equals(agv))
+                                {
+                                    _tasks.add(_taskList.unloadB);
+                                    _tasks.add(_taskList.storeContainer);
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    catch (Exception e)
+                        { System.out.println(e); }
+                }
+            }
+        }
     }
     
     /**
