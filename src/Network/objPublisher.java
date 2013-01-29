@@ -153,4 +153,78 @@ public class objPublisher {
         publisher.send(b, 0);
         System.out.println("Net: Remove container " + ContainerId);
     }
+    
+    public void createCrane(Crane.Crane crane){
+        //22Byte total
+        byte[] b = new byte[22];
+        int vehicleID = crane.getID();
+        byte vehicleType = 0;
+        
+        if(crane.getType() == Crane.Crane.CraneType.storage){
+            vehicleType = 0;
+        }else if(crane.getType() == Crane.Crane.CraneType.barge){
+            vehicleType = 1;
+        }else if(crane.getType() == Crane.Crane.CraneType.seaship){
+            vehicleType = 2;
+        }else if(crane.getType() == Crane.Crane.CraneType.train){
+            vehicleType = 3;
+        }else if(crane.getType() == Crane.Crane.CraneType.truck){
+            vehicleType = 4;
+        }
+        
+
+        
+        
+        Helpers.Vector3f pos = crane.getPosition();
+        
+        b[0] = 6;       //Operation ID
+        
+        Helpers.byteHelper.addToArray(Helpers.byteHelper.toByta(vehicleID), b, 1);
+
+        Helpers.byteHelper.addToArray(Helpers.byteHelper.toByta(pos.x), b, 5);
+        Helpers.byteHelper.addToArray(Helpers.byteHelper.toByta(pos.y), b, 9);
+        Helpers.byteHelper.addToArray(Helpers.byteHelper.toByta(pos.z), b, 13);
+        
+        Helpers.byteHelper.addToArray(Helpers.byteHelper.toByta(crane.getRotation()), b, 17);        
+        Helpers.byteHelper.addToArray(Helpers.byteHelper.toByta(vehicleType), b, 21);
+        
+        publisher.send(b, 0);
+        System.out.println("Net: Creating Crane " + vehicleID);
+    }
+    
+    public void syncCrane(Crane.Crane crane){
+        //17Byte total
+        byte[] b = new byte[17];
+        int vehicleID = crane.getID();
+        byte vehicleType = 0;
+        
+        if(crane.getType() == Crane.Crane.CraneType.storage){
+            vehicleType = 0;
+        }else if(crane.getType() == Crane.Crane.CraneType.barge){
+            vehicleType = 1;
+        }else if(crane.getType() == Crane.Crane.CraneType.seaship){
+            vehicleType = 2;
+        }else if(crane.getType() == Crane.Crane.CraneType.train){
+            vehicleType = 3;
+        }else if(crane.getType() == Crane.Crane.CraneType.truck){
+            vehicleType = 4;
+        }
+        
+
+        
+        
+        Helpers.Vector3f pos = crane.getPosition();
+        
+        b[0] = 7;       //Operation ID
+        
+        Helpers.byteHelper.addToArray(Helpers.byteHelper.toByta(vehicleID), b, 1);
+
+        Helpers.byteHelper.addToArray(Helpers.byteHelper.toByta(pos.x), b, 5);
+        Helpers.byteHelper.addToArray(Helpers.byteHelper.toByta(pos.y), b, 9);
+        Helpers.byteHelper.addToArray(Helpers.byteHelper.toByta(pos.z), b, 13);
+        
+        
+        publisher.send(b, 0);
+        System.out.println("Net: Creating Crane " + vehicleID);
+    }
 }
