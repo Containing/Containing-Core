@@ -102,26 +102,26 @@ public class Pathfinder {
         Nodes[15] = new Node(distanceToMainRoad+3*pathWidth+halfPathWidth, distanceToMainRoad+3*pathWidth+halfPathWidth);
         
         // Paths
-//        // n
-//        pathList.add(new Path(Nodes[4], Nodes[0], true));
-//        pathList.add(new Path(Nodes[5], Nodes[1], true));
-//        pathList.add(new Path(Nodes[2], Nodes[6], true));
-//        pathList.add(new Path(Nodes[3], Nodes[7], true));
-//        // o
-//        pathList.add(new Path(Nodes[8], Nodes[4], true));
-//        pathList.add(new Path(Nodes[9], Nodes[5], true));
-//        pathList.add(new Path(Nodes[6], Nodes[10], true));
-//        pathList.add(new Path(Nodes[7], Nodes[11], true));
-//        // z
-//        pathList.add(new Path(Nodes[12], Nodes[8], true));
-//        pathList.add(new Path(Nodes[13], Nodes[9], true));
-//        pathList.add(new Path(Nodes[10], Nodes[14], true));
-//        pathList.add(new Path(Nodes[11], Nodes[15], true));
-//        // w
-//        pathList.add(new Path(Nodes[0], Nodes[12], true));
-//        pathList.add(new Path(Nodes[1], Nodes[13], true));
-//        pathList.add(new Path(Nodes[14], Nodes[2], true));
-//        pathList.add(new Path(Nodes[15], Nodes[3], true));
+        // n
+        pathList.add(new Path(Nodes[4], Nodes[0], true));
+        pathList.add(new Path(Nodes[5], Nodes[1], true));
+        pathList.add(new Path(Nodes[2], Nodes[6], true));
+        pathList.add(new Path(Nodes[3], Nodes[7], true));
+        // o
+        pathList.add(new Path(Nodes[8], Nodes[4], true));
+        pathList.add(new Path(Nodes[9], Nodes[5], true));
+        pathList.add(new Path(Nodes[6], Nodes[10], true));
+        pathList.add(new Path(Nodes[7], Nodes[11], true));
+        // z
+        pathList.add(new Path(Nodes[12], Nodes[8], true));
+        pathList.add(new Path(Nodes[13], Nodes[9], true));
+        pathList.add(new Path(Nodes[10], Nodes[14], true));
+        pathList.add(new Path(Nodes[11], Nodes[15], true));
+        // w
+        pathList.add(new Path(Nodes[0], Nodes[12], true));
+        pathList.add(new Path(Nodes[1], Nodes[13], true));
+        pathList.add(new Path(Nodes[14], Nodes[2], true));
+        pathList.add(new Path(Nodes[15], Nodes[3], true));
         
         // </editor-fold>
         
