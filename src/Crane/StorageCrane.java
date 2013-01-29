@@ -30,10 +30,10 @@ public class StorageCrane extends Crane
     private enum _taskList { unloadA, unloadB, loadA, loadB, getContainer, storeContainer, moveRow, moveBase };
     private ArrayList<_taskList> _tasks;
     
-    public StorageCrane (int i, Parkinglot parkingA, Parkinglot parkingB) throws Exception
+    public StorageCrane (int id, Parkinglot parkingA, Parkinglot parkingB) throws Exception
     {
-        super(i, 1, Crane.CraneType.storage, parkingA, parkingB);
-        this.position = Vector3f.GetCenter(parkingA.node.getPosition(), parkingB.node.getPosition());
+        super(id, 1, Crane.CraneType.storage, parkingA, parkingB);
+        this._position = Vector3f.GetCenter(parkingA.node.getPosition(), parkingB.node.getPosition());
         Storage_Area storage = new Storage_Area(98,6,6, Vector3f.GetCenter(parkingA.node.getPosition(), parkingB.node.getPosition()));   
         _storageField = storage;
         _storageMap = new HashMap(_storageField.getLength() * _storageField.getWidth());

@@ -36,13 +36,13 @@ public class Crane implements IMessageReceiver
     protected int _currentRow;
     protected float _taskTimeLeft;
     protected ArrayList<Message> _Assignments;
+    protected Vector3f _position;
     
     private enum _taskList { loadAGV, unloadAGV, loadTransport, unloadTransport, moveRowUp, moveRowBase }
     private ArrayList<_taskList> _tasks;
     private int _totalCranes;
     private CraneType _Type;
     private int _ID;
-    private Vector3f _position;
     private float _rotation;
         
     public Crane (int ID, int railsLocation, CraneType type, Parkinglot parkingAGV, Parkinglot parkingTransport) throws Exception
