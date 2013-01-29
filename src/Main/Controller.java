@@ -188,7 +188,9 @@ public class Controller {
         // Adds 100 AGVs
         for(int i = 0; i < 100; i++){
             // Set there positions on the parking nodes of each storage crane
-            agvList.add(new AGV(Pathfinder.parkinglots[71 +i]));
+            AGV agv = new AGV(Pathfinder.parkinglots[71 +i], objpublisher);
+            agvList.add(agv);
+            objpublisher.createVehicle(agv);
         }       
         
         // Initializes the dates
@@ -200,7 +202,7 @@ public class Controller {
         GetNextArrivalDate();   
         
         // Sets the simulationTime equal to the first shipment
-        simulationTime.setTime(shipmentTime.getTime()-1000*60*20);
+        simulationTime.setTime(shipmentTime.getTime()-1000*60*10);
         
         // Sets the simulationTime 1 hour before the first shipment  
        // simulationTime.setHours(simulationTime.getHours() -1);

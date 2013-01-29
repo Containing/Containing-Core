@@ -3,6 +3,7 @@ package Vehicles;
 import Crane.Crane;
 import Crane.StorageCrane;
 import Helpers.*;
+import Network.objPublisher;
 import Parkinglot.Parkinglot;
 import Pathfinding.Pathfinder;
 import Storage.Storage_Area;
@@ -13,7 +14,12 @@ public class AGV extends Vehicle implements IMessageReceiver {
 
     private final float SpeedWithContainer = 20/3.6f;
     private final float SpeedWithoutContainer = 40/3.6f;    
-    private List<Message> assignments;    
+    private List<Message> assignments;   
+    
+    /**
+     * Reference to objPublisher
+     */
+    final objPublisher objpublisher; 
     
     /**
      * When the agv has a container but no assingments
@@ -29,7 +35,7 @@ public class AGV extends Vehicle implements IMessageReceiver {
     }
     private boolean needDeliverAssignment = false;
     
-    public AGV(Parkinglot startPosition) throws Exception{
+    public AGV(Parkinglot startPosition, objPublisher objpublisher) throws Exception{
         if (startPosition == null){
             throw new Exception("\nThe input variable can't be null:"+
                     "\nstartPosition: " + startPosition);
@@ -40,6 +46,7 @@ public class AGV extends Vehicle implements IMessageReceiver {
             storage = new Storage_Area(1, 1, 1, position);
         }
         assignments = new ArrayList();
+        this.objpublisher = objpublisher;
     }
 
     /**
@@ -83,6 +90,7 @@ public class AGV extends Vehicle implements IMessageReceiver {
         // Go to the next node on the route if this node is reached
         else if(position == route[routeIndex].getPosition()){
             routeIndex++;
+            this.objpublisher.syncVehicle(this);
         }
         // Move the agv to the next position on his route
         else{
