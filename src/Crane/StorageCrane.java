@@ -32,8 +32,8 @@ public class StorageCrane extends Crane
     
     public StorageCrane (int i, Parkinglot parkingA, Parkinglot parkingB) throws Exception
     {
-        super(i, Vector3f.GetCenter(parkingA.node.getPosition(), parkingB.node.getPosition()), 1, Crane.CraneType.storage, parkingA, parkingB);
-
+        super(i, 1, Crane.CraneType.storage, parkingA, parkingB);
+        this.position = Vector3f.GetCenter(parkingA.node.getPosition(), parkingB.node.getPosition());
         Storage_Area storage = new Storage_Area(98,6,6, Vector3f.GetCenter(parkingA.node.getPosition(), parkingB.node.getPosition()));   
         _storageField = storage;
         _storageMap = new HashMap(_storageField.getLength() * _storageField.getWidth());
