@@ -185,13 +185,6 @@ public class Controller {
         for(int i = 0 ; i < 100; i++){
             storageCranes.add(new StorageCrane(i, Pathfinder.parkinglots[71 +i], Pathfinder.parkinglots[171 + i]));     
         }       
-        // Initializes 100 storageAreas and there storage cranes
-        for(int i = 0 ; i < 100; i++){
-            storageCranes.add(new StorageCrane(
-                Pathfinder.parkinglots[71 +i],
-                Pathfinder.parkinglots[171 + i]));
-        }
-        
         // Adds 100 AGVs
         for(int i = 0; i < 100; i++){
             // Set there positions on the parking nodes of each storage crane
