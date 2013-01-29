@@ -188,7 +188,7 @@ public class Controller {
         // Adds 100 AGVs
         for(int i = 0; i < 100; i++){
             // Set there positions on the parking nodes of each storage crane
-            AGV agv = new AGV(Pathfinder.parkinglots[71 +i], objpublisher);
+            AGV agv = new AGV(MatchVehicles.idCounter++, Pathfinder.parkinglots[71 +i], objpublisher);
             agvList.add(agv);
             objpublisher.createVehicle(agv);
         }       

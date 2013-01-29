@@ -35,16 +35,15 @@ public class AGV extends Vehicle implements IMessageReceiver {
     }
     private boolean needDeliverAssignment = false;
     
-    public AGV(Parkinglot startPosition, objPublisher objpublisher) throws Exception{
+    public AGV(int id, Parkinglot startPosition, objPublisher objpublisher) throws Exception{
         if (startPosition == null){
             throw new Exception("\nThe input variable can't be null:"+
                     "\nstartPosition: " + startPosition);
         }
-        else{
-            this.position = startPosition.node.getPosition();
-            this.destination = startPosition;
-            storage = new Storage_Area(1, 1, 1, position);
-        }
+        this.position = startPosition.node.getPosition();
+        this.destination = startPosition;
+        storage = new Storage_Area(1, 1, 1, position);
+        this.Id = id;
         assignments = new ArrayList();
         this.objpublisher = objpublisher;
     }
