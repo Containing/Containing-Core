@@ -144,7 +144,7 @@ public class Controller {
         // Generates the node area
         Pathfinder.generateArea();
         // Default multiplier value
-        multiplier = 100;
+        multiplier = 1;
         
         // Initializes new ArrayLists
         messageQueue = new ArrayList<Message>();
@@ -185,7 +185,7 @@ public class Controller {
             // Set there positions on the parking nodes of each storage crane
             AGV agv = new AGV(MatchVehicles.idCounter++, Pathfinder.parkinglots[71 +i], objpublisher);
             agvList.add(agv);
-//            objpublisher.createVehicle(agv);
+            objpublisher.createVehicle(agv);
         }       
                 
         // Loads all the vehicles that come to the harbor
