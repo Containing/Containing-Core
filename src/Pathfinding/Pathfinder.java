@@ -324,9 +324,9 @@ public class Pathfinder {
         
         
         // path
-        for (int i = 0; i < 20; i++) {
-            pathList.add(new Path(Nodes[187], Nodes[176+i]));
-            pathList.add(new Path(Nodes[176+i], Nodes[186]));
+        for (int i = 0; i < 19; i++) {
+            pathList.add(new Path(Nodes[195-i], Nodes[195-(i+1)]));
+            //pathList.add(new Path(Nodes[176+i], Nodes[186]));
         }
         pathList.add(new Path(Nodes[199], Nodes[197]));
         pathList.add(new Path(Nodes[197], Nodes[195]));
