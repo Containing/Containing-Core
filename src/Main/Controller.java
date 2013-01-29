@@ -64,7 +64,6 @@ public class Controller {
     
     // List with all the messages for the controller
     List<Message> messageQueue;
-    List<Message> pendingRemoval;
     
     // The simulation time of this application
     Date simulationTime;
@@ -144,14 +143,13 @@ public class Controller {
         // Generates the node area
         Pathfinder.generateArea();
         // Default multiplier value
-        multiplier = 10;
+        multiplier = 100;
         
         // Initializes new ArrayLists
-        messageQueue = new ArrayList();
-        pendingRemoval = new ArrayList();
-        presentVehicles = new ArrayList();        
-        agvList = new ArrayList();          
-        storageCranes = new ArrayList();
+        messageQueue = new ArrayList<Message>();
+        presentVehicles = new ArrayList<TransportVehicle>();        
+        agvList = new ArrayList<AGV>();          
+        storageCranes = new ArrayList<StorageCrane>();
         
         // Initializes space for the cranes        
         seaCranes = new Crane[10];
@@ -186,7 +184,7 @@ public class Controller {
             // Set there positions on the parking nodes of each storage crane
             AGV agv = new AGV(MatchVehicles.idCounter++, Pathfinder.parkinglots[71 +i], objpublisher);
             agvList.add(agv);
-            objpublisher.createVehicle(agv);
+//            objpublisher.createVehicle(agv);
         }       
                 
         // Loads all the vehicles that come to the harbor
@@ -397,8 +395,12 @@ public class Controller {
         }
         // Updates all the messageQueue
         UpdateMessages();
-        // Remove all the messages that are handeld
-        ApplyRemoval();
+        
+        for(int i = messageQueue.size() -1 ; i>= 0; i--){
+            if(messageQueue.get(i).messageHandeld){
+                messageQueue.remove(i);
+            }
+        }
         
         // Send StatsMessage every 1000ms
         statsPublisherMessageLimiter += gameTime;
@@ -419,8 +421,8 @@ public class Controller {
         boolean nonAble = false;
         
         // Checks every message
-        for(Message message : messageQueue){
-            
+        for(int m = 0; m < messageQueue.size(); m++){
+            Message message = messageQueue.get(m);            
             // <editor-fold defaultstate="collapsed" desc="AGV">
             // When the message requests an AGV 
             if(message.RequestedObject().equals(AGV.class)){
@@ -478,7 +480,7 @@ public class Controller {
             // </editor-fold>
             
             // When the message requests a crane
-            else if(message.RequestedObject().equals(Crane.class)){
+             if(message.RequestedObject().equals(Crane.class)){
                 // When a vehicle requested the crane
                 if(message.DestinationObject() instanceof Vehicle){
                     // Switch between the vechile types
@@ -614,14 +616,6 @@ public class Controller {
         msg.vehicles.put("TRAIN", availableTrains);
         
         statsPublisher.SendStatsMessage(msg);
-    }
-    
-    private void ApplyRemoval()
-    {
-        for(Message mess : pendingRemoval){
-            messageQueue.remove(mess);
-        }
-        pendingRemoval.clear();
     }
     
     // <editor-fold defaultstate="collapsed" desc="Container Methods">
@@ -826,7 +820,7 @@ public class Controller {
                 message.GetContainer()));
         }
         // Message was handeld so remove it        
-        pendingRemoval.add(message);        
+        message.messageHandeld = true;   
         return toCheck;
     }    
     
@@ -904,7 +898,7 @@ public class Controller {
                         (Container)null));
                 }  
                 //Message was handeld so remove it
-                pendingRemoval.add(message);
+                 message.messageHandeld = true;
                 break;
             }
         }
@@ -959,7 +953,7 @@ public class Controller {
                 message.GetContainer()));
         }
         // Message was handeld so remove it        
-         pendingRemoval.add(message);      
+         message.messageHandeld = true;   
         return toCheck;
     }
     

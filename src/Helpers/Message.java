@@ -32,6 +32,8 @@ public class Message {
     
     Node destNode;
     
+    public boolean messageHandeld;
+    
     /**
      * Constructs a new message
      * @param sourceSender The object that requests an object
@@ -45,6 +47,7 @@ public class Message {
             ACTION action,
             Container container) throws Exception
     {        
+        messageHandeld = false;
         if(sourceSender == null){
             throw new Exception("Source Sender can't be null");
         }        
@@ -155,6 +158,9 @@ public class Message {
      */
     public Node DestinationNode() throws Exception
     {
+        if(destNode != null){
+            return destNode;
+        }
         if(destinationObject.getClass() == TransportVehicle.class){            
             if(((TransportVehicle)destinationObject).getDestination() == null){
                 throw new Exception("destination node is null");
