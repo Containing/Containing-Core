@@ -142,7 +142,11 @@ public class AGV extends Vehicle implements IMessageReceiver {
             else{
                 // When the assignment is not is Deliver, Fetch
                 throw new Exception("Wrong assignment AGV Can't Load or Unload");
-            }            
+            }
+            if(!assignments.isEmpty())
+                if(destination.node != assignments.get(0).DestinationNode()){
+                    this.setDestination(assignments.get(0).DestinationObject());
+            }
         }
         // When the agv has no assignments left
         if(Available()){
