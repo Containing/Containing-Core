@@ -525,7 +525,10 @@ public class Crane implements IMessageReceiver
                 }
                 catch (Exception e) { }
 
-                this.update(updateTime);
+                if (_tasks.isEmpty() == false)
+                {
+                    this.update(updateTime);
+                }
             }
         }
     }

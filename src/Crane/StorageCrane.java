@@ -381,6 +381,11 @@ public class StorageCrane extends Crane
                     catch (Exception e)
                         {  }
                 }
+                
+                if (_tasks.isEmpty() == false)
+                {
+                    this.update(updateTime);
+                }
             }
         }
     }
