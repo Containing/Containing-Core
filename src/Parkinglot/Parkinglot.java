@@ -95,18 +95,17 @@ public class Parkinglot <T>
      * @return The vehicle that has been requested to be unparked.
      * @throws Exception Is thrown when the vehicle can't be unparked.
      */
-    public T unPark (T vehicle) throws Exception
+    public void unPark (T vehicle) throws Exception
     {
         for (T parkedVehicle : _parkingSpace)
         {
-            if (parkedVehicle == vehicle)
+            if (parkedVehicle == vehicle || parkedVehicle.equals(vehicle))
             {
                 _parked--;
                 _parkingSpace.remove(parkedVehicle);
-                return parkedVehicle;
             }
         }
-        throw new Exception("Can't unpark the vehicle from the parkinglot.");
+        System.out.println("Can't unpark the vehicle from the parkinglot.");
     }
     
     /**

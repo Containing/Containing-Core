@@ -10,6 +10,7 @@ import Vehicles.AGV;
 import Vehicles.TransportVehicle;
 import java.util.ArrayList;
 import java.util.Date;
+import javax.swing.text.Position;
 
 /**
  * @author Karel Gerbrands
@@ -236,8 +237,9 @@ public class Crane implements IMessageReceiver
         
         else if (storage.rowEmpty(_currentRow) == true)
             { throw new Exception("Can't grab an container from an empty row."); }
-        
+
         _carriedContainer = storage.popContainer(rowIndex, columnIndex);
+        _carriedContainer.setDatabasePosition("", new Vector3f());
         
         return storage;
     }
