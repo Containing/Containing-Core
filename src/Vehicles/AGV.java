@@ -155,10 +155,10 @@ public class AGV extends Vehicle implements IMessageReceiver {
         }
         // When the agv has no assignments left
         if(Available()){
-//            // When the AGV still carries a container 
-//            if(storage.isFilled()){
-//                needDeliverAssignment = true;
-//            }
+            // When the AGV still carries a container 
+            if(storage.isFilled()){
+                needDeliverAssignment = true;
+            }
 //            // Default parkinglot 0
 //            int index = 0;
 //            // Default set on first parkinglot
