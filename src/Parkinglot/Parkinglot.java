@@ -97,7 +97,12 @@ public class Parkinglot <T>
      */
     public void unPark (T vehicle) throws Exception
     {
-        for (T parkedVehicle : _parkingSpace)
+        if (!_parkingSpace.remove(vehicle))
+        {
+            System.out.println("Can't unpark the vehicle from the parkinglot.");
+        }
+        
+        /*for (T parkedVehicle : _parkingSpace)
         {
             if (parkedVehicle == vehicle || parkedVehicle.equals(vehicle))
             {
@@ -105,8 +110,7 @@ public class Parkinglot <T>
                 _parkingSpace.remove(parkedVehicle);
                 break;
             }
-        }
-        System.out.println("Can't unpark the vehicle from the parkinglot.");
+        }*/
     }
     
     /**
