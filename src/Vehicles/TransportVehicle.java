@@ -146,9 +146,14 @@ public class TransportVehicle extends Vehicle {
      * @throws Exception 
      */
     @Override
-    public void update(float gameTime) throws Exception {
+    public void update(float gameTime) throws Exception{
+        this.update(gameTime, false);
+    }
+            
+            
+    public void update(float gameTime, boolean visualOnly) throws Exception {
         if (position == destination.node.getPosition()){
-            if(!parked){
+            if(!visualOnly && !parked){
                 destination.park(this);
             }
             if(departure){
