@@ -103,6 +103,7 @@ public class Parkinglot <T>
             {
                 _parked--;
                 _parkingSpace.remove(parkedVehicle);
+                break;
             }
         }
         System.out.println("Can't unpark the vehicle from the parkinglot.");
