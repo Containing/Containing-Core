@@ -144,7 +144,7 @@ public class Controller {
         // Generates the node area
         Pathfinder.generateArea();
         // Default multiplier value
-        multiplier = 100;
+        multiplier = 10;
         
         // Initializes new ArrayLists
         messageQueue = new ArrayList<Message>();
@@ -450,7 +450,7 @@ public class Controller {
                     //agv.setDestination(message.DestinationNode());
                     //Copies the message to the message queue
                     ((AGV)agv).SendMessage(message);
-                    ((AGV)agv).setDestination(message.DestinationObject());
+                    ((AGV)agv).setDestination(message.DestinationObject()); 
                     // When it's a fetch message send a delivery message
                     if(message.Fetch() && message.GetContainer() != null){
                         // When the destination object is a crane
@@ -476,7 +476,8 @@ public class Controller {
                         // Check the Storage cranes
                         storageCranes = StorageCranesToCheck(storageCranes,(AGV)message.DestinationObject(), message);
                         }
-                    }                
+                    } 
+                    message.messageHandeld = true;
                 }
             }
             // </editor-fold>
