@@ -88,12 +88,14 @@ public class AGV extends Vehicle implements IMessageReceiver {
         } 
         // Go to the next node on the route if this node is reached
         else if(position == route[routeIndex].getPosition()){
+            parked = false;
             routeIndex++;
             if(this.objpublisher!=null)
                 this.objpublisher.syncVehicle(this);
         }
         // Move the agv to the next position on his route
         else{
+            parked = false;
             float speed = (storage.Count() == 0) ? SpeedWithoutContainer : SpeedWithContainer;
             Vector3f NextNode = route[routeIndex].getPosition();
             Vector3f diff = new Vector3f(   NextNode.x - this.getPosition().x,
