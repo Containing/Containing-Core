@@ -25,7 +25,7 @@ public class Parkinglot <T>
         if (n == null)
             { throw new Exception("The node can't be null."); }
         
-        
+        _parked = 0;
         _parkingSpace = new ArrayList<T>();        
         _size = size;
         node = n;
