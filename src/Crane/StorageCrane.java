@@ -298,7 +298,7 @@ public class StorageCrane extends Crane
                 }
             }
             
-            else
+            else if (_tasks.isEmpty() == true)
             {
                 if (message.Load() == true)
                 {
