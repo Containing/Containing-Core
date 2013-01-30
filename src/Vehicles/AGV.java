@@ -54,6 +54,7 @@ public class AGV extends Vehicle implements IMessageReceiver {
      * @throws Exception 
      */
     public void setDestination(Object destinationObject) throws Exception{
+        this.destination.unPark(this);
         if (destinationObject.getClass() == Crane.class){
             this.destination = ((Crane)destinationObject).parkinglotAGV;
         }
