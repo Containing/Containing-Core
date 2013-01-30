@@ -10,6 +10,7 @@ import Main.Container;
 import Parkinglot.Parkinglot;
 import Storage.Storage_Area;
 import Vehicles.AGV;
+import Vehicles.TransportVehicle;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -27,7 +28,7 @@ public class StorageCrane extends Crane
 {
     private Storage_Area _storageField;
     private HashMap _storageMap;
-    private enum _taskList { unloadA, unloadB, loadA, loadB, getContainer, storeContainer, moveRow, moveBase };
+    private enum _taskList { unloadA, unloadB, loadA, loadB, getContainer, storeContainer, moveBase };
     private ArrayList<_taskList> _tasks;
     
     public StorageCrane (int id, Parkinglot parkingA, Parkinglot parkingB) throws Exception
@@ -114,6 +115,7 @@ public class StorageCrane extends Crane
         {
             _storageMap.remove(containerID);
             this.unloadContainer(_storageField, _currentRow, _currentRow);
+            _carriedContainer.setDatabasePosition("", new Vector3f());
 
             if (_storageField.Count(coordinates[0], coordinates[1]) > 0)
             {                
@@ -161,6 +163,7 @@ public class StorageCrane extends Crane
                             {
                                 _storageMap.remove(_storageField.peekContainer(row, column).getId());
                                 _storageMap.put(_carriedContainer.getId(), new int[] {row, column, _storageField.Count(row, column)+1});
+                                _carriedContainer.setDatabasePosition(Integer.toString(this.getID()), new Vector3f(column, _storageField.Count(row, column)+1, row));
                                 this.loadContainer(_storageField, row, column);
                                 break outerloop;
                             }
@@ -177,7 +180,7 @@ public class StorageCrane extends Crane
     @Override
     public void update(float updateTime)
     {
-        /*if (parkinglotAGV.isEmpty() == false || parkinglotTransport.isEmpty() == false 
+        if (parkinglotAGV.isEmpty() == false && parkinglotTransport.isEmpty() == false 
             && Available() == false && updateTime > 0)
         {
             Message message = _Assignments.get(0);
@@ -190,7 +193,109 @@ public class StorageCrane extends Crane
             
             else if (_tasks.isEmpty() == false)
             {
+                Storage_Area storage = null;
+                boolean taskPossible = false;
                 
+                if (_tasks.get(0) == _taskList.loadA || _tasks.get(0) == _taskList.unloadA)
+                {
+                    try
+                    {
+                        ArrayList<AGV> agvList = parkinglotAGV.getVehicles();
+                        for (AGV agv : agvList)
+                        {
+                            if (message.DestinationObject().equals(agv))
+                            {
+                                storage = agv.storage;
+                                taskPossible = true;
+                            }
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        taskPossible = false;
+                    }
+                }
+                
+                else if (_tasks.get(0) == _taskList.loadB || _tasks.get(0) == _taskList.unloadB)
+                {
+                    try
+                    {
+                        ArrayList<AGV> agvList = parkinglotTransport.getVehicles();
+                        for (AGV agv : agvList)
+                        {
+                            if (message.DestinationObject().equals(agv))
+                            {
+                                storage = agv.storage;
+                                taskPossible = true;
+                            }
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        taskPossible = false;
+                    }
+                }
+                
+                if (taskPossible == true)
+                {
+                    if (_taskTimeLeft > 0)
+                    {
+                        _taskTimeLeft -= updateTime;
+                        
+                        if (_taskTimeLeft <= 0)
+                        {
+                            try
+                            {                                
+                                if (_tasks.get(0) == _taskList.loadA || _tasks.get(0) == _taskList.unloadA)
+                                {
+                                    AGV a = (AGV)parkinglotAGV.getVehicles().get(0);
+                                    a.storage = storage;
+                                    parkinglotAGV.setVehicle(a, 0);
+                                }
+                                
+                                else if (_tasks.get(0) == _taskList.loadA || _tasks.get(0) == _taskList.unloadB)
+                                {
+                                    TransportVehicle t = (TransportVehicle)parkinglotTransport.getVehicles().get(0);
+                                    t.storage = storage;
+                                    parkinglotTransport.setVehicle(t, 0);
+                                }
+                                
+                                _tasks.remove(0);
+                                
+                                if (_taskTimeLeft < 0)
+                                {   
+                                    float time = _taskTimeLeft * -1;
+                                    _taskTimeLeft = 0;
+                                    this.update(time);
+                                }
+                                
+                                if (_tasks.isEmpty() == true)
+                                    { _Assignments.remove(0); }
+                            }
+                            catch (Exception e)
+                                { System.out.println(e.getMessage()); }
+                        }
+                    }
+
+                    else
+                    {
+                        try
+                        {
+                            switch (_tasks.get(0))
+                            {
+                                case moveBase: this.moveRow(_storageField.getLength() / 2); break;
+                                case loadA: this.loadContainer(storage, 0, 0); break;
+                                case unloadA: this.unloadContainer(storage, 0, 0); break;
+                                case loadB: this.loadContainer(storage, 0, 0); break;
+                                case unloadB: this.unloadContainer(storage, 0, 0); break;
+                                case getContainer: Container cont = (Container)message.RequestedObject(); this.getContainer(Integer.toString(cont.getId())); break;  
+                                case storeContainer: this.storeContainer(); break;
+                            }
+                        }
+                        catch (Exception e)
+                            { System.out.println(e.getMessage()); }
+                    }
+                }
             }
             
             else
@@ -214,7 +319,7 @@ public class StorageCrane extends Crane
                         }
                     }
                     catch (Exception e)
-                        { System.out.println(e); }
+                        {  }
                     
                     try 
                     {
@@ -233,7 +338,7 @@ public class StorageCrane extends Crane
                         }
                     }
                     catch (Exception e)
-                        { System.out.println(e); }
+                        {  }
                 }
                 
                 else if (message.UnLoad() == true)
@@ -255,7 +360,7 @@ public class StorageCrane extends Crane
                         }
                     }
                     catch (Exception e)
-                        { System.out.println(e); }
+                        {  }
                     
                     try 
                     {
@@ -274,10 +379,10 @@ public class StorageCrane extends Crane
                         }
                     }
                     catch (Exception e)
-                        { System.out.println(e); }
+                        {  }
                 }
             }
-        }*/
+        }
     }
     
     /**
