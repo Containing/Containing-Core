@@ -462,7 +462,7 @@ public class Crane implements IMessageReceiver
                 }
             }
             
-            else
+            else if (_tasks.isEmpty() == true)
             {
                 try
                 {
