@@ -344,7 +344,7 @@ public class Crane implements IMessageReceiver
      */
     public void update(float updateTime)
     {
-        if ((parkinglotAGV.isEmpty() == false || parkinglotTransport.isEmpty() == false) 
+        if (parkinglotAGV.isEmpty() == false && parkinglotTransport.isEmpty() == false 
             && Available() == false && updateTime > 0)
         {
             Message message = _Assignments.get(0);
@@ -469,7 +469,7 @@ public class Crane implements IMessageReceiver
                         agv = true;
                     } 
                 }
-                catch (Exception e) { System.out.println("The parkinglot for the AGV is empty."); }
+                catch (Exception e) {  }
                 
                 try
                 {
@@ -478,20 +478,20 @@ public class Crane implements IMessageReceiver
                         transport = true;
                     } 
                 }
-                catch (Exception e) { System.out.println("The parkinglot for the transport is empty."); }
+                catch (Exception e) {  }
 
                 try
                 {
                     Storage_Area storage = null;
                     int maxRow;
                     
-                    if (agv = true)
+                    if (agv == true)
                     {
                         AGV a = (AGV)parkinglotAGV.getVehicles().get(0);
                         storage = a.storage;
                     }
                     
-                    else if (transport = true)
+                    else if (transport == true)
                     {
                         TransportVehicle t = (TransportVehicle)parkinglotTransport.getVehicles().get(0);
                         storage = t.storage;
