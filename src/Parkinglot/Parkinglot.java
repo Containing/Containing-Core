@@ -99,7 +99,7 @@ public class Parkinglot <T>
     {
         if (!_parkingSpace.remove(vehicle))
         {
-            System.out.println("Can't unpark the vehicle from the parkinglot.");
+            //System.out.println("Can't unpark the vehicle from the parkinglot.");
         }
         
         /*for (T parkedVehicle : _parkingSpace)
