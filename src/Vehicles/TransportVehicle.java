@@ -102,6 +102,7 @@ public class TransportVehicle extends Vehicle {
      * @throws Exception If something goes wrong while calculating the route.
      */
     public void setDestination(Node destination) throws Exception{
+        this.destination.unPark(this);
         this.destination = new Parkinglot(1, destination);
         this.route = Pathfinding.Pathfinder.findShortest(Pathfinder.findClosestNode(position), destination, storage.Count() == 0);
         this.routeIndex = 1;
@@ -148,7 +149,7 @@ public class TransportVehicle extends Vehicle {
     public void update(float gameTime) throws Exception {
         if (position == destination.node.getPosition()){
             if(!parked){
-                
+                destination.park(this);
             }
             if(departure){
                 destroy = true;
