@@ -142,37 +142,41 @@ public class AGV extends Vehicle implements IMessageReceiver {
             else{
                 // When the assignment is not is Deliver, Fetch
                 throw new Exception("Wrong assignment AGV Can't Load or Unload");
-            }            
+            }
+            if(!assignments.isEmpty())
+                if(destination.node != assignments.get(0).DestinationNode()){
+                    this.setDestination(assignments.get(0).DestinationObject());
+            }
         }
         // When the agv has no assignments left
         if(Available()){
-            // When the AGV still carries a container 
-            if(storage.isFilled()){
-                needDeliverAssignment = true;
-            }
-            // Default parkinglot 0
-            int index = 0;
-            // Default set on first parkinglot
-            float distance = Vector3f.distance(this.position, Pathfinder.parkinglots[0].node.getPosition());  
-            
-            // Calculate what the nearest parkinglot is
-            float tempDist = Vector3f.distance(this.position, Pathfinder.parkinglots[11].node.getPosition());             
-            if(distance > tempDist){
-                distance = tempDist;
-                index = 11;
-            }                
-            tempDist = Vector3f.distance(this.position, Pathfinder.parkinglots[20].node.getPosition());    
-            if(distance > tempDist){
-                distance = tempDist;
-                index = 20;
-            }                
-            tempDist = Vector3f.distance(this.position, Pathfinder.parkinglots[41].node.getPosition());    
-            if(distance > tempDist){
-                distance = tempDist;
-                index = 41;
-            }
-            // Sends the agv to the nearest parkinglot
-            this.setDestination(Pathfinder.parkinglots[index]);
+//            // When the AGV still carries a container 
+//            if(storage.isFilled()){
+//                needDeliverAssignment = true;
+//            }
+//            // Default parkinglot 0
+//            int index = 0;
+//            // Default set on first parkinglot
+//            float distance = Vector3f.distance(this.position, Pathfinder.parkinglots[0].node.getPosition());  
+//            
+//            // Calculate what the nearest parkinglot is
+//            float tempDist = Vector3f.distance(this.position, Pathfinder.parkinglots[11].node.getPosition());             
+//            if(distance > tempDist){
+//                distance = tempDist;
+//                index = 11;
+//            }                
+//            tempDist = Vector3f.distance(this.position, Pathfinder.parkinglots[20].node.getPosition());    
+//            if(distance > tempDist){
+//                distance = tempDist;
+//                index = 20;
+//            }                
+//            tempDist = Vector3f.distance(this.position, Pathfinder.parkinglots[41].node.getPosition());    
+//            if(distance > tempDist){
+//                distance = tempDist;
+//                index = 41;
+//            }
+//            // Sends the agv to the nearest parkinglot
+//            this.setDestination(Pathfinder.parkinglots[index]);
         }        
     }
     
